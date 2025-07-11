@@ -11,6 +11,7 @@ ending=".py"
 hapmap= open("HapMap.ped")
 lines= hapmap.readlines()
 total_snp=len(lines[0].split('\t'))-6
+# total_snp=700
 n=int(sys.argv[1]) #group size adjust 
 comment="shuffle_rand"+str(n)+"_"
 level=0
@@ -296,7 +297,8 @@ def combine_build_up(n, total_snp):
     print("started build-up at", curr_time())
     method="given"
     level=0
-    identified=random.shuffle(list(range(total_snp)))
+    identified=list(range(total_snp))
+    random.shuffle(identified)
     ends=[]
     for i in range(len(identified)//n+1):
         ends.append(i*n)
