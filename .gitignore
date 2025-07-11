@@ -5,5 +5,5 @@
 **/*.ped
 **/*.bim
 **/*.map
-
+**/.DS_Store
 Entire/*
