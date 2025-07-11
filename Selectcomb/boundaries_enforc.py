@@ -295,6 +295,10 @@ def combine_build_up(n, total_snp):
     method="given"
     level=0
     identified=list(range(total_snp))
+    ends=[]
+    for i in range(len(identified)//n):
+        ends.append(i)
+    
     while True:#or level< big number to prevent endless
         if len(identified)//n==0:
             
@@ -308,7 +312,7 @@ def combine_build_up(n, total_snp):
             for i in range(-4-int(lines[1]),-4):
                 ele= lines[i].split(sep=',')
                 ele[0], ele[-1]=ele[0][1:], ele[-1][:-2]
-                ele=list( map(float, ele))
+                ele=sorted(list( map(float, ele)))
                 for j in range(len(ele)):
                     print(ele[j], end=", ")
             file.close()
@@ -318,15 +322,10 @@ def combine_build_up(n, total_snp):
 
 
         created_files=[]
-        
+        ends[-1]=len(identified)     #make last group bigger by combining the rest
         for i in range(len(ends)-1):
             start=ends[i]
             end=ends[i+1]
-            if end+n>len(identified):
-                end=len(identified)
-            
-            
-            
             mkdir(dir_l(level)+str(method)+str(comment)+str(start))
             to_analyze= identified[start:end]
             # print(to_analyze)
@@ -345,16 +344,12 @@ def combine_build_up(n, total_snp):
                 for j in range(len(ele)):
                     identified.add(ele[j])
                 if len(identified)-ends[-1]>=n:
-                    ends.append(len(identified))
-                    
+                    ends.append(len(identified))  
             file.close()
         
         identified=list(identified)
-        ends[-1]=len(identified)
+        
         # print(identified, "identified")
         level+=1
         print("reached new level", level, curr_time())
-
-    
-
 combine_build_up(n, total_snp)
