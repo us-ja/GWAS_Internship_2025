@@ -1,2 +1,2 @@
 source ../venv/bin/activate
-python3 tree.py 300
+python3 shuffle.py 200

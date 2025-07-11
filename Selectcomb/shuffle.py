@@ -12,12 +12,12 @@ hapmap= open("HapMap.ped")
 lines= hapmap.readlines()
 total_snp=len(lines[0].split('\t'))-6
 n=int(sys.argv[1]) #group size adjust 
-comment="split_allowed"+str(n)+"_"
+comment="shuffle"+str(n)+"_"
 level=0
 to_combine=[]
 def curr_time():
     return str(datetime.now().strftime("%H:%M:%S"))
-print("Started at ", curr_time())
+print("Started at ", curr_time)
 all_selections=[]
 def calculate_decimal(list):
     "calculates decimal number treatings all - as 0"
@@ -98,7 +98,6 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
                 if selection_type=="random" or selection_type=="seeded":
                     random.seed(seed)
                     selection=random.sample(range(6, total+6),k=amt_select_snp)
-                    selection.sort()
                     # selection=set()
                     # while len(selection)<amt_select_snp:
                     #     selection.add(random.randint(6,total))
@@ -320,11 +319,13 @@ def combine_build_up(n, total_snp):
 
         created_files=[]
         
-        for i in range(len(identified)//n):
-            start=i*n
-            end=(i+1)*n
+        for i in range(len(ends)-1):
+            start=ends[i]
+            end=ends[i+1]
             if end+n>len(identified):
                 end=len(identified)
+            
+            
             
             mkdir(dir_l(level)+str(method)+str(comment)+str(start))
             to_analyze= identified[start:end]
@@ -333,6 +334,7 @@ def combine_build_up(n, total_snp):
         # print(created_files)
         identified=set()
         assert len(identified)==0, "identified not empty"
+        ends=[0]
         for file_name in created_files:
             file = open(file_name)
             lines=file.readlines()
@@ -342,9 +344,13 @@ def combine_build_up(n, total_snp):
                 ele=list(map(int, map(float, ele)))
                 for j in range(len(ele)):
                     identified.add(ele[j])
+                if len(identified)-ends[-1]>=n:
+                    ends.append(len(identified))
                     
             file.close()
+        
         identified=list(identified)
+        ends[-1]=len(identified)
         # print(identified, "identified")
         level+=1
         print("reached new level", level, curr_time())

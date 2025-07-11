@@ -1,2 +1,2 @@
 source ../venv/bin/activate
-python3 tree.py 500
+python3 boundaries_enforc.py 500
