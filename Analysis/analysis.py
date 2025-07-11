@@ -5,7 +5,7 @@ import os
 # methods=["seeded6", "sequentialold6","seededtest30","sequentialchr87726" ]
 
 
-directory="Selectseq/"
+directory="value_change_tests/Results"
 
 for path, dirs, file in os.walk(directory):
     dirs = sorted(dirs)
@@ -20,12 +20,16 @@ excluded=[]
 x_min=50
 x_max=900
 for e in dirs:
-    # if "old" in e:
-    #     excluded.append(e)
-    # print(e, "here")
+    if "old" in e:
+        excluded.append(e)
+    print(e, "here")
 
-    if True:#e not in excluded and "seq" in e:
+    if "old" not in e and "new" not in e:#e not in excluded and "seq" in e:
         methods.append(e)
+    
+    pass
+# methods.append("seededtrick6")
+# methods.append("sequentialchr87726")
 # print(methods)
 num_snps=[]
 nec_snps=[]
