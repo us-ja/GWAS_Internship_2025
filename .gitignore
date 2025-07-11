@@ -1,0 +1,9 @@
+**/res*.txt
+**/analysis*.txt
+**/out*.log
+**/out*.txt
+**/*.ped
+**/*.bim
+**/*.map
+
+Entire/*
