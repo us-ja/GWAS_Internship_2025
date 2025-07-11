@@ -104,7 +104,7 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
                 elif selection_type=="preselected" or selection_type=="given":
                     
                     selection=list(map(lambda x: x + 6, (map(abs, selection))))
-                    selection.sort()
+                    
                     
                 else:#treats it as sequential
                     if seq_start+amt_select_snp>total:
