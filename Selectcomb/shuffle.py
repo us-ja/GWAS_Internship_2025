@@ -17,7 +17,7 @@ level=0
 to_combine=[]
 def curr_time():
     return str(datetime.now().strftime("%H:%M:%S"))
-print("Started at ", curr_time)
+print("Started at ", curr_time())
 all_selections=[]
 def calculate_decimal(list):
     "calculates decimal number treatings all - as 0"
@@ -296,8 +296,8 @@ def combine_build_up(n, total_snp):
     level=0
     identified=list(range(total_snp))
     ends=[]
-    for i in range(len(identified)//n):
-        ends.append(i)
+    for i in range(len(identified)//n+1):
+        ends.append(i*n)
     
     while True:#or level< big number to prevent endless
         if len(identified)//n==0:
@@ -312,7 +312,7 @@ def combine_build_up(n, total_snp):
             for i in range(-4-int(lines[1]),-4):
                 ele= lines[i].split(sep=',')
                 ele[0], ele[-1]=ele[0][1:], ele[-1][:-2]
-                ele=sorted(list( map(float, ele)))
+                ele=(list( map(float, ele)))
                 for j in range(len(ele)):
                     print(ele[j], end=", ")
             file.close()

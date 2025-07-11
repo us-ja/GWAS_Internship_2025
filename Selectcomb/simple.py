@@ -279,7 +279,7 @@ transformation= "convert3"
 hapmap= open("HapMap.ped")
 lines= hapmap.readlines()
 total_snp=len(lines[0].split('\t'))-6
-n=700 #group size
+n=1700 #group size
 comment="comparison"
 
 value=start
