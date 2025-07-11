@@ -105,9 +105,10 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
                     # while len(selection)<amt_select_snp:
                     #     selection.add(random.randint(6,total))
                 elif selection_type=="preselected" or selection_type=="given":
+                    
+                    selection=list(map(lambda x: x + 6, (map(abs, selection))))
                     selection.sort()
-                    selection=list(map(lambda x: x + 6, selection))
-                    selection=list(map(abs, selection))
+                    
                 else:#treats it as sequential
                     if seq_start+amt_select_snp>total:
                         amt_select_snp=total-seq_start
