@@ -12,7 +12,10 @@ import random
 # file.close()
 
 # print(int(str(9.5)))
-a=set()
-for i in range(10):
-    a.add(random.randint(0,50))
-print(list(a))
+seed=40
+random.seed(seed)
+a=[]
+for i in range(1000000):
+    a.append(i)
+random.shuffle(a)
+print(a)

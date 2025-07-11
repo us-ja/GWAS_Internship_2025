@@ -12,9 +12,11 @@ hapmap= open("HapMap.ped")
 lines= hapmap.readlines()
 total_snp=len(lines[0].split('\t'))-6
 n=int(sys.argv[1]) #group size adjust 
-comment="shuffle"+str(n)+"_"
+comment="shuffle_rand"+str(n)+"_"
 level=0
 to_combine=[]
+seed=40
+random.seed(seed)
 def curr_time():
     return str(datetime.now().strftime("%H:%M:%S"))
 print("Started at ", curr_time())
@@ -294,7 +296,7 @@ def combine_build_up(n, total_snp):
     print("started build-up at", curr_time())
     method="given"
     level=0
-    identified=list(range(total_snp))
+    identified=random.shuffle(list(range(total_snp)))
     ends=[]
     for i in range(len(identified)//n+1):
         ends.append(i*n)

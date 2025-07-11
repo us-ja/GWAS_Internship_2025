@@ -11,6 +11,7 @@ ending=".py"
 hapmap= open("HapMap.ped")
 lines= hapmap.readlines()
 total_snp=len(lines[0].split('\t'))-6
+# total_snp=1700
 n=int(sys.argv[1]) #group size adjust 
 comment="boundaries_enf"+str(n)+"_"
 level=0
