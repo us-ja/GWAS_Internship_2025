@@ -273,14 +273,14 @@ def espresso(input, output):
 
     
 method='sequential'
-start=6
+start=865406
 ending=".py"
 transformation= "convert3"
 hapmap= open("HapMap.ped")
 lines= hapmap.readlines()
 total_snp=len(lines[0].split('\t'))-6
-n=1700 #group size
-comment="comparison"
+n=200 #group size
+comment="seqtest"
 
 value=start
 
