@@ -11,15 +11,22 @@ ending=".py"
 hapmap= open("HapMap.ped")
 lines= hapmap.readlines()
 total_snp=len(lines[0].split('\t'))-6
-# total_snp=1700
+total_snp=1700
 n=int(sys.argv[1]) #group size adjust 
 comment="boundaries_enf"+str(n)+"_"
 level=0
+
 to_combine=[]
 def curr_time():
     return str(datetime.now().strftime("%H:%M:%S"))
 print("Started at ", curr_time())
 all_selections=[]
+def count_unknown(list):
+    count=0
+    for e in list:
+        if e=="-":
+            count+=1
+    return count
 def calculate_decimal(list):
     "calculates decimal number treatings all - as 0"
     d=[0]
@@ -42,6 +49,7 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
     #k_pers number of persons considered, select the first n persons, or higher, 
      #if total is not selected
      #if not specified selects first k snp's, possilble selection modes: random, seeded, total, sequential, preselected
+    excluded_pers=0
     if selection_type=="preselected":
         selection=[]
         preselected = open(str(select_snp))
@@ -159,26 +167,34 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
             count+=1  
     doubles=[]
     found=set()
+    for e in idict:
+        if overspecification_possible==True:
+            unknowns=count_unknown(idict[e]["snps"])
+            if unknowns>=20:
+                excluded_pers+=1
     with open(txt_out, 'w') as g:
         sys.stdout = g
-        print(".i ", amt_select_snp*2)
+        print(".i ", (amt_select_snp)*2)
         print(".o ", 1)
         print(".type fr")
-        print(".p", len(idict))
+        print(".p", len(idict)-excluded_pers)
         for e in idict:
             if overspecification_possible==True:
-                dec=calculate_decimal(idict[e]["snps"])     
-                new=set(dec)
-                if  found.isdisjoint(new):
-                    found= found | new
-                    for f in idict[e]["snps"]:
-                        print(f, end="")
-                    # print(" ",1)
-                    print(" ",int(idict[e]["phenotype"])-1)
-                else: #ignores if this excact combination of SNP was already seen
+                unknowns=count_unknown(idict[e]["snps"])
+                if unknowns<20:
+                    dec=calculate_decimal(idict[e]["snps"])     
+                    new=set(dec)
+                    if  found.isdisjoint(new):
+                        found= found | new
+                        for f in idict[e]["snps"]:
+                            print(f, end="")
+                        # print(" ",1)
+                        print(" ",int(idict[e]["phenotype"])-1)
+                    else: #ignores if this excact combination of SNP was already seen
                     
-                    for g in dec:
-                        doubles.append(dec)
+                        for g in dec:
+                            doubles.append(dec)
+                
             else:#overspecification is assumed to unprobable
                 for f in idict[e]["snps"]:
                     print(f, end="")
@@ -274,9 +290,9 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
             print(len(selection))
             print("amount of identified SNPs:") 
             print(counter)
-    rm(txt_out)
-    rm(espresso_out)
-    rm(log_out)
+    # rm(txt_out)
+    # rm(espresso_out)
+    # rm(log_out)
     sys.stdout=o
     return res_out#make only if needed
 def espresso(input, output):
@@ -297,7 +313,7 @@ def combine_build_up(n, total_snp):
     level=0
     identified=list(range(total_snp))
     ends=[]
-    for i in range(len(identified)//n+1):
+    for i in range(865406, len(identified)//n+1):
         ends.append(i*n)
     
     while True:#or level< big number to prevent endless
