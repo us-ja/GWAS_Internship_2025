@@ -49,8 +49,10 @@ def calculate_decimal(list):
             else:
                 print(newlist[i], "inconsistency found")
     return d
+
 def mkdir(name):  
     subprocess.run(str("mkdir -p "+str(name)), shell=True)
+
 def rm(name, option=""):
     subprocess.run(str("rm "+option+" "+name), shell=True)
 
@@ -188,7 +190,6 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
         print(".i ", (amt_select_snp)*2)
         print(".o ", 1)
         print(".type fr")
-        print(".p", len(idict)-excluded_pers)
         for e in idict:
             unknowns=count_unknown(idict[e]["snps"])
             
@@ -297,7 +298,7 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
                 counter+=len(e)
                 print(e)
             print("input length (.i)")
-            print(len(selection))
+            print((len(selection)-doubles-excluded_pers)*2)
             print("amount of identified SNPs:") 
             print(counter)
     # rm(txt_out)
@@ -305,6 +306,7 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
     # rm(log_out)
     sys.stdout=o
     return res_out#make only if needed
+
 def espresso(input, output):
     
     subprocess.run(str("../../espresso-logic-master/bin/espresso "+input+" > "+output ), shell=True)
