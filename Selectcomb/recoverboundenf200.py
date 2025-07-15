@@ -349,17 +349,10 @@ def combine_build_up(n, total_snp):
             print()
             return 
         
-
-
-
         created_files=[]
-        ends=[]
-        
-        for i in range(len(identified)//n+1):
-            ends.append(i*n)
-        ends[-1]=len(identified)     #make last group bigger by combining the rest
         
         if not first:
+            ends[-1]=len(identified)     #make last group bigger by combining the rest
             for i in range(len(ends)-1):
                 start=ends[i]
                 end=ends[i+1]
@@ -379,7 +372,7 @@ def combine_build_up(n, total_snp):
 
         identified=set()
         assert len(identified)==0, "identified not empty"
-        
+        ends=[0]
         for file_name in created_files:
             file = open(file_name)
             lines=file.readlines()
@@ -392,7 +385,8 @@ def combine_build_up(n, total_snp):
                 ele=list(map(int, map(float, ele)))
                 for j in range(len(ele)):
                     identified.add(ele[j])
-                 
+                if len(identified)-ends[-1]>=n:
+                    ends.append(len(identified))
             file.close()
         
         identified=list(identified)

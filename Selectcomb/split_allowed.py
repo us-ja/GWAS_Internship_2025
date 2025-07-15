@@ -363,7 +363,8 @@ def combine_build_up(n, total_snp):
             lines=file.readlines()
             for i in range(-4-int(lines[1]),-4):
                 ele= lines[i].split(sep=',')
-                ele[0], ele[-1]=ele[0][1:], ele[-1][:-2]
+                ele[0] =ele[0][1:]
+                ele[-1]=ele[-1][:-2]
                 ele=list(map(int, map(float, ele)))
                 for j in range(len(ele)):
                     identified.add(ele[j])
