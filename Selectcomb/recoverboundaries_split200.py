@@ -324,12 +324,13 @@ def combine_build_up(n, total_snp):
     method="given"
     level=0
     identified=list(range(total_snp))
-    random.shuffle(identified)
+    
     ends=[]
     
     first=True
+    
     while True:#or level< big number to prevent endless
-        if len(identified)//n==0:
+        if len(identified)//n==0 and not first:
             
             mkdir(str(method)+str(comment)+str(level))
             f_res=(conversion(identified, method, level, comment, total=total_snp))
@@ -367,7 +368,7 @@ def combine_build_up(n, total_snp):
                 created_files.append(conversion(to_analyze, method, start, comment, total=total_snp, dir=dir_l(level)))
         else:
             for (root,dirs,files) in os.walk("../Selectcomb/l_0/"):
-                if "givenboundaries_split200_" in root:
+                if "givensplit_allowed200_" in root:
        
                     for e in files:
                         if "result" in e:
@@ -383,7 +384,10 @@ def combine_build_up(n, total_snp):
             lines=file.readlines()
             for i in range(-4-int(lines[1]),-4):
                 ele= lines[i].split(sep=',')
-                ele[0], ele[-1]=ele[0][1:], ele[-1][:-2]
+                ele[0] =ele[0][1:]
+                ele[-1]=ele[-1][:-2]
+                if ele[0][0]=="[":
+                    print(ele, file_name)
                 ele=list(map(int, map(float, ele)))
                 for j in range(len(ele)):
                     identified.add(ele[j])

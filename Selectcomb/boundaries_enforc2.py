@@ -301,9 +301,9 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
             print((len(selection)-doubles-excluded_pers)*2)
             print("amount of identified SNPs:") 
             print(counter)
-    # rm(txt_out)
-    # rm(espresso_out)
-    # rm(log_out)
+    rm(txt_out)
+    rm(espresso_out)
+    rm(log_out)
     sys.stdout=o
     return res_out#make only if needed
 
