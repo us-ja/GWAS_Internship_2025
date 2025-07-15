@@ -11,9 +11,9 @@ ending=".py"
 hapmap= open("HapMap.ped")
 lines= hapmap.readlines()
 total_snp=len(lines[0].split('\t'))-6
-total_snp=1700
+# total_snp=170
 n=int(sys.argv[1]) #group size adjust 
-comment="boundaries_enf"+str(n)+"_"
+comment="seq_boundaries_enf"+str(n)+"_"
 level=0
 
 to_combine=[]
@@ -21,30 +21,39 @@ def curr_time():
     return str(datetime.now().strftime("%H:%M:%S"))
 print("Started at ", curr_time())
 all_selections=[]
+
 def count_unknown(list):
     count=0
     for e in list:
-        if e=="-":
+        if "--" == e: 
             count+=1
     return count
+
 def calculate_decimal(list):
-    "calculates decimal number treatings all - as 0"
+    "calculates decimal numbers "
     d=[0]
-    m=len(list)
+    newlist=[]
+
+    for e in list:
+        newlist.append(e[0])
+        newlist.append(e[-1])
+    m=len(newlist)
     for i in range(m):
-        if list[i]==1:
+        if newlist[i]=='1':
             for k in range(len(d)):
                 d[k]=d[k]+(2**(m-i-1))
-        elif list[i]!=0:#then it's something else most probably unknown -
-            for k in range(len(d)):
-                d.append(d[k]+(2**(m-i-1))) 
+        elif newlist[i]!='0':#then it's something else most probably unknown -
+            if newlist[i]=='-':
+                for k in range(len(d)):
+                    d.append(d[k]+(2**(m-i-1))) 
+            else:
+                print(newlist[i], "inconsistency found")
     return d
 def mkdir(name):  
     subprocess.run(str("mkdir -p "+str(name)), shell=True)
 def rm(name, option=""):
     subprocess.run(str("rm "+option+" "+name), shell=True)
-# subprocess.Popen("cd Selectcomb/", shell=True)
-# subprocess.run("source ../venv/bin/activate", shell=True)
+
 def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped', total=None, k_pers=None, dir=""):
     #k_pers number of persons considered, select the first n persons, or higher, 
      #if total is not selected
@@ -82,8 +91,7 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
     o = sys.stdout   #define std as o
     #make dictionary for all allele for each SNP
     
-    # if amt_select_snp<200:
-    #     overspecification_possible=True
+
         
     with open(ped_file) as file:
         
@@ -122,7 +130,9 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
                     selection=list(range(seq_start,seq_start+amt_select_snp))
                 path=dir+selection_type+comment+str(value)+"/"
                 output=path+"output_"+str(amt_select_snp)
-                overspecification_possible=False    #false if enough SNP's are selected
+                overspecification_possible=True    #false if enough SNP's are selected
+                    # if amt_select_snp<200:
+                    #     overspecification_possible=True
                 
                 log_out= output+".log"
                 txt_out= output+".txt"
@@ -165,48 +175,48 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
                     idict[indivual[1]]["snps"].append(binary[allele])   
                     snp_num+=1        
             count+=1  
-    doubles=[]
+    doubles=0
     found=set()
-    for e in idict:
-        if overspecification_possible==True:
-            unknowns=count_unknown(idict[e]["snps"])
-            if unknowns>=20:
-                excluded_pers+=1
-    with open(txt_out, 'w') as g:
-        sys.stdout = g
+    allow_unknowns=1
+    sys.stdout=o
+
+    
+                
+    
+    with open(txt_out, 'w') as esp_in:
+        sys.stdout = esp_in
         print(".i ", (amt_select_snp)*2)
         print(".o ", 1)
         print(".type fr")
         print(".p", len(idict)-excluded_pers)
         for e in idict:
-            if overspecification_possible==True:
-                unknowns=count_unknown(idict[e]["snps"])
-                if unknowns<20:
-                    dec=calculate_decimal(idict[e]["snps"])     
-                    new=set(dec)
-                    if  found.isdisjoint(new):
-                        found= found | new
-                        for f in idict[e]["snps"]:
-                            print(f, end="")
-                        # print(" ",1)
-                        print(" ",int(idict[e]["phenotype"])-1)
-                    else: #ignores if this excact combination of SNP was already seen
-                    
-                        for g in dec:
-                            doubles.append(dec)
+            unknowns=count_unknown(idict[e]["snps"])
+            
+            if unknowns<allow_unknowns:
+                sys.stdout=lo
+                dec=calculate_decimal(idict[e]["snps"]) 
+                sys.stdout=esp_in    
+                new=set(dec)
+                if  found.isdisjoint(new):
+                    found= found | new
+                    for f in idict[e]["snps"]:
+                        print(f, end="")
+                    # print(" ",1)
+                    print(" ",int(idict[e]["phenotype"])-1)
+                else: #ignores if this excact combination of SNP was already seen
                 
-            else:#overspecification is assumed to unprobable
-                for f in idict[e]["snps"]:
-                    print(f, end="")
-                print(" ",int(idict[e]["phenotype"])-1)
-        # print(".e")
+                    for g in dec:
+                        doubles+=1
+            else:
+                excluded_pers+=1
+        print(".e")
     
     sys.stdout = lo
-    if overspecification_possible==False:
-        if len(doubles)!=0:
-            print(len(doubles), "duplicates were found, first seen is selected and they were", doubles, "increase amount of selceted SNPs")   
-        else:
-            print("no overspecification")   
+    
+    if doubles!=0:
+        print(doubles, "duplicates were found, first seen is selected, increase amount of selceted SNPs")   
+    else:
+        print("no overspecification")   
     print("k_pers=",count) 
     # print("selected risk allele's are:")
     # print(risk)
@@ -259,7 +269,7 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
                         elif line[i]==" " or line[i]==" ":
                             break
                         else:
-                            error.append("inconsistency at column", i,"that is snp", selected_snp[snp], "with:", line[i], "!")
+                            error.append(str("inconsistency at column "+ str(i)+" that is snp "+ str(selected_snp[snp])+ " with:"+ str(line[i])+ "!"))
                     
                 
                 
@@ -313,7 +323,7 @@ def combine_build_up(n, total_snp):
     level=0
     identified=list(range(total_snp))
     ends=[]
-    for i in range(865406, len(identified)//n+1):
+    for i in range(len(identified)//n+1):
         ends.append(i*n)
     
     while True:#or level< big number to prevent endless
@@ -336,8 +346,6 @@ def combine_build_up(n, total_snp):
             print()
             return 
         
-
-
         created_files=[]
         ends[-1]=len(identified)     #make last group bigger by combining the rest
         for i in range(len(ends)-1):

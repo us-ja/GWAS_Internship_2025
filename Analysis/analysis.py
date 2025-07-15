@@ -61,7 +61,7 @@ for method in methods:
                 print(path+method+"/"+file_name, "not enough lines")
                 pass
             elif int(lines[3])!=0:
-                if x_min<=int(lines[1]) and int(lines[1])<=x_max :#and int(lines[1])%5==0:
+                if x_min<=int(lines[1]) and int(lines[1])<=x_max and int(lines[1])%5==0:
                     num_snps[-1].append(int(lines[1]))
                     nec_snps[-1].append(int(lines[-1]))
                     products[-1].append(int(lines[3]))
@@ -146,6 +146,6 @@ for show in ["normal"]:#"seq_rand", "old_new"
 
     for ax in axs.flat:
         ax.set(xlabel='SNPs')
-    plt.subplots_adjust(left=0.1, bottom=None, right=0.9125, top=0.9, wspace=None, hspace=0.5)
+    plt.subplots_adjust(left=0.1, bottom=None, right=0.8125, top=0.9, wspace=None, hspace=0.5)
     plt.title(show)
     plt.show()
