@@ -288,7 +288,9 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
                 counter+=len(e)
                 print(e)
             print("input length (.i)")
-            print((len(selection)-doubles-excluded_pers)*2)
+            print((len(selection))*2)
+            print("doubles/excluded")
+            print(doubles+excluded_pers)
             print("amount of identified SNPs:") 
             print(counter)
     # rm(txt_out)
@@ -321,13 +323,12 @@ def dir_l():
     return ""
 # echo "Started with seed" $method$comment$value "at" $(date '+%B %V %T:')
 n=[579852.5, -462318, 49044.5, 650422.5, 555449, -810289, 660188.5, 254566.5, 358117.5,-113367, 8876.5, -1021108, -200016, 630544.5, 37042.5, 434836.5, 650265.5, 765307, -440736, -964734, 652329.5, -656695, -113367, 579852.5, 345358.5, -838861, 555449,308225.5, 567913.5, 495729.5, -981291, 929552.5, 509722.5, -431841, 773926, -964734, -184344,-363513, 652329.5, -908103, 579852.5, -113367, 708439.5, 765307, 555449,-113367, 8876.5, -1021108, -200016, 630544.5, 37042.5, 434836.5, 650265.5, 765307]
-n=[-431841, 652329.5, 555449, 579852.5, 630544.5, -113367, 650265.5, -964734]
+n=[-440736, -964734, 652329.5, -656695, -113367, 579852.5, 345358.5, -838861, 555449]
 n= list(set(map(int,(map(abs,map(float,n))))))
 mkdir(dir_l()+str(method)+str(comment)+str(start))
 print(conversion(n, method, start, comment, total=total_snp, dir=dir_l()))
 print( "Completed",start, "at", curr_time() )
     
-
 
 
 

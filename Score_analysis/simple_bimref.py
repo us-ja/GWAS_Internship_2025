@@ -52,7 +52,7 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
         selected = preselected.readlines()
         amt_select_snp=len(selected)
         for e in selected:
-            selection.append(int(e[:-1])+6)
+            selection.append(int(e[:-1]))
 
         preselected.close()
     elif selection_type=="given":
@@ -143,37 +143,40 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
                 bim=open(bim_file)
                 b_lines=bim.readlines()
                 for e in selection:
-                    risk.append(b_lines[e-7].split()[-1])
-                    norisk.append(b_lines[e-7].split()[-2])
+                    
+                    risk.append(b_lines[e-6].split()[-1])
+                    norisk.append(b_lines[e-6].split()[-2])
                 print(risk,)
                 print(norisk)
 
                 
-                
-                
+
             if k_pers==None or count<k_pers:#always true if all person's are considered
                 indivual=line.split('\t')
                 idict[indivual[1]] = {"snps": [], "phenotype": indivual[5]}
-                snp_num=0
+                
                 
                 # assert len(selection)==amt_select_snp, "error while selecting amount of selected elements does not match the instructed amount"
-                for i in selection: 
+                
+                for i in range(len(selection)): 
                     allele=0
-                    snp=(indivual[i][0], indivual[i][-1])
+                    snp=(indivual[selection[i]][0], indivual[selection[i]][-1])
                     
                     for e in snp :
                         if e=="0":
                             allele=4
                             break
                         else: 
-                            assert len(risk)>=snp_num, "snp_overflow" 
-                            if risk[snp_num]==e :
+                            assert len(risk)>=i, "snp_overflow" 
+                            if risk[i]==e :
                                 allele+=1  
-                            elif norisk[snp_num]!=e and "-" not in e:
-                                print("major problem", risk[snp_num], norisk[snp_num], e)
-                    idict[indivual[1]]["snps"].append(binary[allele])   
-                    snp_num+=1        
+                            elif norisk[i]!=e and "-" not in e:
+                                print("major problem", risk[i], norisk[i], e, count, )
+                                print(selection[i],i)
+
+                    idict[indivual[1]]["snps"].append(binary[allele])         
             count+=1  
+
     doubles=0
     found=set()
     allow_unknowns=1
@@ -328,7 +331,7 @@ to_combine=[]
 # echo "Started with seed" $method$comment$value "at" $(date '+%B %V %T:')
 # n=[579852.5, -462318, 49044.5, 650422.5, 555449, -810289, 660188.5, 254566.5, 358117.5,-113367, 8876.5, -1021108, -200016, 630544.5, 37042.5, 434836.5, 650265.5, 765307, -440736, -964734, 652329.5, -656695, -113367, 579852.5, 345358.5, -838861, 555449,308225.5, 567913.5, 495729.5, -981291, 929552.5, 509722.5, -431841, 773926, -964734, -184344,-363513, 652329.5, -908103, 579852.5, -113367, 708439.5, 765307, 555449,-113367, 8876.5, -1021108, -200016, 630544.5, 37042.5, 434836.5, 650265.5, 765307]
 n=[-431841, 652329.5, 555449, 579852.5, 630544.5, -113367, 650265.5, -964734]
-n=list(range(1,100))
+# n=list(range(1,100))
 n= list(set(map(int,(map(abs,map(float,n))))))
 mkdir(dir_l()+str(method)+str(comment)+str(start))
 print(conversion(n, method, start, comment, total=total_snp))
