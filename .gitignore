@@ -9,3 +9,4 @@
 Entire/*
 **/error*.txt
 .DS_Store
+.Rproj.user

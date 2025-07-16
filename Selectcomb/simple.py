@@ -57,7 +57,7 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
         selected = preselected.readlines()
         amt_select_snp=len(selected)
         for e in selected:
-            selection.append(int(e[:-1])+6)
+            selection.append(int(e[:-1]))
 
         preselected.close()
     elif selection_type=="given":
