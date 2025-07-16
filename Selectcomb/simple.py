@@ -73,7 +73,7 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
         seed=0
         seq_start=6
     if selection_type=='seeded' :
-        seed=int(sys.argv[3])
+        # seed=int(sys.argv[3])
         seq_start=6
     else:
         seq_start=int(value)
@@ -291,9 +291,9 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
             print((len(selection)-doubles-excluded_pers)*2)
             print("amount of identified SNPs:") 
             print(counter)
-    rm(txt_out)
-    rm(espresso_out)
-    rm(log_out)
+    # rm(txt_out)
+    # rm(espresso_out)
+    # rm(log_out)
     sys.stdout=o
     return res_out#make only if needed
 
@@ -302,15 +302,15 @@ def espresso(input, output):
     subprocess.run(str("../../espresso-logic-master/bin/espresso "+input+" > "+output ), shell=True)
 
     
-method='sequential'
-start=865406
+method='given'
+start=6
 ending=".py"
 transformation= "convert3"
 hapmap= open("HapMap.ped")
 lines= hapmap.readlines()
 total_snp=len(lines[0].split('\t'))-6
 n=200 #group size
-comment="seqtest"
+comment="resultver"
 
 value=start
 
@@ -320,9 +320,10 @@ to_combine=[]
 def dir_l():
     return ""
 # echo "Started with seed" $method$comment$value "at" $(date '+%B %V %T:')
-
+n=[579852.5, -462318, 49044.5, 650422.5, 555449, -810289, 660188.5, 254566.5, 358117.5,-113367, 8876.5, -1021108, -200016, 630544.5, 37042.5, 434836.5, 650265.5, 765307, -440736, -964734, 652329.5, -656695, -113367, 579852.5, 345358.5, -838861, 555449,308225.5, 567913.5, 495729.5, -981291, 929552.5, 509722.5, -431841, 773926, -964734, -184344,-363513, 652329.5, -908103, 579852.5, -113367, 708439.5, 765307, 555449,-113367, 8876.5, -1021108, -200016, 630544.5, 37042.5, 434836.5, 650265.5, 765307]
+n= list(set(map(int,(map(abs,map(float,n))))))
 mkdir(dir_l()+str(method)+str(comment)+str(start))
-to_combine.append(conversion(n, method, start, comment, total=total_snp, dir=dir_l()))
+print(conversion(n, method, start, comment, total=total_snp, dir=dir_l()))
 print( "Completed",start, "at", curr_time() )
     
 
@@ -333,6 +334,6 @@ print("Finished ",method,comment,value, " at ", curr_time())
 
 
 
-# hapmap.close()
+hapmap.close()
 
 
