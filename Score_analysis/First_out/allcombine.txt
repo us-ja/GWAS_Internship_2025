@@ -1,0 +1,20 @@
+products:
+1
+first:
+4
+second:
+4
+var:
+0.65625
+Selection:
+[431841, 652329, 555449, 579852, 630544, 113367, 650265, 964734]
+None
+Risk allele:
+['G', 'C', 'A', 'A', 'A', 'T', 'T', 'T']
+error: 0
+result:
+[-431841, 652329.5, 555449, 579852.5, 630544.5, -113367, 650265.5, -964734]
+input length (.i)
+-10
+amount of identified SNPs:
+8
