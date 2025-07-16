@@ -1,0 +1,22 @@
+products:
+2
+first:
+4
+second:
+3
+var:
+0.3520408163265306
+Selection:
+[431841, 652329, 555449, 579852, 630544, 113367, 650265, 964734]
+None
+Risk allele:
+['T', 'C', 'T', 'T', 'G', 'C', 'A', 'G']
+error: 0
+result:
+[652329, -630544, 113367.5]
+[652329.5, -630544, -113367, 113367.5]
+input length (.i)
+-162
+amount of identified SNPs:
+7
+89 0. this line shows the error that a lot of people were excluded....

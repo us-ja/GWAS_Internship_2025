@@ -1,4 +1,3 @@
-
 import subprocess
 # subprocess.run("source ../venv/bin/activate", shell=True)
 import sys
@@ -6,18 +5,16 @@ import random
 import numpy as np
 from datetime import datetime
 import os
-
+def dir_l():
+    return ""
 def curr_time():
     return str(datetime.now().strftime("%H:%M:%S"))
-
-all_selections=[]
 def count_unknown(list):
     count=0
     for e in list:
         if "--" == e: 
             count+=1
     return count
-
 def calculate_decimal(list):
     "calculates decimal numbers "
     d=[0]
@@ -38,15 +35,13 @@ def calculate_decimal(list):
             else:
                 print(newlist[i], "inconsistency found")
     return d
-
-
 def mkdir(name):  
     subprocess.run(str("mkdir -p "+str(name)), shell=True)
 def rm(name, option=""):
     subprocess.run(str("rm "+option+" "+name), shell=True)
 # subprocess.Popen("cd Selectcomb/", shell=True)
 # subprocess.run("source ../venv/bin/activate", shell=True)
-def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped', total=None, k_pers=None, dir=""):
+def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped', bim_file='HapMap.bim',total=None, k_pers=None, dir=""):
     #k_pers number of persons considered, select the first n persons, or higher, 
      #if total is not selected
      #if not specified selects first k snp's, possilble selection modes: random, seeded, total, sequential, preselected
@@ -57,7 +52,7 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
         selected = preselected.readlines()
         amt_select_snp=len(selected)
         for e in selected:
-            selection.append(int(e[:-1]))
+            selection.append(int(e[:-1])+6)
 
         preselected.close()
     elif selection_type=="given":
@@ -91,7 +86,7 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
         count=0 #counts the lines
         idict = {}
         inc_col=set()
-        risk=[None]*(amt_select_snp)
+        
         for line in lines:
             if count==0:
                 if total==None:
@@ -131,7 +126,7 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
                 json_out=output+".json"
                 lo= open(log_out, 'w')
                 sys.stdout=lo
-                
+                selection=list(selection)
                 print("persons:=",k_pers)
                 print("seed=",seed) 
                 print("amt_select_snp=",amt_select_snp) #important that prints amount of SNP's
@@ -143,6 +138,18 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
                 print("Selection was done using", selection_type, "as method with seed", seed, ", following selection was made:")
                 print(selection)
                 print("The ", 1,". is taken as reference, so 1 means same as the",1,". person while 0 means the other possibilities for each SNP consider the bim-file for further investigation.")
+                risk=[]
+                norisk=[]
+                bim=open(bim_file)
+                b_lines=bim.readlines()
+                for e in selection:
+                    risk.append(b_lines[e-7].split()[-1])
+                    norisk.append(b_lines[e-7].split()[-2])
+                print(risk,)
+                print(norisk)
+
+                
+                
                 
             if k_pers==None or count<k_pers:#always true if all person's are considered
                 indivual=line.split('\t')
@@ -159,11 +166,11 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
                             allele=4
                             break
                         else: 
-                            assert len(risk)>=snp_num, "snp_overflow"
-                            if risk[snp_num]==None:
-                                risk[snp_num]=e  
+                            assert len(risk)>=snp_num, "snp_overflow" 
                             if risk[snp_num]==e :
                                 allele+=1  
+                            elif norisk[snp_num]!=e and "-" not in e:
+                                print("major problem", risk[snp_num], norisk[snp_num], e)
                     idict[indivual[1]]["snps"].append(binary[allele])   
                     snp_num+=1        
             count+=1  
@@ -188,7 +195,7 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
                 dec=calculate_decimal(idict[e]["snps"]) 
                 sys.stdout=esp_in    
                 new=set(dec)
-                if  found.isdisjoint(new):
+                if  True:#found.isdisjoint(new):
                     found= found | new
                     for f in idict[e]["snps"]:
                         print(f, end="")
@@ -200,6 +207,7 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
                         doubles+=1
             else:
                 excluded_pers+=1
+
         print(".e")
     
     sys.stdout = lo
@@ -288,9 +296,10 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
                 counter+=len(e)
                 print(e)
             print("input length (.i)")
-            print((len(selection)-doubles-excluded_pers)*2)
+            print((len(selection))*2)
             print("amount of identified SNPs:") 
             print(counter)
+            
     # rm(txt_out)
     # rm(espresso_out)
     # rm(log_out)
@@ -305,26 +314,24 @@ def espresso(input, output):
 method='given'
 start=6
 ending=".py"
-transformation= "convert3"
 hapmap= open("HapMap.ped")
 lines= hapmap.readlines()
 total_snp=len(lines[0].split('\t'))-6
 n=200 #group size
-comment="verify2"
+comment="scores"
 
 value=start
 
 
 
 to_combine=[]
-def dir_l():
-    return ""
 # echo "Started with seed" $method$comment$value "at" $(date '+%B %V %T:')
-n=[579852.5, -462318, 49044.5, 650422.5, 555449, -810289, 660188.5, 254566.5, 358117.5,-113367, 8876.5, -1021108, -200016, 630544.5, 37042.5, 434836.5, 650265.5, 765307, -440736, -964734, 652329.5, -656695, -113367, 579852.5, 345358.5, -838861, 555449,308225.5, 567913.5, 495729.5, -981291, 929552.5, 509722.5, -431841, 773926, -964734, -184344,-363513, 652329.5, -908103, 579852.5, -113367, 708439.5, 765307, 555449,-113367, 8876.5, -1021108, -200016, 630544.5, 37042.5, 434836.5, 650265.5, 765307]
+# n=[579852.5, -462318, 49044.5, 650422.5, 555449, -810289, 660188.5, 254566.5, 358117.5,-113367, 8876.5, -1021108, -200016, 630544.5, 37042.5, 434836.5, 650265.5, 765307, -440736, -964734, 652329.5, -656695, -113367, 579852.5, 345358.5, -838861, 555449,308225.5, 567913.5, 495729.5, -981291, 929552.5, 509722.5, -431841, 773926, -964734, -184344,-363513, 652329.5, -908103, 579852.5, -113367, 708439.5, 765307, 555449,-113367, 8876.5, -1021108, -200016, 630544.5, 37042.5, 434836.5, 650265.5, 765307]
 n=[-431841, 652329.5, 555449, 579852.5, 630544.5, -113367, 650265.5, -964734]
+n=list(range(1,100))
 n= list(set(map(int,(map(abs,map(float,n))))))
 mkdir(dir_l()+str(method)+str(comment)+str(start))
-print(conversion(n, method, start, comment, total=total_snp, dir=dir_l()))
+print(conversion(n, method, start, comment, total=total_snp))
 print( "Completed",start, "at", curr_time() )
     
 
@@ -336,5 +343,3 @@ print("Finished ",method,comment,value, " at ", curr_time())
 
 
 hapmap.close()
-
-
