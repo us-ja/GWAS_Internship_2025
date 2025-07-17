@@ -1,22 +1,18 @@
 
 import subprocess
-# subprocess.run("source ../venv/bin/activate", shell=True)
 import sys
 import random 
 import numpy as np
 from datetime import datetime
-import os
-     
+import os  
 def curr_time():
     return str(datetime.now().strftime("%H:%M:%S"))
-
 def count_unknown(list):
     count=0
     for e in list:
         if "--" == e: 
             count+=1
     return count
-
 def calculate_decimal(list):
     "calculates decimal numbers "
     d=[0]
@@ -37,10 +33,8 @@ def calculate_decimal(list):
             else:
                 print(newlist[i], "inconsistency found")
     return d
-
 def mkdir(name, option="-p"):  
     subprocess.run(str("mkdir "+option+" "+str(name)), shell=True)
-
 def rm(name, option=""):
     subprocess.run(str("rm "+option+" "+name), shell=True)
 def to_espresso(selection, lines, k_pers, risk, norisk):  
@@ -183,12 +177,11 @@ def espresso_analysis(espresso_out, path, selection, doubles, excluded_pers, sel
                 print("no overspecification", excluded_pers, "seq were exluded as too many don't cares")   
             print(counter)
     return res_out
-
 def espresso(input, output):
     subprocess.run(str("../../espresso-logic-master/bin/espresso "+input+" > "+output ), shell=True)
-
-def conversion(select_snp, selection_type:str, comment:str, value:int, ped_file_adr:str='HapMap.ped', bim_file:str='HapMap.bim', total:int=None, k_pers:int=None, dir:str="", delete_logs:bool=True):
+def conversion(select_snp, selection_type:str, comment:str, value:int, total:int=None, k_pers:int=None, dir:str="", delete_logs:bool=True):
     ''' '''
+    global ped_file, bim_file
     mkdir(dir+str(selection_type)+str(comment)+str(value))
     out_before=sys.stdout
     if selection_type=="given":
@@ -204,7 +197,7 @@ def conversion(select_snp, selection_type:str, comment:str, value:int, ped_file_
             seq_start=int(value)
             seed=None
 
-    ped_file= open(ped_file_adr) 
+    ped_file= open(ped_file) 
     
     ped_lines = ped_file.readlines()
     count=0 #counts the lines
@@ -261,13 +254,22 @@ def conversion(select_snp, selection_type:str, comment:str, value:int, ped_file_
         rm(espresso_out)
     sys.stdout=out_before
     return res_out#make only if needed
-
 def dir_l(level):
     return "l_"+str(level)+"/"
-# echo "Started with seed" $method$comment$value "at" $(date '+%B %V %T:')
+def get_files(dir, in_subdir=None, in_file=None):
+    '''returns list of files in given dir with in_subdir/in_file specifing what must be part of path/filename'''
+    created_files=[]
+    for (root,dirs,files) in os.walk(dir):
+        if in_subdir==None or "givenboundaries_enf200_" in root:
 
-def combine_build_up(n, total_snp, bounded=True, shuffle=True):
-    level=0
+            for e in files:
+                if in_file in e:
+                    created_files.append(root+"/"+e)
+    return(created_files)
+def combine_build_up(n:int, total_snp:int, bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0):
+    '''combines  with given groupsize, if recover is a tuple specifiying dir, in_subdir, in_file then starts from matching files'''
+    global ped_file, bim_file
+    level=startlevel
     if bounded:
         comment="seq_bound_enf"+str(n)+"_"
     else:
@@ -285,23 +287,26 @@ def combine_build_up(n, total_snp, bounded=True, shuffle=True):
     while True:#or level< big number to prevent endless
         if len(identified)//n==0:
             break
-        created_files=[]
-        if not bounded:
-            ends=[]
-            for i in range((len(identified)//n)+1):
-                ends.append(i*n)
-        ends[-1]=len(identified)     #make last group bigger by combining the rest
-        for i in range(len(ends)-1):
-            
-            start=ends[i]
-            end=ends[i+1]
-            
+        if recover==None:
+            created_files=[]
+            if not bounded:
+                ends=[]
+                for i in range((len(identified)//n)+1):
+                    ends.append(i*n)
+            ends[-1]=len(identified)     #make last group bigger by combining the rest
+            for i in range(len(ends)-1):
+                
+                start=ends[i]
+                end=ends[i+1]
+                to_analyze= identified[start:end]
+                # print(to_analyze)
+                created_files.append(conversion(to_analyze, method,  comment, start, total=total_snp, dir=dir_l(level),))
+            # print(created_files)
+            identified=set()
+        else:
+            created_files=get_files(recover, in_subdir, in_file)
+            recover=None
 
-            to_analyze= identified[start:end]
-            # print(to_analyze)
-            created_files.append(conversion(to_analyze, method,  comment, start, total=total_snp, dir=dir_l(level),))
-        # print(created_files)
-        identified=set()
         assert len(identified)==0, "identified not empty"
         ends=[0]
         for file_name in created_files:
@@ -326,7 +331,7 @@ def combine_build_up(n, total_snp, bounded=True, shuffle=True):
 
 
     if len(identified)//n==0:#prevent entering this if levelled out and not finished
-        f_res=(conversion(identified, method, level, comment, total=total_snp))
+        f_res=(conversion(identified, method, comment,level,  total=total_snp))
         print( "finished at level", level, curr_time())
         print("the selection gave :")
         identified=set()
@@ -344,8 +349,12 @@ def combine_build_up(n, total_snp, bounded=True, shuffle=True):
 
 o = sys.stdout   #define std as o
 start=6
-ending=".py"
-hapmap= open("HapMap.ped")
+fileprefix="HapMap"
+pedsuffix=".ped"
+bimsuffix=".bim"
+ped_file=fileprefix+pedsuffix
+bim_file=fileprefix+bimsuffix
+hapmap= open()
 lines= hapmap.readlines()
 total_snp=len(lines[0].split('\t'))-6
 # total_snp=170
