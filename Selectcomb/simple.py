@@ -169,7 +169,7 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
             count+=1  
     doubles=0
     found=set()
-    allow_unknowns=1
+    allow_unknowns=20
     sys.stdout=o
 
     

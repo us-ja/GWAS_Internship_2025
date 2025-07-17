@@ -144,8 +144,8 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
                 b_lines=bim.readlines()
                 for e in selection:
                     
-                    risk.append(b_lines[e-6].split()[-1])
-                    norisk.append(b_lines[e-6].split()[-2])
+                    norisk.append(b_lines[e-6].split()[-1])
+                    risk.append(b_lines[e-6].split()[-2])
                 print(risk,)
                 print(norisk)
 
@@ -179,7 +179,7 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
 
     doubles=0
     found=set()
-    allow_unknowns=1
+    allow_unknowns=20
     sys.stdout=o
 
     
