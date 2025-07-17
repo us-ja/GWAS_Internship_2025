@@ -5,6 +5,23 @@ import random
 import numpy as np
 from datetime import datetime
 import os  
+o = sys.stdout   #define std as o
+def chromosomes_start():
+    '''returns a list of all the start of the chromosomes'''
+    global bim_file
+    bim=open(bim_file)
+    lines=bim.readlines()
+    last=0
+    count=0
+    lst=[]
+    for line in lines:
+        var=line.split()
+        if last!=int(var[0]):
+            last=int(var[0])
+            lst.append(count)
+            # print(last)
+        count+=1
+    return lst
 def curr_time():
     return str(datetime.now().strftime("%H:%M:%S"))
 def count_unknown(list):
@@ -197,9 +214,9 @@ def conversion(select_snp, selection_type:str, comment:str, value:int, total:int
             seq_start=int(value)
             seed=None
 
-    ped_file= open(ped_file) 
+    ped= open(ped_file) 
     
-    ped_lines = ped_file.readlines()
+    ped_lines = ped.readlines()
     count=0 #counts the lines
     line=ped_lines[0]
     if total==None:
@@ -237,10 +254,10 @@ def conversion(select_snp, selection_type:str, comment:str, value:int, total:int
     for e in selection:
         norisk.append(b_lines[e-6].split()[-1])
         risk.append(b_lines[e-6].split()[-2])
-
+    bim.close()
     esp_in = open(txt_out, 'w') 
     sys.stdout=esp_in
-    doubles, excluded_pers= to_espresso(selection,lines,k_pers, risk, norisk)
+    doubles, excluded_pers= to_espresso(selection,ped_lines,k_pers, risk, norisk)
     
     ped_file.close()
 
@@ -266,9 +283,16 @@ def get_files(dir, in_subdir=None, in_file=None):
                 if in_file in e:
                     created_files.append(root+"/"+e)
     return(created_files)
-def combine_build_up(n:int, total_snp:int, bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0):
+def get_total_snp():
+    global ped_file
+    hapmap= open(ped_file)
+    lines= hapmap.readlines()
+    hapmap.close()
+    return len(lines[0].split('\t'))-6
+def combine_build_up(n:int, k_pers=None, bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0):
     '''combines  with given groupsize, if recover is a tuple specifiying dir, in_subdir, in_file then starts from matching files'''
-    global ped_file, bim_file
+    global ped_file, bim_file, total_snp 
+    print("Started building at ", curr_time())
     level=startlevel
     if bounded:
         comment="seq_bound_enf"+str(n)+"_"
@@ -331,7 +355,7 @@ def combine_build_up(n:int, total_snp:int, bounded:bool=True, shuffle:bool=True,
 
 
     if len(identified)//n==0:#prevent entering this if levelled out and not finished
-        f_res=(conversion(identified, method, comment,level,  total=total_snp))
+        f_res=(conversion(identified, method, comment,level, total=total_snp, k_pers=k_pers))
         print( "finished at level", level, curr_time())
         print("the selection gave :")
         identified=set()
@@ -347,23 +371,14 @@ def combine_build_up(n:int, total_snp:int, bounded:bool=True, shuffle:bool=True,
         print()
         return 
 
-o = sys.stdout   #define std as o
-start=6
 fileprefix="HapMap"
 pedsuffix=".ped"
 bimsuffix=".bim"
 ped_file=fileprefix+pedsuffix
 bim_file=fileprefix+bimsuffix
-hapmap= open()
-lines= hapmap.readlines()
-total_snp=len(lines[0].split('\t'))-6
-# total_snp=170
-print("Started at ", curr_time())
-
-to_combine=[]
-
-all_selections=[]
-combine_build_up(sys.argv[1], total_snp)
-#simple()
+total_snp=get_total_snp()# total_snp=170 #for tests only
+# k_pers=60#for tests only
+# combine_build_up(sys.argv[1])
+conversion(1000, "seeded", "test", 8)
 
 sys.stdout=o
