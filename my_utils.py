@@ -336,7 +336,7 @@ def merge_sort(A,l,r, comparision_func =lambda x,y : (x>y) ):
     L=merge_sort(A,l,m, comparision_func)
     R=merge_sort(A,m,r, comparision_func)
     return merge_nicer(L,R, comparision_func)
-def score(selection:list, a_lines:list, only_pos:bool=False)->float:
+def score(selection:list, a_lines:list, only_pos:bool=False):
     result = 0
     for e in selection:
         sign=1
