@@ -1,6 +1,9 @@
 
 import random
 import numpy
+import matplotlib.pyplot as plt
+import statsmodels.api as sm
+import pylab as py
 def rand_sign(x):
     y=0
     while y==0:
@@ -29,8 +32,8 @@ a_lines=assoc.readlines()
 assoc.close()
 randscore=[]
 randpos=[]
-rand_size=8#len(a_lines-1)
-for i in range(500000):
+rand_size=9#len(a_lines-1)
+for i in range(50000):
     selection=list(map(rand_sign, random.sample(range(1, len(a_lines)-1),k=rand_size)))
     randscore.append(score(selection, a_lines))
     randpos.append(score_pos(selection, a_lines))
@@ -39,3 +42,6 @@ def print_summary(list):
 print_summary(randscore)
 print_summary(randpos)
 
+sm.qqplot(numpy.array(list(map(lambda x: (x*2), randscore))), line='45')
+
+py.show()
