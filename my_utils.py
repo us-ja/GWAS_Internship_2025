@@ -336,7 +336,7 @@ def merge_sort(A,l,r, comparision_func =lambda x,y : (x>y) ):
     L=merge_sort(A,l,m, comparision_func)
     R=merge_sort(A,m,r, comparision_func)
     return merge_nicer(L,R, comparision_func)
-def score(selection, a_lines, only_pos=False):
+def score(selection:list, a_lines:list, only_pos:bool=False)->float:
     result = 0
     for e in selection:
         sign=1
@@ -351,3 +351,8 @@ def score(selection, a_lines, only_pos=False):
             else:
                 result += np.log10((float(var[-1])))*sign
     return round(float(result),2)
+def rand_sign(x:float)->float:
+    y=0
+    while y==0:
+        y=random.randint(-1,1)*x
+    return y
