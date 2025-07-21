@@ -11,4 +11,7 @@ with open("HapMap.ped")as file:
         print(count)
         
         break
+def give(func):
+    return func
+print(give(lambda x: x+6)==None)
         
