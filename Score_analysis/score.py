@@ -1,5 +1,6 @@
 import os
 import sys
+sys.path.append('..')
 from my_utils import *
 import numpy
 import random
