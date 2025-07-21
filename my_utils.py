@@ -52,46 +52,58 @@ def mkdir(name:int, option:str="-p"):
     subprocess.run(str("mkdir "+option+" "+str(name)), shell=True)
 def rm(name:str, option:str=""):
     subprocess.run(str("rm "+option+" "+name), shell=True)
-def to_espresso(selection:list, lines:list, k_pers:int, risk:list, norisk:list,  esp_out:str, allow_unknowns=None): 
+def select_risk_al(bim_file, selection):
+    risk=[]
+    norisk=[]
+    bim=open(bim_file)
+    b_lines=bim.readlines()
+    
+    for e in selection:
+        e_line=b_lines[e-6].split()
+        norisk.append(e_line[-1])
+        risk.append(e_line[-2])
+    bim.close()
+    return risk, norisk
+def to_espresso(selection:list, sel_pers:list, lines:list, risk:list, norisk:list,  esp_in:str, allow_unknowns=None): 
     
     idict = {}
     o=sys.stdout
-   
     
-    count=0
     excluded_pers=0
     binary=("00", "01", "11", "10", "--")
-    for line in lines:
-        if k_pers==None or count<k_pers:#always true if all person's are considered
-            indivual=line.split('\t')
-            idict[indivual[1]] = {"snps": [], "phenotype": indivual[5]}
-            snp_num=0
+    for h in sel_pers:
+        assert h>=0 and h<len(lines), "selected person is not in range"
+        line=lines[h]
+        indivual=line.split('\t')
+        idict[indivual[1]] = {"snps": [], "phenotype": indivual[5]}
+        snp_num=0
+        
+        # assert len(selection)==amt_select_snp, "error while selecting amount of selected elements does not match the instructed amount"
+        for i in range(len(selection)): 
+            f= selection[i]
+            allele=0
+            snp=(indivual[selection[i]][0], indivual[selection[i]][-1])
             
-            # assert len(selection)==amt_select_snp, "error while selecting amount of selected elements does not match the instructed amount"
-            for i in range(len(selection)): 
-                f= selection[i]
-                allele=0
-                snp=(indivual[selection[i]][0], indivual[selection[i]][-1])
-                
-                for e in snp :
-                    if e=="0":
-                        allele=4
-                        break
-                    else: 
-                        if not len(risk)>=i:
-                            print(risk)
-                            assert len(risk)>=i, "snp_overflow" 
-                        if risk[i]==e :
-                            allele+=1  
-                        elif norisk[i]!=e and "-" not in e:
-                            sys.stdout=o
-                            print("major problem", risk[i], norisk[i], e)
-                            print(selection[i],i) 
-                idict[indivual[1]]["snps"].append(binary[allele])   
-                snp_num+=1        
-        count+=1  
+            for e in snp :
+                if e=="0":
+                    allele=4
+                    break
+                else: 
+                    if not len(risk)>=i:
+                        print(risk)
+                        assert len(risk)>=i, "snp_overflow" 
+                    if risk[i]==e :
+                        allele+=1  
+                    elif norisk[i]!=e and "-" not in e:
+                        
+                        print("major problem", risk[i], norisk[i], e)
+                        print(selection[i],i) 
+            idict[indivual[1]]["snps"].append(binary[allele])   
+            snp_num+=1        
+         
     doubles=0
     found=set()
+    esp_out = open(esp_in, 'w')
     sys.stdout=esp_out
     print(".i ", (len(selection))*2)
     print(".o ", 1)
@@ -118,11 +130,12 @@ def to_espresso(selection:list, lines:list, k_pers:int, risk:list, norisk:list, 
             excluded_pers+=1
     print(".e")
     sys.stdout=o
+    esp_out.close()
     # with open(json_out, 'w') as f: 
     #     sys.stdout = f    
     #     print(idict)
     return doubles, excluded_pers
-def espresso_analysis(espresso_out, path, selection, doubles, excluded_pers, selection_type, seed, risk, norisk):
+def espresso_analysis(espresso_out, path, selection, doubles, excluded_pers, selection_type, seed, risk, norisk, sel_pers):
     '''reads out from espresso and creates result file containing the summary'''
     n=len(selection)
     res_out= path+"result"+str(n)+".txt"
@@ -190,17 +203,20 @@ def espresso_analysis(espresso_out, path, selection, doubles, excluded_pers, sel
             if selection_type=="seeded" or selection_type=="random":
                 print("seed=",seed) 
             print("result:")
-            counter=0
-            for e in result:
-                counter+=len(e)
-                print(e)
             print("input length (.i)")
             print((len(selection))*2)
+            print("Sel_pers:")
+            print(sel_pers)
             print("number of excluded pers:")
+            print("excluded pers")
             if doubles!=0 and doubles!=None:
                 print(doubles, "duplicates were found, first seen is selected, increase amount of selceted SNPs and ", excluded_pers, "seq were exluded as too many don't cares")   
             else:
                 print("no overspecification", excluded_pers, "seq were exluded as too many don't cares")   
+            counter=0
+            for e in result:
+                counter+=len(e)
+                print(e)
             print("Products:")
             print(len(result))
             print("Literals/ num of SNP:")
@@ -209,7 +225,7 @@ def espresso_analysis(espresso_out, path, selection, doubles, excluded_pers, sel
 def espresso(input, output):
     '''runs espresso with input and ouput to output'''
     subprocess.run(str("../../espresso-logic-master/bin/espresso "+input+" > "+output ), shell=True)
-def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefix:str='HapMap',total:int=None, k_pers:int=None, dir:str="", delete_logs:bool=True, allow_unknowns:str=None, stopifoverspecif:bool=False):
+def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefix:str='HapMap',total:int=None, k_pers:int=None, dir:str="", delete_logs:bool=True, allow_unknowns:str=None, stopifoverspecif:bool=False, sel_pers:list=[]):
     '''returns file name of the result executed according to input, A1 is selected as risk allele'''
     out_before=sys.stdout
     ped_file=fileprefix+".ped"
@@ -232,6 +248,8 @@ def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefi
     ped= open(ped_file) 
     
     ped_lines = ped.readlines()
+    if sel_pers==[]:
+        sel_pers=list(range(0,len(ped_lines)))
     count=0 #counts the lines
     line=ped_lines[0]
     if total==None:
@@ -264,21 +282,13 @@ def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefi
     
     
     espresso_out=path+"analysis_"+str(len(selection))+".txt"
-    risk=[]
-    norisk=[]
-    bim=open(bim_file)
-    b_lines=bim.readlines()
+    risk, norisk = select_risk_al(bim_file, selection)
+
     
-    for e in selection:
-        e_line=b_lines[e-6].split()
-        norisk.append(e_line[-1])
-        risk.append(e_line[-2])
-    bim.close()
     
-    esp_in = open(txt_out, 'w') 
     
-    doubles, excluded_pers= to_espresso(selection,ped_lines,k_pers, risk, norisk,esp_in,allow_unknowns)
-    esp_in.close()
+    doubles, excluded_pers= to_espresso(selection,sel_pers, ped_lines, risk, norisk,txt_out,allow_unknowns)
+    
     ped.close()
     if stopifoverspecif and doubles!=0:
         if delete_logs:
@@ -289,7 +299,7 @@ def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefi
     espresso(txt_out, espresso_out)  
     
     
-    res_out=espresso_analysis(espresso_out, path, selection, doubles, excluded_pers, selection_type, seed, risk, norisk)
+    res_out=espresso_analysis(espresso_out, path, selection, doubles, excluded_pers, selection_type, seed, risk, norisk, sel_pers)
     if delete_logs:
         rm(txt_out)
         rm(espresso_out)
@@ -329,7 +339,7 @@ def merge_nicer(A,B, compar):
             C.append(B[j])
             j=j+1
     return C
-def merge_sort(A,l,r, comparision_func:function=lambda x,y : (x>y) ):
+def merge_sort(A,l,r, comparision_func=lambda x,y : (x>y) ):
     if r-l == 0:
         return []
     if r-l == 1:
@@ -354,7 +364,93 @@ def score(selection:list, a_lines:list, only_pos:bool=False):
                 result += np.log10((float(var[-1])))*sign
     return round(float(result),2)
 def rand_sign(x:float)->float:
+    '''returns given float with random sign -/+'''
     y=0
     while y==0:
         y=random.randint(-1,1)*x
     return y
+
+
+def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0, deletelog=True, sel_pers=[], add_comm:str=""):
+    '''combines  with given groupsize, if recover is a tuple specifiying dir, in_subdir, in_file then starts from matching files'''
+    print("Started building at ", curr_time())
+    if total_snp==None:
+        total_snp=get_total_snp(dataprefix)
+    level=startlevel
+    if bounded:
+        comment=add_comm+"bound_enf"+str(group_size)+"_"
+    else:
+        comment=add_comm+"split"+str(group_size)+"_"
+    print("started build-up at", curr_time())
+    method="given"
+    level=0
+    identified=list(range(total_snp))
+    if shuffle:
+        random.shuffle(identified)
+    ends=[]
+    for i in range(len(identified)//group_size+1):
+        ends.append(i*group_size)
+    
+    while True:#or level< big number to prevent endless
+        if len(identified)//group_size==0:
+            break
+        if recover==None:
+            created_files=[]
+            if not bounded:
+                ends=[]
+                for i in range((len(identified)//group_size)+1):
+                    ends.append(i*group_size)
+            ends[-1]=len(identified)     #make last group bigger by combining the rest
+            for i in range(len(ends)-1):
+                
+                start=ends[i]
+                end=ends[i+1]
+                to_analyze= identified[start:end]
+                # print(to_analyze)
+                created_files.append(conversion(to_analyze, method,  comment, start, fileprefix=dataprefix ,total=total_snp, dir=dir_l(level),stopifoverspecif=True, sel_pers=sel_pers, delete_logs=deletelog))
+            # print(created_files)
+            
+        else:
+            created_files=get_files(recover, in_subdir, in_file)
+            recover=None
+        identified=set()
+        
+        ends=[0]
+        for file_name in created_files:
+            if file_name!=None:
+                file = open(file_name)
+                lines=file.readlines()
+                for i in range(-4-int(lines[1]),-4):
+                    ele= lines[i].split(sep=',')
+                    ele[0] =ele[0][1:]
+                    ele[-1]=ele[-1][:-2]
+                    ele=list(map(int, map(float, ele)))
+                    for j in range(len(ele)):
+                        identified.add(ele[j])
+                    if len(identified)-ends[-1]>=group_size:
+                        ends.append(len(identified))  
+                file.close()
+        
+        identified=list(identified)
+        
+        # print(identified, "identified")
+        level+=1
+        print("reached new level", level, curr_time())
+
+
+    if len(identified)//group_size==0:#prevent entering this if levelled out and not finished
+        f_res=(conversion(identified, method, comment,level, fileprefix=dataprefix, total=total_snp, sel_pers=sel_pers, delete_logs=deletelog))
+        print( "finished at level", level, curr_time())
+        print("the selection gave :")
+        identified=set()
+        file=open(f_res)
+        lines=file.readlines()
+        for i in range(-4-int(lines[1]),-4):
+            ele= lines[i].split(sep=',')
+            ele[0], ele[-1]=ele[0][1:], ele[-1][:-2]
+            ele=(list( map(float, ele)))
+            for j in range(len(ele)):
+                print(ele[j], end=", ")
+        file.close()
+        print()
+        return f_res 
