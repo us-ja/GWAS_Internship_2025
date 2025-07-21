@@ -64,7 +64,7 @@ def select_risk_al(bim_file, selection):
         risk.append(e_line[-2])
     bim.close()
     return risk, norisk
-def to_espresso(selection:list, sel_pers:list, lines:list, risk:list, norisk:list,  esp_in:str, allow_unknowns=None): 
+def to_espresso(selection:list, sel_pers:list, lines:list, risk:list, norisk:list,  esp_in:str, allow_unknowns=None, change_pheno=None): 
     
     idict = {}
     o=sys.stdout
@@ -80,7 +80,7 @@ def to_espresso(selection:list, sel_pers:list, lines:list, risk:list, norisk:lis
         
         # assert len(selection)==amt_select_snp, "error while selecting amount of selected elements does not match the instructed amount"
         for i in range(len(selection)): 
-            f= selection[i]
+    
             allele=0
             snp=(indivual[selection[i]][0], indivual[selection[i]][-1])
             
@@ -120,7 +120,10 @@ def to_espresso(selection:list, sel_pers:list, lines:list, risk:list, norisk:lis
                 for f in idict[e]["snps"]:
                     print(f, end="")
                 # print(" ",1)
-                print(" ",int(idict[e]["phenotype"])-1)
+                if change_pheno==None:
+                    print(" ",int(idict[e]["phenotype"])-1)
+                else:
+                    print(" ",change_pheno(e))
             else: #ignores if this excact combination of SNP was already seen
             
                 for g in dec:
@@ -225,7 +228,7 @@ def espresso_analysis(espresso_out, path, selection, doubles, excluded_pers, sel
 def espresso(input, output):
     '''runs espresso with input and ouput to output'''
     subprocess.run(str("../../espresso-logic-master/bin/espresso "+input+" > "+output ), shell=True)
-def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefix:str='HapMap',total:int=None, k_pers:int=None, dir:str="", delete_logs:bool=True, allow_unknowns:str=None, stopifoverspecif:bool=False, sel_pers:list=[]):
+def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefix:str='HapMap',total:int=None, k_pers:int=None, dir:str="", delete_logs:bool=True, allow_unknowns:str=None, stopifoverspecif:bool=False, sel_pers:list=[], change_pheno=None):
     '''returns file name of the result executed according to input, A1 is selected as risk allele'''
     out_before=sys.stdout
     ped_file=fileprefix+".ped"
@@ -287,7 +290,7 @@ def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefi
     
     
     
-    doubles, excluded_pers= to_espresso(selection,sel_pers, ped_lines, risk, norisk,txt_out,allow_unknowns)
+    doubles, excluded_pers= to_espresso(selection,sel_pers, ped_lines, risk, norisk,txt_out,allow_unknowns, change_pheno=change_pheno)
     
     ped.close()
     if stopifoverspecif and doubles!=0:
@@ -371,9 +374,11 @@ def rand_sign(x:float)->float:
     return y
 
 
-def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0, deletelog=True, sel_pers=[], add_comm:str=""):
+def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0, deletelog=True, sel_pers=[], add_comm:str="",seed:int=None):
     '''combines  with given groupsize, if recover is a tuple specifiying dir, in_subdir, in_file then starts from matching files'''
     print("Started building at ", curr_time())
+    if seed!=None:
+        random.seed(seed)
     if total_snp==None:
         total_snp=get_total_snp(dataprefix)
     level=startlevel
