@@ -123,6 +123,7 @@ def to_espresso(selection:list, lines:list, k_pers:int, risk:list, norisk:list, 
     #     print(idict)
     return doubles, excluded_pers
 def espresso_analysis(espresso_out, path, selection, doubles, excluded_pers, selection_type, seed, risk, norisk):
+    '''reads out from espresso and creates result file containing the summary'''
     n=len(selection)
     res_out= path+"result"+str(n)+".txt"
     selected_snp=list(map(lambda x: x - 6, selection))
@@ -206,9 +207,10 @@ def espresso_analysis(espresso_out, path, selection, doubles, excluded_pers, sel
             print(counter)
     return res_out
 def espresso(input, output):
+    '''runs espresso with input and ouput to output'''
     subprocess.run(str("../../espresso-logic-master/bin/espresso "+input+" > "+output ), shell=True)
 def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefix:str='HapMap',total:int=None, k_pers:int=None, dir:str="", delete_logs:bool=True, allow_unknowns:str=None, stopifoverspecif:bool=False):
-    '''returns file name of the result executed according to input'''
+    '''returns file name of the result executed according to input, A1 is selected as risk allele'''
     out_before=sys.stdout
     ped_file=fileprefix+".ped"
     bim_file=fileprefix+".bim"
@@ -306,7 +308,7 @@ def get_files(dir:str, in_subdir:str=None, in_file:str=None):
                 if in_file in e:
                     created_files.append(root+"/"+e)
     return(created_files)
-def get_total_snp(fileprefix):
+def get_total_snp(fileprefix:str):
     hapmap= open(fileprefix+".ped")
     lines= hapmap.readlines()
     hapmap.close()
@@ -327,7 +329,7 @@ def merge_nicer(A,B, compar):
             C.append(B[j])
             j=j+1
     return C
-def merge_sort(A,l,r, comparision_func =lambda x,y : (x>y) ):
+def merge_sort(A,l,r, comparision_func:function=lambda x,y : (x>y) ):
     if r-l == 0:
         return []
     if r-l == 1:
