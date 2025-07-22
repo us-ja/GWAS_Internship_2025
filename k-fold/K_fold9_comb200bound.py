@@ -9,19 +9,20 @@ a_pers=(random.sample(range(0,109), k= int(0.9*109)))
 a_pers.sort()
 
 comb_res=(combine_build_up(200, "HapMap", sel_pers=a_pers, add_comm="9fold", seed=seed))
-identified=set()
-file=open(comb_res)
-lines=file.readlines()
-for i in range(-4-int(lines[1]),-4):
-    ele= lines[i].split(sep=',')
-    ele[0] =ele[0][1:]
-    ele[-1]=ele[-1][:-2]
-    ele=list(map(int, map(float, ele)))
-    for j in range(len(ele)):
-        identified.add(ele[j])
-file.close()
+
 
 def compare():
+    identified=set()
+    file=open(comb_res)
+    lines=file.readlines()
+    for i in range(-4-int(lines[1]),-4):
+        ele= lines[i].split(sep=',')
+        ele[0] =ele[0][1:]
+        ele[-1]=ele[-1][:-2]
+        ele=list(map(int, map(float, ele)))
+        for j in range(len(ele)):
+            identified.add(ele[j])
+    file.close()
     i=0
     j=0
     b_pers=[]
