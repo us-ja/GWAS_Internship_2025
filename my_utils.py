@@ -318,7 +318,7 @@ def get_files(dir:str, in_subdir:str=None, in_file:str=None):
         if in_subdir==None or "givenboundaries_enf200_" in root:
 
             for e in files:
-                if in_file in e:
+                if in_file ==None or in_file in e:
                     created_files.append(root+"/"+e)
     return(created_files)
 def get_total_snp(fileprefix:str):
