@@ -211,7 +211,7 @@ def espresso_analysis(espresso_out, path, selection, doubles, excluded_pers, sel
             print("Sel_pers:")
             print(sel_pers)
             print("number of excluded pers:")
-            print("excluded pers")
+            print(excluded_pers)
             if doubles!=0 and doubles!=None:
                 print(doubles, "duplicates were found, first seen is selected, increase amount of selceted SNPs and ", excluded_pers, "seq were exluded as too many don't cares")   
             else:
