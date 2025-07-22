@@ -1,15 +1,14 @@
-with open("HapMap.map")as file:
+with open("HapMap.ped")as file:
     lines=file.readlines()
     last=0
     count=0
     for line in lines:
         
         var=line.split()
-        if last!=int(var[0]):
-            last=int(var[0])
-            print(count+6, end=" ")
-            # print(last)
-        count+=1
-
+        print((var[1]))
+        if "5" in var[1] or "9" in var[1] :
+            count+=1
 print(count)
+
+
         

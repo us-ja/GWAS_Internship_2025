@@ -157,20 +157,7 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
     c2=0
     print('here 4')
     for e in idict:
-        print(c2)
-        c2+=1
-        dec=calculate_decimal(idict[e]["snps"])
-        print(c2, "sec")     
-        new=set(dec)
-        if  found.isdisjoint(new):
-            found= found | new
-            for f in idict[e]["snps"]:
-                print(f, end="")
-            # print(" ",1)
-            print(" ",int(idict[e]["phenotype"])-1)
-        else: #ignores if this excact combination of SNP was already seen
-            print("aasle")
-            return False
+        print(e)
             
     
     print("finsihed true")
@@ -188,7 +175,7 @@ def conversion(select_snp, selection_type, value, comment, ped_file='HapMap.ped'
 
     
 method='sequential'
-start=865406
+start=6
 ending=".py"
 transformation= "convert3"
 hapmap= open("HapMap.ped")
