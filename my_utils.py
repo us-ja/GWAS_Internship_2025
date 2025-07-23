@@ -64,7 +64,7 @@ def select_risk_al(bim_file, selection):
         risk.append(e_line[-2])
     bim.close()
     return risk, norisk
-def to_espresso(selection:list, sel_pers:list, lines:list, risk:list, norisk:list,  esp_in:str, allow_unknowns=None, change_pheno=None): 
+def to_espresso(selection:list, sel_pers:list, lines:list, risk:list, norisk:list,  esp_in:str, allow_unknowns=20, change_pheno=None): 
     
     idict = {}
     o=sys.stdout
@@ -245,7 +245,7 @@ def espresso_analysis(espresso_out, path, selection, doubles, excluded_pers, sel
 def espresso(input, output):
     '''runs espresso with input and ouput to output'''
     subprocess.run(str("../../espresso-logic-master/bin/espresso "+input+" > "+output ), shell=True)
-def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefix:str='HapMap',total:int=None, dir:str="", delete_logs:bool=True, allow_unknowns:str=None, stopifoverspecif:bool=False, sel_pers:list=[], change_pheno=None):
+def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefix:str='HapMap',total:int=None, dir:str="", delete_logs:bool=True, allow_unknowns:str=20, stopifoverspecif:bool=False, sel_pers:list=[], change_pheno=None):
     '''returns file name of the result executed according to input, A1 is selected as risk allele'''
     out_before=sys.stdout
     ped_file=fileprefix+".ped"
@@ -392,7 +392,7 @@ def rand_sign(x:float)->float:
     return y
 
 
-def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0, deletelog=True, sel_pers=[], add_comm:str="",seed:int=None, change_pheno=None, allow_unknowns=None):
+def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0, deletelog=True, sel_pers=[], add_comm:str="",seed:int=None, change_pheno=None, allow_unknowns:int=20, change_pers_func=None):
     '''combines  with given groupsize, if recover is a tuple specifiying dir, in_subdir, in_file then starts from matching files'''
     print("Started building at ", curr_time())
     if seed!=None:
