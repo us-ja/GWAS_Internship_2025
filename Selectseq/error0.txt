@@ -1,2 +1,0 @@
-nohup: ignoring input
-only_improve.sh: 1: source: not found

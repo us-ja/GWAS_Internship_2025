@@ -1,2 +1,0 @@
-nohup: ignoring input
-must_change.sh: 1: source: not found

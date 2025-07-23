@@ -1,2 +1,0 @@
-nohup: ignoring input
-monoton_improv.sh: 1: source: not found
