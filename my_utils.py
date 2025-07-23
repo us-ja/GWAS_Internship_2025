@@ -418,11 +418,13 @@ def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=T
         else:
             created_files=get_files(recover, in_subdir, in_file)
             recover=None
-        identified=set()
-        
+       
+        identified=[]
         ends=[0]
         for file_name in created_files:
+
             if file_name!=None:
+                new_identified=set()
                 file = open(file_name)
                 lines=file.readlines()
                 for i in range(-4-int(lines[1]),-4):
@@ -431,13 +433,14 @@ def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=T
                     ele[-1]=ele[-1][:-2]
                     ele=list(map(int, map(float, ele)))
                     for j in range(len(ele)):
-                        identified.add(ele[j])
-                    if len(identified)-ends[-1]>=group_size:
-                        ends.append(len(identified))  
+                        new_identified.add(ele[j])
+                identified.extend(new_identified)
+                if len(identified)-ends[-1]>=group_size:
+                    ends.append(len(identified))  
                 file.close()
         
-        identified=list(identified)
         
+        new_identified=set()#empty to avoid space being used
         # print(identified, "identified")
         level+=1
         print("reached new level", level, curr_time())
