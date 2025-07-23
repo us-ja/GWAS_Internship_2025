@@ -391,7 +391,7 @@ def rand_sign(x:float)->float:
     return y
 
 
-def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0, deletelog=True, sel_pers=[], add_comm:str="",seed:int=None, change_pheno=None):
+def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0, deletelog=True, sel_pers=[], add_comm:str="",seed:int=None, change_pheno=None, allow_unknowns=None):
     '''combines  with given groupsize, if recover is a tuple specifiying dir, in_subdir, in_file then starts from matching files'''
     print("Started building at ", curr_time())
     if seed!=None:
@@ -429,7 +429,7 @@ def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=T
                 end=ends[i+1]
                 to_analyze= identified[start:end]
                 # print(to_analyze)
-                created_files.append(conversion(to_analyze, method,  comment, start, fileprefix=dataprefix ,total=total_snp, dir=dir_l(level),stopifoverspecif=True, sel_pers=sel_pers, delete_logs=deletelog, change_pheno=change_pheno))
+                created_files.append(conversion(to_analyze, method,  comment, start, fileprefix=dataprefix ,total=total_snp, dir=dir_l(level),stopifoverspecif=True, sel_pers=sel_pers, delete_logs=deletelog, change_pheno=change_pheno, allow_unknowns=allow_unknowns))
             # print(created_files)
             
         else:
