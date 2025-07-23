@@ -194,17 +194,16 @@ def espresso_analysis(espresso_out, path, selection, doubles, excluded_pers, sel
             print(np.var(stats)/len(selection))#apartness in regards of selection
             print("Selection:")
             print(selected_snp)#selection
+            print("seed:")
             print(seed)
+            print("error:", len(error))
+            for e in error:
+                print(e)
             print("Risk allele:")
             print(risk)
             print("Normal (norisk) allele:")
             print(norisk)
-            print("error:", len(error))
-            for e in error:
-                print(e)
             print("selection_type=", selection_type) #if not specified selects first k snp's, possilble selection modes: random, seeded, total, sequential
-            if selection_type=="seeded" or selection_type=="random":
-                print("seed=",seed) 
             print("result:")
             print("input length (.i)")
             print((len(selection))*2)
