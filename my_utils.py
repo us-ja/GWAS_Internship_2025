@@ -125,11 +125,29 @@ def to_espresso(selection:list, sel_pers:list, lines:list, risk:list, norisk:lis
                 else:
                     print(" ",change_pheno(e))
             else: #ignores if this excact combination of SNP was already seen
-            
-                for g in dec:
-                    doubles+=1
+                sys.stdout=o
+                print("excluded ", e, "because", unknowns, "where detected")
+                for f in idict[e]["snps"]:
+                    print(f, end="")
+                # print(" ",1)
+                if change_pheno==None:
+                    print(" ",int(idict[e]["phenotype"])-1)
+                else:
+                    print(" ",change_pheno(e))
+                sys.stdout=esp_out
+                doubles+=1
             
         else:
+            sys.stdout=o
+            print("excluded ", e, "because", unknowns, "where detected")
+            for f in idict[e]["snps"]:
+                print(f, end="")
+            # print(" ",1)
+            if change_pheno==None:
+                print(" ",int(idict[e]["phenotype"])-1)
+            else:
+                print(" ",change_pheno(e))
+            sys.stdout=esp_out
             excluded_pers+=1
     print(".e")
     sys.stdout=o
