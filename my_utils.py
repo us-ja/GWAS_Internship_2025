@@ -329,13 +329,13 @@ def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefi
 def dir_l(level:int):
     return "l_"+str(level)+"/"
 def get_files(dir:str, in_subdir:str=None, in_file:str=None):
-    '''returns list of all files in given dir with in_subdir/in_file specifing what must be part of path/filename omits files with point/hidden files'''
+    '''returns list of all files in given dir with in_subdir/in_file specifing what must be part of path/filename doesn't omits files with point/hidden files'''
     created_files=[]
     for (root,dirs,files) in os.walk(dir):
         if in_subdir==None or "givenboundaries_enf200_" in root:
 
             for e in files:
-                if (in_file ==None or in_file in e) and "." not in e:
+                if (in_file ==None or in_file in e):
                     
                     created_files.append(root+"/"+e)
     return(created_files)
@@ -404,7 +404,7 @@ def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=T
         comment=add_comm+"bound_enf"+str(group_size)+"_"
     else:
         comment=add_comm+"split"+str(group_size)+"_"
-    print("started build-up at", curr_time())
+    
     method="given"
     level=0
     identified=list(range(total_snp))
