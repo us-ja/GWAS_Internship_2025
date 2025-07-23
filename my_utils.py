@@ -415,6 +415,8 @@ def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=T
         ends.append(i*group_size)
     
     while True:#or level< big number to prevent endless
+        if change_pers_func!=None:
+            sel_pers=change_pers_func(level)
         if len(identified)//group_size==0:
             break
         if recover==None:
