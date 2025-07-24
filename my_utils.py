@@ -273,7 +273,8 @@ def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefi
     if selection_type=="random":
         seed=random.randint(0,amt_select_snp)
     else:
-        seed=value
+        if seed==None:
+            seed=value
 
     if selection_type=="random" or selection_type=="seeded":
         random.seed(value)
@@ -459,7 +460,7 @@ def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=T
 
 
     if len(identified)//group_size==0:#prevent entering this if levelled out and not finished
-        f_res=(conversion(identified, method, comment,level, fileprefix=dataprefix, total=total_snp, sel_pers=sel_pers, delete_logs=deletelog, change_pheno=None))
+        f_res=(conversion(identified, method, comment,level, fileprefix=dataprefix, total=total_snp, sel_pers=sel_pers, delete_logs=deletelog, change_pheno=None, seed=seed))
         print( "finished at level", level, curr_time())
         print("the selection gave :")
         identified=set()
