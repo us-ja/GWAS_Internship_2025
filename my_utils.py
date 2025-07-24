@@ -482,3 +482,112 @@ def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=T
         file.close()
         print()
         return f_res 
+
+def compare(result, prefix:str="HapMap", accept=lambda x: True):
+    products=[]
+    file=open(result)
+    lines=file.readlines()
+    for i in range(-4-int(lines[1]),-4):
+        ele= lines[i].split(sep=',')
+        ele[0] =ele[0][1:]
+        ele[-1]=ele[-1][:-2]
+        ele=list( map(float, ele))
+        products.append(ele)
+    file.close()
+
+    
+    
+    b_pers=[]
+    
+    a_pers= lines[-8-int(lines[1])].split(',')
+    a_pers[0], a_pers[-1]=a_pers[0][1:], a_pers[-1][:-2]
+    a_pers=list(sorted(map(int, a_pers)))
+    
+    
+
+    i=0
+    j=0
+    hap= open(prefix+".ped")
+    lines=hap.readlines()
+    hap.close()
+    while i<len(lines):
+        if (j>=len(a_pers) or i!=a_pers[j]) and accept(i):
+            b_pers.append(i)
+        else:
+            j+=1
+        i+=1
+    print(b_pers, "persons")
+    correct_pred=0
+    fpos=0
+    fneg=0
+    for e in b_pers:
+        share, pheno= (diagnose_pers(products,e, prefix))
+        print(share, pheno)
+
+        
+        if (int(share)==pheno):
+            correct_pred+=1
+        else:
+            if int(share)==1:
+                fpos+=1
+                print("False positive")
+            else:
+                fneg+=1
+                print("False negative")
+    print("correct were ", correct_pred, "out of ", len(b_pers), "that is ", round(correct_pred/len(b_pers),3)*100,"%", "with", fpos, "false positives and ", fneg, " false negatives")
+
+
+def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None):
+    '''edge case where -0 is identified as 0, binary=("00", "01", "11", "10", "--")'''
+    if lines==None:
+        hap= open(prefix+".ped")
+        lines=hap.readlines()
+        hap.close()
+    indivual=(lines[e]).split('\t')
+    maxshare=0
+    phenotype=int(indivual[5])-1
+    for p in products:
+        state=True
+        falses=0
+        for snp_num in p:
+            if snp_num==int(snp_num):
+                first=True
+            else:
+                first=False
+            if snp_num==abs(snp_num):
+                pos=True
+            else:
+                pos=False
+            snp=(indivual[int(abs(snp_num))+6][0], indivual[int(abs(snp_num))+6][-1])
+            a, b= select_risk_al(prefix+".bim", [int(abs(snp_num))+6])
+            risk, norisk= a[0], b[0]
+            allele=0
+            for e in snp :
+                if e=="0":
+                    allele=4
+                else: 
+                    if risk==e :
+                        allele+=1  
+                    elif norisk!=e and "-" not in e:
+                        print("major problem", risk, norisk, e)
+            
+      
+            if pos:
+                if allele==0:
+                    falses+=1
+                elif allele==1 and first:                    
+                    falses+=1
+            else:
+                if allele==2:                    
+                    falses+=1
+                elif allele==1 and not first:                    
+                    falses+=1
+            # print(allele, a, snp, snp_num, pos, first, falses)
+        if falses==0:
+        
+                
+            return 1, phenotype
+        share= (len(p)-falses)/len(p)
+        if share>maxshare:
+            maxshare=share
+    return maxshare, phenotype
