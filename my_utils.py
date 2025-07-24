@@ -64,7 +64,15 @@ def select_risk_al(bim_file, selection):
         risk.append(e_line[-2])
     bim.close()
     return risk, norisk
-def to_espresso(selection:list, sel_pers:list, lines:list, risk:list, norisk:list,  esp_in:str, allow_unknowns=20, change_pheno=None): 
+def print_line(idict, e, change_pheno):
+    for f in idict[e]["snps"]:
+        print(f, end="")
+    # print(" ",1)
+    if change_pheno==None:
+        print(" ",int(idict[e]["phenotype"])-1)
+    else:
+        print(" ",change_pheno(e))
+def to_espresso(selection:list, sel_pers:list, lines:list, risk:list, norisk:list,  esp_in:str, allow_unknowns=20, change_pheno=None, checkdoubles=True): 
     
     idict = {}
     o=sys.stdout
@@ -108,47 +116,31 @@ def to_espresso(selection:list, sel_pers:list, lines:list, risk:list, norisk:lis
     print(".i ", (len(selection))*2)
     print(".o ", 1)
     print(".type fr")
+    person=0
     for e in idict:
-        unknowns=count_unknown(idict[e]["snps"])
-        
+        unknowns=count_unknown(idict[e]["snps"]) 
         if allow_unknowns==None or unknowns<=allow_unknowns:
-            
-            dec=calculate_decimal(idict[e]["snps"]) 
-            new=set(dec)
-            if  found.isdisjoint(new):
-                found= found | new
-                for f in idict[e]["snps"]:
-                    print(f, end="")
-                # print(" ",1)
-                if change_pheno==None:
-                    print(" ",int(idict[e]["phenotype"])-1)
-                else:
-                    print(" ",change_pheno(e))
-            else: #ignores if this excact combination of SNP was already seen
-                sys.stdout=o
-                print("excluded ", e, "because", unknowns, "where detected")
-                for f in idict[e]["snps"]:
-                    print(f, end="")
-                # print(" ",1)
-                if change_pheno==None:
-                    print(" ",int(idict[e]["phenotype"])-1)
-                else:
-                    print(" ",change_pheno(e))
-                sys.stdout=esp_out
-                doubles+=1
-            
+            if checkdoubles:
+                dec=calculate_decimal(idict[e]["snps"]) 
+                new=set(dec)
+                if  found.isdisjoint(new):
+                    found= found | new
+                    print_line(idict, e, change_pheno)
+                else: #ignores if this excact combination of SNP was already seen
+                    sys.stdout=o
+                    print("excluded ", e, "because", unknowns, "where detected")
+                    print_line(idict, e, change_pheno)#add i and change e with person for easier access
+                    sys.stdout=esp_out
+                    doubles+=1
+            else:
+                print_line(idict, e, change_pheno)
         else:
             sys.stdout=o
             print("excluded ", e, "because", unknowns, "where detected")
-            for f in idict[e]["snps"]:
-                print(f, end="")
-            # print(" ",1)
-            if change_pheno==None:
-                print(" ",int(idict[e]["phenotype"])-1)
-            else:
-                print(" ",change_pheno(e))
+            print_line(idict,e,change_pheno)
             sys.stdout=esp_out
             excluded_pers+=1
+        person+=1
     print(".e")
     sys.stdout=o
     esp_out.close()
@@ -245,7 +237,7 @@ def espresso_analysis(espresso_out, path, selection, doubles, excluded_pers, sel
 def espresso(input, output):
     '''runs espresso with input and ouput to output'''
     subprocess.run(str("../../espresso-logic-master/bin/espresso "+input+" > "+output ), shell=True)
-def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefix:str='HapMap',total:int=None, dir:str="", delete_logs:bool=True, allow_unknowns:str=20, stopifoverspecif:bool=False, sel_pers:list=[], change_pheno=None):
+def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefix:str='HapMap',total:int=None, dir:str="", delete_logs:bool=True, allow_unknowns:str=20, stopifoverspecif:bool=False, sel_pers:list=[], change_pheno=None, checkdoubles=True, seed=None):
     '''returns file name of the result executed according to input, A1 is selected as risk allele'''
     out_before=sys.stdout
     ped_file=fileprefix+".ped"
@@ -307,7 +299,7 @@ def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefi
     
     
     
-    doubles, excluded_pers= to_espresso(selection,sel_pers, ped_lines, risk, norisk,txt_out,allow_unknowns, change_pheno=change_pheno)
+    doubles, excluded_pers= to_espresso(selection,sel_pers, ped_lines, risk, norisk,txt_out,allow_unknowns, change_pheno=change_pheno, checkdoubles=checkdoubles)
     
     ped.close()
     if stopifoverspecif and doubles!=0:
@@ -392,7 +384,7 @@ def rand_sign(x:float)->float:
     return y
 
 
-def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0, deletelog=True, sel_pers=[], add_comm:str="",seed:int=None, change_pheno=None, allow_unknowns:int=20, change_pers_func=None):
+def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0, deletelog=True, sel_pers=[], add_comm:str="",seed:int=None, change_pheno=None, allow_unknowns:int=20, change_pers_func=None, checkdoubles=True):
     '''combines  with given groupsize, if recover is a tuple specifiying dir, in_subdir, in_file then starts from matching files'''
     print("Started building at ", curr_time())
     if seed!=None:
@@ -432,7 +424,7 @@ def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=T
                 end=ends[i+1]
                 to_analyze= identified[start:end]
                 # print(to_analyze)
-                created_files.append(conversion(to_analyze, method,  comment, start, fileprefix=dataprefix ,total=total_snp, dir=dir_l(level),stopifoverspecif=True, sel_pers=sel_pers, delete_logs=deletelog, change_pheno=change_pheno, allow_unknowns=allow_unknowns))
+                created_files.append(conversion(to_analyze, method,  comment, start, fileprefix=dataprefix ,total=total_snp, dir=dir_l(level),stopifoverspecif=True, sel_pers=sel_pers, delete_logs=deletelog, change_pheno=change_pheno, allow_unknowns=allow_unknowns, checkdoubles=checkdoubles, seed=seed))
             # print(created_files)
             
         else:
