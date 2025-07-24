@@ -2,12 +2,12 @@ import sys
 sys.path.append('..')
 import random
 from my_utils import *
-seed=10
+seed=2
 random.seed(seed)
 
 # a_pers=(random.sample(range(0,109), k= int(0.9*109)))
 # a_pers.sort()
-b_pers=[18, 29, 44, 49, 50, 68, 70, 98, 103, 105, 106]
+b_pers=[4, 9, 10, 20, 23, 33, 36, 39, 61, 90, 104]
 a_pers=[]
 i=0
 j=0
@@ -21,6 +21,3 @@ while i<109:
 
 comm="9fold_s"+str(seed)
 comb_res=(combine_build_up(200, "HapMap", sel_pers=a_pers, add_comm=comm, seed=seed))
-
-
-
