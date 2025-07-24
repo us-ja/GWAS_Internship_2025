@@ -388,8 +388,8 @@ def rand_sign(x:float)->float:
 def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0, deletelog=True, sel_pers=[], add_comm:str="",seed:int=None, change_pheno=None, allow_unknowns:int=20, change_pers_func=None, checkdoubles=True):
     '''combines  with given groupsize, if recover is a tuple specifiying dir, in_subdir, in_file then starts from matching files'''
     print("Started building at ", curr_time())
-    if seed!=None:
-        random.seed(seed)
+    
+    random.seed(seed)
     if total_snp==None:
         total_snp=get_total_snp(dataprefix)
     level=startlevel
