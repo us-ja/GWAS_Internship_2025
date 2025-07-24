@@ -20,4 +20,4 @@ while i<109:
 
 
 comm="9fold_s"+str(seed)
-comb_res=(combine_build_up(200, "HapMap", sel_pers=a_pers, add_comm=comm, seed=seed))
+comb_res=(combine_build_up(200, "HapMap", sel_pers=a_pers, add_comm=comm, seed=seed, checkdoubles=False))
