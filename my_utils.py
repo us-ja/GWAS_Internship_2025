@@ -52,17 +52,17 @@ def mkdir(name:int, option:str="-p"):
     subprocess.run(str("mkdir "+option+" "+str(name)), shell=True)
 def rm(name:str, option:str=""):
     subprocess.run(str("rm "+option+" "+name), shell=True)
-def select_risk_al(bim_file, selection):
+def select_risk_al(bim_file, selection, b_lines=None):
     risk=[]
     norisk=[]
-    bim=open(bim_file)
-    b_lines=bim.readlines()
-    
+    if b_lines==None:
+        bim=open(bim_file)
+        b_lines=bim.readlines()
+        bim.close()
     for e in selection:
         e_line=b_lines[e-6].split()
         norisk.append(e_line[-1])
         risk.append(e_line[-2])
-    bim.close()
     return risk, norisk
 def print_line(idict, e, change_pheno):
     for f in idict[e]["snps"]:
@@ -477,7 +477,7 @@ def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=T
         print()
         return f_res 
 
-def compare(result, prefix:str="HapMap", accept=lambda x: True):
+def compare(result, prefix:str="HapMap", accept=lambda x: True, showall=False):
     products=[]
     file=open(result)
     lines=file.readlines()
@@ -519,24 +519,26 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True):
     hap= open(prefix+".ped")
     lines=hap.readlines()
     hap.close()
+    bim=open(prefix+".bim")
+    b_lines=bim.readlines()
+    bim.close()
     for e in b_pers:
-        share, pheno= (diagnose_pers(products,e, prefix, lines=lines))
-        print(share, pheno)
-
-        
+        share, pheno= (diagnose_pers(products,e, prefix, lines=lines, bimlines=b_lines))
         if (int(share)==pheno):
             correct_pred+=1
+            if showall:
+                print(round(share,2), pheno)
         else:
             if int(share)==1:
                 fpos+=1
-                print("False positive")
+                print("False positive for person", e)
             else:
                 fneg+=1
-                print("False negative")
+                print("False negative for person", e,"with share of", round(share,2))
     print("correct were ", correct_pred, "out of ", len(b_pers), "that is ", round(correct_pred/len(b_pers),3)*100,"%", "with", fpos, "false positives and ", fneg, " false negatives")
 
 
-def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None):
+def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimlines=None):
     '''edge case where -0 is identified as 0, binary=("00", "01", "11", "10", "--")'''
     if lines==None:
         hap= open(prefix+".ped")
@@ -558,7 +560,10 @@ def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None):
             else:
                 pos=False
             snp=(indivual[int(abs(snp_num))+6][0], indivual[int(abs(snp_num))+6][-1])
-            a, b= select_risk_al(prefix+".bim", [int(abs(snp_num))+6])
+            if bimlines==None:
+                a, b= select_risk_al(prefix+".bim", [int(abs(snp_num))+6])
+            else:
+                a, b= select_risk_al(prefix+".bim", [int(abs(snp_num))+6], b_lines=bimlines)
             risk, norisk= a[0], b[0]
             allele=0
             for e in snp :
