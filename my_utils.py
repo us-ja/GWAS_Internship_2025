@@ -515,8 +515,13 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True):
     correct_pred=0
     fpos=0
     fneg=0
+    
+
+    hap= open(prefix+".ped")
+    lines=hap.readlines()
+    hap.close()
     for e in b_pers:
-        share, pheno= (diagnose_pers(products,e, prefix))
+        share, pheno= (diagnose_pers(products,e, prefix, lines=lines))
         print(share, pheno)
 
         
