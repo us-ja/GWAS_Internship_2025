@@ -6,7 +6,14 @@ seed=10
 def only_not_in(x):
     return x>99
 
-compare("l_3/given50per_lbound_enf200_0/result203.txt", accept=only_not_in)         
+print("all not in last level")
+compare("l_3/given50per_lbound_enf200_0/result203.txt", ) 
+compare("given50per_lbound_enf200_4/result7.txt","\n")  
+print("")
+print("only not part of data") 
+compare("l_3/given50per_lbound_enf200_0/result203.txt", accept=only_not_in) 
+compare("given50per_lbound_enf200_4/result7.txt", accept=only_not_in)         
+   
                
         
          

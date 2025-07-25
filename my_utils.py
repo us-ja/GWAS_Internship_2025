@@ -386,7 +386,7 @@ def rand_sign(x:float)->float:
     return y
 
 
-def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0, deletelog=True, sel_pers=[], add_comm:str="",seed:int=None, change_pheno=None, allow_unknowns:int=20, change_pers_func=None, checkdoubles=True):
+def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0, deletelog=True, sel_pers=[], add_comm:str="",seed:int=None, change_pheno=None, allow_unknowns:int=20, change_pers_func=None, checkdoubles=True, shuffle_in_level=False):
     '''combines  with given groupsize, if recover is a tuple specifiying dir, in_subdir, in_file then starts from matching files'''
     print("Started building at ", curr_time())
     
@@ -452,7 +452,8 @@ def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=T
                 if len(identified)-ends[-1]>=group_size:
                     ends.append(len(identified))  
                 file.close()
-        
+        if shuffle_in_level:
+            random.shuffle(identified)
         
         new_identified=set()#empty to avoid space being used
         # print(identified, "identified")
