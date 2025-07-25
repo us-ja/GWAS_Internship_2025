@@ -54,7 +54,7 @@ for e in selections:
 print(res_score)
 # print(randscore)
 plt.title('PRS of selected SNP')
-plt.boxplot([res_score,randscore, pos_score], labels=["Our", "Random", "Random positive"])
+plt.boxplot([res_score,randscore, pos_score], tick_labels=["Our", "Random", "Random positive"])
 plt.ylabel('Sum of 9')
 plt.show()
 def print_summary(list):
