@@ -19,6 +19,7 @@ with open("HapMap.ped")as file:
     for line in lines:
         
         var=line.split('\t')
-        print((var[-10:]))
+        if int(var[5])==2:
+            count+=1
         
 print(count)

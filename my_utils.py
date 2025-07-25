@@ -260,6 +260,7 @@ def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefi
     ped= open(ped_file) 
     
     ped_lines = ped.readlines()
+    ped.close()
     if sel_pers==[]:
         sel_pers=list(range(0,len(ped_lines)))
     count=0 #counts the lines
@@ -302,7 +303,7 @@ def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefi
     
     doubles, excluded_pers= to_espresso(selection,sel_pers, ped_lines, risk, norisk,txt_out,allow_unknowns, change_pheno=change_pheno, checkdoubles=checkdoubles)
     
-    ped.close()
+    
     if stopifoverspecif and doubles!=0:
         if delete_logs:
             rm(txt_out)
