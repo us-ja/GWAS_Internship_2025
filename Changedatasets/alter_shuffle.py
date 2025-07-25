@@ -8,7 +8,7 @@ def givepers(l:int, sel_pers=None):
         return list(range(l%2*50, (l%2+1)*50))
     else:
         return sel_pers[l%2*50:(l%2+1)*50]
-for seed in range(115, 130):
+for seed in range(145, 160):
     print("start with seed", seed, "at", curr_time())
     random.seed(seed)
     sel_pers=random.shuffle(list(range(109)))
