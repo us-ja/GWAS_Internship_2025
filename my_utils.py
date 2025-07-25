@@ -90,7 +90,7 @@ def to_espresso(selection:list, sel_pers:list, lines:list, risk:list, norisk:lis
         for i in range(len(selection)): 
     
             allele=0
-            snp=(indivual[selection[i]][0], indivual[selection[i]][-1])
+            snp=(indivual[selection[i]][0], indivual[selection[i]][2])
             
             for e in snp :
                 if e=="0":
