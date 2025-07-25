@@ -376,6 +376,8 @@ def score(selection:list, a_lines:list, only_pos:bool=False):
                 result+=abs(np.log10(float(var[-1])))
             else:
                 result += np.log10((float(var[-1])))*sign
+        else:
+            print("no evaluatable because of NA or 0 in OR column")
     return round(float(result),2)
 def rand_sign(x:float)->float:
     '''returns given float with random sign -/+'''
