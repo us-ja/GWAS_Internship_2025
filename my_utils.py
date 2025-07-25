@@ -337,8 +337,7 @@ def get_total_snp(fileprefix:str):
     lines= hapmap.readlines()
     hapmap.close()
     return len(lines[0].split('\t'))-6
-def fun(x,y):
-    return x[0]>=y[0]
+
 def merge_nicer(A,B, compar):
     i=0
     j=0
@@ -570,7 +569,6 @@ def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None):
                         allele+=1  
                     elif norisk!=e and "-" not in e:
                         print("major problem", risk, norisk, e)
-            
       
             if pos:
                 if allele==0:
