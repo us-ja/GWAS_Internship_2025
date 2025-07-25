@@ -385,17 +385,19 @@ def rand_sign(x:float)->float:
         y=random.randint(-1,1)*x
     return y
 
-
 def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0, deletelog=True, sel_pers=[], add_comm:str="",seed:int=None, change_pheno=None, allow_unknowns:int=20, change_pers_func=None, checkdoubles=True, shuffle_in_level=False):
     '''combines  with given groupsize, if recover is a tuple specifiying dir, in_subdir, in_file then starts from matching files'''
     print("Started building at ", curr_time())
-    
+    if shuffle_in_level:
+        bounded=False     #bounded is adapted automatically as no structure to preserve
     random.seed(seed)
     if total_snp==None:
         total_snp=get_total_snp(dataprefix)
     level=startlevel
     if bounded:
         comment=add_comm+"bound_enf"+str(group_size)+"_"
+    elif shuffle_in_level:
+        comment=add_comm+"shuffle"+str(group_size)+"_"
     else:
         comment=add_comm+"split"+str(group_size)+"_"
     
@@ -410,7 +412,7 @@ def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=T
     
     while True:#or level< big number to prevent endless
         if change_pers_func!=None:
-            sel_pers=change_pers_func(level)
+            sel_pers=change_pers_func(level, sel_pers)
         if len(identified)//group_size==0:
             break
         if recover==None:
