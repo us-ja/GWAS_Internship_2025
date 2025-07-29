@@ -3,8 +3,8 @@ sys.path.append('..')
 import random
 from my_utils import *
 res=[]
-def givepers(l:int, sel_pers=None):
-    if sel_pers==None:
+def givepers(l:int, sel_pers:list=[]):
+    if sel_pers==[]:
         return list(range(l%4*25, (l%4+1)*25))
     else:
         return sel_pers[l%4*25:(l%4+1)*25]

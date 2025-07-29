@@ -495,8 +495,6 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall=False):
         products.append(ele)
     file.close()
 
-    
-    
     b_pers=[]
     
     a_pers= lines[-8-int(lines[1])].split(',')
