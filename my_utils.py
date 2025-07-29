@@ -410,10 +410,12 @@ def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bo
     ends=[]
     for i in range(len(identified)//group_size+1):
         ends.append(i*group_size)
-    
+    if change_pers_func!=None:
+        o_sel_pers=sel_pers
     while True:#or level< big number to prevent endless
         if change_pers_func!=None:
-            sel_pers=change_pers_func(level, sel_pers)
+            sel_pers=change_pers_func(level, o_sel_pers)
+            assert len(sel_pers)!=0, "change pers function does not return in a correct format"
         if len(identified)//group_size==0:
             break
         if recover==None:

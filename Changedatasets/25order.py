@@ -11,7 +11,8 @@ def givepers(l:int, sel_pers=None):
 for seed in range(115, 130):
     print("start with seed", seed, "at", curr_time())
     random.seed(seed)
-    sel_pers=random.shuffle(list(range(109)))
+    sel_pers=(list(range(109)))
+    random.shuffle(sel_pers)
     print(sel_pers)
     comm="25_s"+str(seed)
     res.append(combine_build_up(200, "HapMap",add_comm=comm, seed=seed, sel_pers=sel_pers,change_pers_func=givepers,checkdoubles=False,))

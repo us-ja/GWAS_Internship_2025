@@ -20,7 +20,3 @@ for seed in range(170, 175):
     comm="chg_ph_rand"+str(seed)
     res.append(combine_build_up(200, "HapMap",add_comm=comm, seed=seed, checkdoubles=False, change_pheno=(lambda x: 1 if x in ids else 0)))
 
-for e in res:
-    print("\n Analysis of ",e)
-    compare(e)
-print("finished all at", curr_time())
