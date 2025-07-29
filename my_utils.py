@@ -386,7 +386,7 @@ def rand_sign(x:float)->float:
         y=random.randint(-1,1)*x
     return y
 
-def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0, deletelog=True, sel_pers=[], add_comm:str="",seed:int=None, change_pheno=None, allow_unknowns:int=20, change_pers_func=None, checkdoubles=True, shuffle_in_level=False):
+def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0, deletelog:bool=True, sel_pers=[], add_comm:str="",seed:int=None, change_pheno=None, allow_unknowns:int=20, change_pers_func=None, checkdoubles:bool=True, shuffle_in_level:bool=False):
     '''combines  with given groupsize, if recover is a tuple specifiying dir, in_subdir, in_file then starts from matching files'''
     print("Started building at ", curr_time())
     if shuffle_in_level:
@@ -465,7 +465,7 @@ def combine_build_up(group_size:int, dataprefix, total_snp=None , bounded:bool=T
 
 
     if len(identified)//group_size==0:#prevent entering this if levelled out and not finished
-        f_res=(conversion(identified, method, comment,level, fileprefix=dataprefix, total=total_snp, sel_pers=sel_pers, delete_logs=deletelog, change_pheno=None, seed=seed))
+        f_res=(conversion(identified, method, comment,level, fileprefix=dataprefix, total=total_snp, stopifoverspecif=True, sel_pers=sel_pers, delete_logs=deletelog, change_pheno=change_pheno, allow_unknowns=allow_unknowns, checkdoubles=checkdoubles, seed=seed))
         print( "finished at level", level, curr_time())
         print("the selection gave :")
         identified=set()
