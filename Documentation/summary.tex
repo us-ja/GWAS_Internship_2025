@@ -1,0 +1,84 @@
+\documentclass[letterpaper, 11pt]{article}
+\usepackage {graphicx}
+\usepackage{multicol}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{margin=3cm}
+\title{	
+
+Genome Wide Association Study using Espresso methods
+}
+
+\author{ Janis Waser}
+\begin{document}
+\maketitle
+
+
+\tableofcontents
+\newpage
+\section{Goal}
+\label{sec:goal}
+Genome wide association studies  (GWAS) is increasingly reliable and thus able to explain biological phenomena. A polygenic risk score is easily computable, but only gives limited insight to the inner mechanisms which are involved. Analyzing all possible combinations by brute-force for large data sets is not feasible and we must find methods which circumvent this complexity and still produce reliable results.
+
+We are using a minimal cover algorithms to find a small selections of single nucleotide polymorphisms (SNPs) in a causal relationship for a given binary phenotype.  With these selections, we would like to explain the phenotypes.  Further, we investigate the genome-wide spanning relations between SNPs and potential groupings of the phenotype such as different subtypes of a disease. 
+\section {Quality control}
+We want to emphasize the importance of quality control (QC) for this approach as it relies heavily on the assumption that the data has no inconsistencies. 
+
+Our data stems from a GWAS/PRS tutorial and the corresponding Git directory which we also use for quality control \cite{tutorial}. It has 109 subjects and 1'070'325 SNPs after the aforementioned QC.  
+
+
+
+For the selection of approaches the number of permitted unknowns is crucial, which is set to 2\% per individual and SNP. In the scope this means that there might still exist above 20'000 unknowns per individual. 
+
+
+\section{Espresso}
+Espresso is a tool that performs 2-level logic minimisation. It uses heuristics to find a satisfying minimal cover. It takes a logic table as input and outputs a minimized circuit.  The output is not guaranteed to be optimal. 
+
+"-" is used as don't cares. It is possible to specify special input types such as  \emph{.type fr} to indicate that not in case of an underspecified truth tables the underspecified cases are treated as don't cares. 
+
+
+\section{Translation of genetic data into binary}
+Most genetic data is stored in two pairwise inherited strings this is true particular for human autosomal genes. The manifestation can be made up from one of the four nucleobases (A/C/G/T) or an indentation of any length or a deletion (non-existence). The information for any particular SNP might also be partially missing. For any given position there commonly exist two different manifestations, one is labelled as the no-risk allele and the other allele is referred to as risk allele. There is no consensus for every SNP on what allele should be considered the risk allele, generally the variant with lower sampling rates is considered the risk allele. Two different studies might find different might find different risk alleles but they would still agree on the same manifestation which is in correlation with the disease. 
+
+We abstract the manifestations to a count of the occurrences of the risk allele. This count we decode into two digits long binary number. To avoid the unnecessary big Hamming distance of 2 between the counts of 2 ($10_2$) and 1 ($01_2$), while the smaller distance between 2 and 0 ($00_2$) would only have a Hamming distance of 1, we encode 2 as $11_2$. 
+
+Phenotypes for each individual should already exist in an easily binary translatable form.  We focus on binary phenotypes, if this approach shows promising results it is also possible to extend the approach to continuous  data or different potentially related diseases with pleiotropy. 
+
+\section{Evaluation of results}
+\label{sec:evaluate}
+We use a range of different criteria to approximate the quality of our method. Each criteria has its own advantages and flaws which should always be taken into consideration. No single criteria is sufficient for showing a working method rather does it give an indication.
+\begin{enumerate}
+\item Previous identification of SNPs by other researchers
+\item Out of data prediction accuracy of the phenotype
+\item PRS 
+\item Products 
+\item Literals
+\item Time and complexity of the solution\end{enumerate}
+
+We might also discuss potential issues or perks of a specific method which go beyond this list. 
+\section{ Tried methods}
+\subsection{Primitive approaches}
+\subsubsection{Entire}
+Taking the entire dataset and let it be solved by Espresso, is impossible as the time requirements grow exponentially, as we know the problem is not even in P. 
+\subsubsection{Omitting parts of the dataset}
+Taking partial parts of the dataset and never discovering other parts is possible though it is highly doubtful how a good solution should found consistently. For discovering the dataset and experimenting this we did run some experiments. In the context of this experiment when we refer to $n$ we mean the amount of SNPs. 
+
+\begin{enumerate} 
+\setcounter{enumi}{1}
+\item The out-of-data prediction accuracy is as predicted around the 50\% mark, potentially slightly above for hign $n$. 
+\setcounter{enumi}{3}
+\item High $n$ yield a smaller product, we explain deviations from this rule by the diverging paths taken in Espresso or in case of different dataset by the difference of possibilities. 
+\item Same as for products, just more pronounced as in practice this are higher numbers and more possible outcomes(events). 
+\item This analysis is fast and easy to execute, it scales exponentially with n. 
+\end{enumerate}
+
+
+
+
+
+\begin{thebibliography}{99}
+\bibitem{tutorial}
+\emph{Marees AT et al. } A tutorial on conducting genome-wide association studies: Quality control and statistical analysis. \url{https://pmc.ncbi.nlm.nih.gov/articles/PMC6001694/}
+
+\end{thebibliography}
+\end{document}
