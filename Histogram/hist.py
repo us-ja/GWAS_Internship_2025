@@ -9,7 +9,7 @@ import os
 
 
 data=[]
-files=get_files("../", "given", "result", ["Old", "l_", "Shuffle_Pheno", "Showcase"])
+files=get_files("../k-fold/Res", None,"result",)
 # print(files)
 for e in files:
     print(e)
