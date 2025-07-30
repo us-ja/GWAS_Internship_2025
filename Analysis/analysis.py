@@ -19,16 +19,17 @@ methods=[]
 excluded=[]
 x_min=50
 x_max=900
-for e in dirs:
-    if "old" in e:
-        excluded.append(e)
-    print(e, "here")
+# for e in dirs:
+#     if "old" in e:
+#         excluded.append(e)
+   
 
-    if "old" not in e and "new" not in e:#e not in excluded and "seq" in e:
-        methods.append(e)
+#     if "new" not in e:#e not in excluded and "seq" in e:
+#         methods.append(e)
     
-    pass
-# methods.append("seededtrick6")
+#     pass
+methods.append("seededtrick6")
+methods.append("seededold43")
 # methods.append("sequentialchr87726")
 # print(methods)
 num_snps=[]
@@ -93,12 +94,13 @@ for method in methods:
 # print(variances)
 hspace = 0.2
 
-
-for show in ["normal"]:#"seq_rand", "old_new"
+methods[0]="adjusted binary"
+methods[1]="strictly binary"
+for show in ["old_new"]:#"seq_rand", "old_new"
     plotter='o'
     
-    fig, axs = plt.subplots(2, 2)
-    fig.suptitle(show, fontsize=16)
+    fig, axs = plt.subplots(2, 1)
+    # fig.suptitle(show, fontsize=16)
     j=0
     for i in range(len(methods)):
             #give possiblity to not select certain types
@@ -111,7 +113,7 @@ for show in ["normal"]:#"seq_rand", "old_new"
         color='C'+str(j)
         if show=="old_new":
             color='blue'
-            if "old" in methods[i]:
+            if "old" in methods[i] or "strictly" in methods[i] :
                 color='red'
         elif show=="seq_rand":
             color='blue'
@@ -129,23 +131,25 @@ for show in ["normal"]:#"seq_rand", "old_new"
         marker=4
         alpha=0.3
         if visible:
-            axs[0,0].plot(num_snps[i], nec_snps[i], plotter,markersize=marker, alpha= alpha,label=(methods[i]),color=color )
-            axs[0,1].plot(num_snps[i], products[i],plotter,markersize=marker, alpha= alpha,color=color)
-            axs[1, 0].plot(num_snps[i], first_share[i], plotter,markersize=marker, alpha= alpha,color=color)
-            axs[1, 1].plot(num_snps[i], variances[i], plotter,markersize=marker, alpha= alpha,color=color)
+            axs[0].plot(num_snps[i], nec_snps[i], plotter,markersize=marker, alpha= alpha,label=(methods[i]),color=color )
+            axs[1].plot(num_snps[i], products[i],plotter,markersize=marker, alpha= alpha,color=color)
+            # axs[1, 0].plot(num_snps[i], first_share[i], plotter,markersize=marker, alpha= alpha,color=color)
+            # axs[1, 1].plot(num_snps[i], variances[i], plotter,markersize=marker, alpha= alpha,color=color)
         j+=1
-    axs[0, 0].set_title('Number of SNP identified')
-    axs[0, 1].set_title('Products')
-    axs[1, 0].set_title('Share of the first element')
-    axs[1, 1].set_title('Variance')
+    # axs[0].set_title('Number of SNP identified')
+    # axs[1].set_title('Products')
+    # axs[1, 0].set_title('Share of the first element')
+    # axs[1, 1].set_title('Variance')
     for i in range(2):
         for j in range(2):
             # axs[i,j].set_xlim(x_min, x_max)
             pass
-    fig.legend(loc='outside upper right')
+    fig.legend(loc='outside lower right')
 
     for ax in axs.flat:
-        ax.set(xlabel='SNPs')
-    plt.subplots_adjust(left=0.1, bottom=None, right=0.8125, top=0.9, wspace=None, hspace=0.5)
-    plt.title(show)
+        ax.set(xlabel='Input size')
+    axs.flat[0].set(ylabel="Literals")
+    axs.flat[1].set(ylabel="Products")
+    plt.subplots_adjust(left=0.1, bottom=0.18, wspace=None, hspace=0.5)
+    # plt.title(show)
     plt.show()

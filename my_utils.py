@@ -322,14 +322,19 @@ def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefi
     return res_out#make only if needed
 def dir_l(level:int):
     return "l_"+str(level)+"/"
-def get_files(dir:str, in_subdir:str=None, in_file:str=None):
+def notcontain(forbidden:list, s:str):
+    for e in forbidden:
+        if e in s:
+            return False
+    return True
+def get_files(dir:str, in_subdir:str=None, in_file:str=None, not_in_subdir:list=None, not_in_file:list=None):
     '''returns list of all files in given dir with in_subdir/in_file specifing what must be part of path/filename doesn't omits files with point/hidden files'''
     created_files=[]
     for (root,dirs,files) in os.walk(dir):
-        if in_subdir==None or "givenboundaries_enf200_" in root:
+        if (in_subdir==None or in_subdir in root) and (not_in_subdir==None or notcontain(not_in_subdir, root)) :
 
             for e in files:
-                if (in_file ==None or in_file in e):
+                if (in_file ==None or in_file in e) and (not_in_file==None or notcontain(not_in_file, in_file)):
                     
                     created_files.append(root+"/"+e)
     return(created_files)
