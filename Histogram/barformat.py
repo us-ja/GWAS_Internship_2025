@@ -15,7 +15,6 @@ shuffle=[0]*n
 files=get_files("../", "given", "result", ["Old", "l_", "Shuffle_Pheno", "Showcase"])
 # print(files)
 for e in files:
-    print(e)
     file=open(e)
     lines=file.readlines()
     for i in range(-4-int(lines[1]),-4):
@@ -51,11 +50,11 @@ def mybars(heights, color, label):
             else:
                 plt.vlines(x=i, ymin=0, ymax=heights[i], colors=color)
             if heights[i]>2:
-                plt.text(x=i-0.01*len(heights), y=heights[i]+0.15, s=i, fontsize=heights[i]*0.5+3, color=color)
+                plt.text(x=i, y=heights[i]+0.15, s=i, fontsize=heights[i]*0.5+3, color=color)
                 
 mybars(heights, "blue", "k-fold")
 mybars(shuffle, "red", "Phenotype Shuffle")
-
+plt.ticklabel_format(useOffset=False, style='plain')
 plt.legend(loc="upper left")
 
 # Adding labels and title

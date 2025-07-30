@@ -103,7 +103,7 @@ The random method will be used exclusively in all future analysis. \\
 
 Different encoding methods also influence the result. The adjusted method is selected going forwards (see \ref{sec:encode})
 
-\begin{figure} \centering{\includegraphics[width=\linewidth]{binarycomp} 
+\begin{figure}[h] \centering{\includegraphics[width=\linewidth, trim={0 0 0 4},clip]{binarycomp} 
 \caption {Comparison between different binary encoding methods }\label{fig:binary}
 }
 
@@ -112,11 +112,21 @@ Different encoding methods also influence the result. The adjusted method is sel
 The adjusted method will be used exclusively in all future analysis. 
 
 \subsubsection{Iterative approaches}
+We can try to start with some small selection and iteratively build up until the entire data set is included. We start with the smallest possible set such that the truth table is not over-specified and add one SNP, we evaluate this table, find a minimal cover and from the number of literals in the minimal cover, we decide whether this SNP stays in the selection depending on some criteria. Then we do same for every SNP. 
 
+\begin{figure} [!h] \centering{\includegraphics[ trim={70 320 0 0},clip, width=\linewidth]{play_snp} 
+\caption {Iterative approaches with SNP indicating the number of selected SNPs, the limit was set on literals. 0: strictly decreasing, 1: monotonically decreasing, 2: no equivalences (increasing or decreasing)}\label{fig:play}
+}
+\end{figure}
+
+The time it takes to go through the entire dataset is immense and from some point onwards there are likely no gains. This approach does not consider all possible relationships between different SNPs, in fact in only remarks the ones with a strong PRS anyways or the starting set, making this approach not equilibrated. 
+
+
+\subsection{Phenotype shuffling}
 \subsection{Pyramid scheme}
 \subsection{Subgroup scheme}
 
-
+\newpage
 \begin{thebibliography}{99}
 \bibitem{tutorial}
 \emph{Marees AT et al. } A tutorial on conducting genome-wide association studies: Quality control and statistical analysis. \url{https://pmc.ncbi.nlm.nih.gov/articles/PMC6001694/}
