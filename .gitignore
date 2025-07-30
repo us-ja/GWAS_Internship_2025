@@ -2,6 +2,8 @@
 **/analysis*.txt
 **/out*.log
 **/out*.txt
+**/*.fam
+**/*.bed
 **/*.ped
 **/*.bim
 **/*.map
