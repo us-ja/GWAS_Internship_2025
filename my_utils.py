@@ -395,7 +395,7 @@ def rand_sign(x:float)->float:
     while y==0:
         y=random.randint(-1,1)*x
     return y
-def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0, deletelog:bool=True, sel_pers=[], add_comm:str="",seed:int=None, change_pheno=None, allow_unknowns:int=20, change_pers_func=None, checkdoubles:bool=True, shuffle_in_level:bool=False):
+def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0, deletelog:bool=True, sel_pers=[], add_comm:str="",seed:int=None, change_pheno=None, allow_unknowns:int=20, change_pers_func=None, checkdoubles:bool=True, shuffle_in_level:bool=True):
     '''combines  with given groupsize, if recover is a tuple specifiying dir, in_subdir, in_file then starts from matching files'''
     print("Started building at ", curr_time())
     if shuffle_in_level:
@@ -548,7 +548,6 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall=False):
                 fneg+=1
                 print("False negative for person", e,"with share of", round(share,2))
     print("correct were ", correct_pred, "out of ", len(b_pers), "that is ", round(correct_pred/len(b_pers),3)*100,"%", "with", fpos, "false positives and ", fneg, " false negatives")
-
 def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimlines=None):
     '''edge case where -0 is identified as 0, binary=("00", "01", "11", "10", "--")'''
     if lines==None:
