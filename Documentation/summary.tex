@@ -51,6 +51,7 @@ Phenotypes for each individual should already exist in an easily binary translat
 \section{Evaluation of results}
 \label{sec:evaluate}
 We use a range of different criteria to approximate the quality of our method. Each criteria has its own advantages and flaws which should always be taken into consideration. No single criteria is sufficient for showing a working method rather does it give an indication.
+
 \begin{enumerate}
 \item Previous identification of SNPs by other researchers
 \item Out of data prediction accuracy of the phenotype
@@ -60,11 +61,21 @@ We use a range of different criteria to approximate the quality of our method. E
 \item Time and complexity of the solution\end{enumerate}
 
 We might also discuss potential issues or perks of a specific method which go beyond this list. 
+
+\subsection{Previous identification of SNPs by other researchers}
+If there already exists a genetic analysis on the specific phenotype we are researching, we can compare those findings. 
+In other cases, it might even be the case that datasets or phenotypes are simulated. Knowing the underlying structure, we expect our results to match the simulations SNPs, if our method works. 
+\subsection{Out-of-data accuracy}
+\subsection{PRS}
+\subsection{Products}
+\subsection{Literals}
+\subsection{Time \& Complexity}
 \section{ Tried methods}
 \subsection{Primitive approaches}
 \subsubsection{Entire}
 Taking the entire dataset and let it be solved by Espresso, is impossible as the time requirements grow exponentially, as we know the problem is not even in P. 
 \subsubsection{Omitting parts of the dataset}
+\label{sec:omit}
 Taking partial parts of the dataset and never discovering other parts is possible though it is highly doubtful how a good solution should found consistently. For discovering the dataset and experimenting this we did run some experiments. In the context of this experiment when we refer to $n$ we mean the amount of SNPs. 
 
 \begin{enumerate} 
@@ -94,7 +105,7 @@ If there are less than 60 SNP, it is generally not possible to find an assignmen
 
 A random selection of SNP generally decreases the identified products required for a minimal cover, this trends also affects the literals but is less pronounced. Additionally, it was discovered that missing data is not distributed equally among the data and therefore in sequential analysis even for a relative high n it might not be possible to find a cover due to over-specification. For random selections this constitutes less of a concern as we are guaranteed to have at most 2\% missingness.  
 \begin{figure}[h]
-\centering{\includegraphics[width=\linewidth]{randseq} \caption {Comparison between random and sequential selection methods }
+\centering{\includegraphics[width=\linewidth]{randseq} \caption {Comparison between random and sequential selection methods }\label{fig:randseq}
 }
 \end{figure}
 
@@ -124,20 +135,26 @@ The time it takes to go through the entire dataset is immense and from some poin
 
 
 \subsection{Pyramid scheme}
+In the pyramid scheme, the algorithm runs sequentially  through the entire dataset by separating all SNPs into groups of size $k$, finding a minimal cover for every group. All the SNPs making part of a found minimal cover are then subsequently taken to the next level. This is repeated until in one level  all the identified SNPs from the previous level are less than k SNPs, from where a minimal cover for the entire universe of less than k SNPs can be found. \\
+
+The selection of the group can be done in many ways, we decided to analyze the random selection approach as well as sequential, which should correspond to the sequences in the DNA as already enounced in Chapter \ref{sec:omit}, and clearly preferable as we can see in Figure \ref{fig:randseq}.
+
+
 \subsection{Phenotype shuffling}
-We shuffle the phenotypes of all the individuals, this is achieved through random selection of k persons which have phenotype 2 resp. 1. 
+We shuffle the phenotypes of all the individuals, this is achieved through random selection of k persons which have phenotype 2 respectively 1. 
 This altered dataset can be run through the same pyramid scheme as before or also other later scripts. When this is done we expect the resulting minimal cover to be random, meaning that the method we compare to where structure exist should need less literals or products as there is an underlying structure dictating the outcome, where this is obviously not true for shuffled phenotypes. We can also control with the frequencies of the selected SNPs with shuffled phenotypes whether there exists an overlap with the SNPs of our normal method. 
 \begin{figure} [!h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{histall.eps} 
-\caption {Histogram of mutiple  k-folds using the Pyramid scheme and mutiple phenotype shuffling schemes. No overlap is detected, clear trends with the pyramid scheme are visible. )}\label{fig:play}
+\caption {Histogram of multiple  k-folds using the Pyramid scheme and mutiple phenotype shuffling schemes. The selection scheme is superimposed on top of the k-fold. No overlap is detected, clear trends with the pyramid scheme are visible, while for shuffled phenotypes no order is apparent.   }\label{fig:play}
 }
 \end{figure}
 
-\subsection{Subgroup scheme}
+\subsection{Selection scheme}
 
 \newpage
 \begin{thebibliography}{99}
 \bibitem{tutorial}
 \emph{Marees AT et al. } A tutorial on conducting genome-wide association studies: Quality control and statistical analysis. \url{https://pmc.ncbi.nlm.nih.gov/articles/PMC6001694/}
-
+\bibitem{lipid_data}
+\emph{Hajiaghabozorgi, M. } GWAS dataset with simulated binary phenotypes for 1000 Genome Project. March 1, 2023. \url{https://doi.org/10.5281/zenodo.7683384}
 \end{thebibliography}
 \end{document}
