@@ -90,7 +90,8 @@ def to_espresso(selection:list, sel_pers:list, lines:list, risk:list, norisk:lis
         for i in range(len(selection)): 
     
             allele=0
-            snp=(indivual[selection[i]][0], indivual[selection[i]][2])
+            snp=(indivual[selection[i]]).split()
+            # snp=(indivual[selection[i]][0], indivual[selection[i]][2])
             
             for e in snp :
                 if e=="0":
@@ -572,7 +573,7 @@ def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimline
                 pos=True
             else:
                 pos=False
-            snp=(indivual[int(abs(snp_num))+6][0], indivual[int(abs(snp_num))+6][-1])
+            snp=(indivual[int(abs(snp_num))+6][0]).split()
             if bimlines==None:
                 a, b= select_risk_al(prefix+".bim", [int(abs(snp_num))+6])
             else:
