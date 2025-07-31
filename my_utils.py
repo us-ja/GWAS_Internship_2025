@@ -129,7 +129,7 @@ def to_espresso(selection:list, sel_pers:list, lines:list, risk:list, norisk:lis
                     print_line(idict, e, change_pheno)
                 else: #ignores if this excact combination of SNP was already seen
                     sys.stdout=o
-                    print("excluded ", e, "because", unknowns, "where detected")
+                    print("excluded ", e, "because of duplication, unknowns:", unknowns, "where detected")
                     print_line(idict, e, change_pheno)#add i and change e with person for easier access
                     sys.stdout=esp_out
                     doubles+=1
@@ -395,7 +395,6 @@ def rand_sign(x:float)->float:
     while y==0:
         y=random.randint(-1,1)*x
     return y
-
 def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0, deletelog:bool=True, sel_pers=[], add_comm:str="",seed:int=None, change_pheno=None, allow_unknowns:int=20, change_pers_func=None, checkdoubles:bool=True, shuffle_in_level:bool=False):
     '''combines  with given groupsize, if recover is a tuple specifiying dir, in_subdir, in_file then starts from matching files'''
     print("Started building at ", curr_time())
@@ -413,7 +412,7 @@ def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bo
         comment=add_comm+"split"+str(group_size)+"_"
     
     method="given"
-    level=0
+
     identified=list(range(total_snp))
     if shuffle:
         random.shuffle(identified)
@@ -492,7 +491,6 @@ def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bo
         file.close()
         print()
         return f_res 
-
 def compare(result, prefix:str="HapMap", accept=lambda x: True, showall=False):
     products=[]
     file=open(result)
@@ -550,7 +548,6 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall=False):
                 fneg+=1
                 print("False negative for person", e,"with share of", round(share,2))
     print("correct were ", correct_pred, "out of ", len(b_pers), "that is ", round(correct_pred/len(b_pers),3)*100,"%", "with", fpos, "false positives and ", fneg, " false negatives")
-
 
 def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimlines=None):
     '''edge case where -0 is identified as 0, binary=("00", "01", "11", "10", "--")'''
