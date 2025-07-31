@@ -343,7 +343,11 @@ def get_total_snp(fileprefix:str):
     lines= hapmap.readlines()
     hapmap.close()
     return len(lines[0].split('\t'))-6
-
+def get_total_pers(fileprefix:str):
+    hapmap= open(fileprefix+".ped")
+    lines= hapmap.readlines()
+    hapmap.close()
+    return len(lines)
 def merge_nicer(A,B, compar):
     i=0
     j=0
