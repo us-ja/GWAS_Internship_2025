@@ -122,8 +122,16 @@ We can try to start with some small selection and iteratively build up until the
 The time it takes to go through the entire dataset is immense and from some point onwards there are likely no gains. This approach does not consider all possible relationships between different SNPs, in fact in only remarks the ones with a strong PRS anyways or the starting set, making this approach not equilibrated. 
 
 
-\subsection{Phenotype shuffling}
+
 \subsection{Pyramid scheme}
+\subsection{Phenotype shuffling}
+We shuffle the phenotypes of all the individuals, this is achieved through random selection of k persons which have phenotype 2 resp. 1. 
+This altered dataset can be run through the same pyramid scheme as before or also other later scripts. When this is done we expect the resulting minimal cover to be random, meaning that the method we compare to where structure exist should need less literals or products as there is an underlying structure dictating the outcome, where this is obviously not true for shuffled phenotypes. We can also control with the frequencies of the selected SNPs with shuffled phenotypes whether there exists an overlap with the SNPs of our normal method. 
+\begin{figure} [!h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{histall.eps} 
+\caption {Histogram of mutiple  k-folds using the Pyramid scheme and mutiple phenotype shuffling schemes. No overlap is detected, clear trends with the pyramid scheme are visible. )}\label{fig:play}
+}
+\end{figure}
+
 \subsection{Subgroup scheme}
 
 \newpage
