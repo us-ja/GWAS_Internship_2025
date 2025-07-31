@@ -15,7 +15,7 @@ for seed in range(130, 145):
     random.shuffle(sel_pers)
     print(sel_pers)
     comm="alternate"+str(seed)
-    res.append(combine_build_up(200, "HapMap",add_comm=comm, seed=seed, sel_pers=sel_pers,change_pers_func=givepers, checkdoubles=False))
+    res.append(combine_build_up(200, "HapMap",add_comm=comm, seed=seed, sel_pers=sel_pers,change_pers_func=givepers, checkdoubles=False, shuffle_in_level=False))
 
 for e in res:
     print("\n Analysis of ",e)

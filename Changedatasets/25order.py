@@ -16,7 +16,7 @@ for seed in range(115, 130):
     print(sel_pers)
     comm="25_s"+str(seed)
     try:
-        res.append(combine_build_up(200, "HapMap",add_comm=comm, seed=seed, sel_pers=sel_pers,change_pers_func=givepers,checkdoubles=False,))
+        res.append(combine_build_up(200, "HapMap",add_comm=comm, seed=seed, sel_pers=sel_pers,change_pers_func=givepers,checkdoubles=False,shuffle_in_level=False))
     except:
         print("seed failed", seed)
         continue
