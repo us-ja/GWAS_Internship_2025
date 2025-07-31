@@ -15,7 +15,12 @@ for seed in range(115, 130):
     random.shuffle(sel_pers)
     print(sel_pers)
     comm="25_s"+str(seed)
-    res.append(combine_build_up(200, "HapMap",add_comm=comm, seed=seed, sel_pers=sel_pers,change_pers_func=givepers,checkdoubles=False,))
+    try:
+        res.append(combine_build_up(200, "HapMap",add_comm=comm, seed=seed, sel_pers=sel_pers,change_pers_func=givepers,checkdoubles=False,))
+    except:
+        print("seed failed", seed)
+        continue
+
 
 for e in res:
     print("\n Analysis of ",e)
