@@ -12,8 +12,8 @@ n=get_total_snp("../HapMap")
 heights=[0]*n
 shuffle=[0]*n
 
-files=get_files("../", "given", "result", ["Old", "l_", "Shuffle_Pheno", "Showcase"])
-# print(files)
+files=get_files("../k-fold", "given", "result", ["Old", "l_", "Shuffle_Pheno", "Showcase"])
+print(files)
 for e in files:
     file=open(e)
     lines=file.readlines()
@@ -27,8 +27,9 @@ for e in files:
     file.close()
 
 files=get_files("../Shuffle_Pheno", "given", "result", )
-# print(files)
+print(files)
 for e in files:
+
     file=open(e)
     lines=file.readlines()
     for i in range(-4-int(lines[1]),-4):
@@ -50,7 +51,7 @@ def mybars(heights, color, label):
             else:
                 plt.vlines(x=i, ymin=0, ymax=heights[i], colors=color)
             if heights[i]>2:
-                plt.text(x=i, y=heights[i]+0.15, s=i, fontsize=heights[i]*0.5+3, color=color)
+                plt.text(x=i, y=heights[i]+0.1, s=i, fontsize=heights[i]*0.5+3, color=color)
                 
 mybars(heights, "blue", "k-fold")
 mybars(shuffle, "red", "Phenotype Shuffle")
@@ -61,5 +62,5 @@ plt.legend(loc="upper left")
 plt.xlabel('Number of SNP')
 plt.ylabel('Frequency')
 plt.title('Histogram of SNPs')
-
+# plt.savefig('../Documentation/histall.eps', format='eps')
 plt.show()
