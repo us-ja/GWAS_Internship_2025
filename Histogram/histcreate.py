@@ -39,24 +39,28 @@ def mybars(color, label, dir:str=".", in_subdir:str=None, in_file:str=None, not_
     
         
     for i in range(len(heights)):
+        if bottom!=None:
+            heights[i]+=bottom[i]
         if heights[i]!=0:
             if bottom==None:
                 ymin=0
             else:
                 ymin=bottom[i]
             if first:
-                plt.vlines(x=i, ymin=ymin, ymax=ymin+heights[i], colors=color, label=label+" ("+str(len(files))+")", )
+                plt.vlines(x=i, ymin=ymin, ymax=heights[i], colors=color, label=label+" ("+str(len(files))+")", )
                 first=False
             else:
-                plt.vlines(x=i, ymin=ymin, ymax=heights[i]+ymin, colors=color)
-            if ymin+heights[i]>2:
-                plt.text(x=i, y=heights[i]+0.1+ymin, s=i, fontsize=(heights[i]+ymin)*0.7+1, color=color)
-    if pres_h:
-        return heights
-k_fold=mybars( "blue", "Pyramid", "../k-fold", "given", "result", ["Old", "l_", "Shuffle_Pheno", "Showcase"], pres_h=True)
-mybars("red", "Phenotype Shuffle", "../Shuffle_Pheno", "given", "result", not_in_subdir=["l_"], print_f=True)
-mybars( "green", "Grouping", "../Changedatasets", "given", "result", bottom=k_fold)
-plt.ticklabel_format(useOffset=False, style='plain')
+                plt.vlines(x=i, ymin=ymin, ymax=heights[i], colors=color)
+            if heights[i]>1 and ymin!=heights[i]:
+                plt.text(x=i, y=heights[i], s=i, fontsize=(heights[i])*0.8+1, color=color, rotation=0, ha="center")
+    
+    
+    return heights
+k_fold=mybars( "C0", "Pyramid", "../k-fold/Res", "given", "result", ["Old", "l_", "Shuffle_Pheno", "Showcase"], pres_h=True)
+alter=mybars( "C1", "Alternate", "../Changedatasets", "alter", "result",bottom=k_fold, pres_h=True)
+mybars( "C2", "Grouping", "../Changedatasets", "25", "result", bottom=alter)
+mybars("C3", "Phenotype Shuffle", "../Shuffle_Pheno", "given", "result", not_in_subdir=["l_"], )
+plt.ticklabel_format(useOffset=False, style='plain',)
 plt.legend(loc="upper left")
 
 # Adding labels and title
