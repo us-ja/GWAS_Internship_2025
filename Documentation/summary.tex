@@ -142,13 +142,19 @@ The selection of the group can be done in many ways, we decided to analyze the r
 
 \subsection{Phenotype shuffling}
 We shuffle the phenotypes of all the individuals, this is achieved through random selection of k persons which have phenotype 2 respectively 1. 
-This altered dataset can be run through the same pyramid scheme as before or also other later scripts. When this is done we expect the resulting minimal cover to be random, meaning that the method we compare to where structure exist should need less literals or products as there is an underlying structure dictating the outcome, where this is obviously not true for shuffled phenotypes. We can also control with the frequencies of the selected SNPs with shuffled phenotypes whether there exists an overlap with the SNPs of our normal method. 
+This altered dataset can be run to test different methods. When this is done we expect the resulting minimal cover to be random, meaning that the method we compare to where structure exist should need less literals or products as there is an underlying structure dictating the outcome, where this is obviously not true for shuffled phenotypes. We can also control with the frequencies of the selected SNPs with shuffled phenotypes whether there exists an overlap with the SNPs of our normal method. \\
+It was found that not all schemes support phenotype shuffling meaning that for example the grouping scheme relies on the fact that there is some underlying determining for genotypes per phenotype. It therefore might occur that since the involved individuals from one level have an over-specified truth table due to the phenotypes basically being random as the different subgroups of individuals on each level are independent.  \\
+
+\subsection{Grouping scheme}
+This method divides the individuals into different equal-sized groups, in each level one group is chosen and the dataset of only those individuals is considered on this level similar to the Pyramid scheme. 
+
+On each level, only a part of the individuals is considered, this means, that the minimal cover is optimized only for those people. On the next level, different individuals get selected, we can assume their phenotype is determined by the same underlying structure, therefore the previous minimal covers should suffice to find a minimal cover. If this is not the case, we have an over-specified truth table, this might be due to there not being an underlying structure or the missing detection of it or due to errors in genotyping. 
 \begin{figure} [!h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{histall.eps} 
-\caption {Histogram of multiple  k-folds using the Pyramid scheme and mutiple phenotype shuffling schemes. The selection scheme is superimposed on top of the k-fold. No overlap is detected, clear trends with the pyramid scheme are visible, while for shuffled phenotypes no order is apparent.   }\label{fig:play}
+\caption {Histogram of multiple  k-folds using the Pyramid scheme and mutiple phenotype shuffling schemes. The grouping scheme is superimposed on top of the k-fold. No overlap is detected, clear trends with the pyramid scheme are visible, while for shuffled phenotypes no order is apparent.   }\label{fig:play}
 }
 \end{figure}
 
-\subsection{Selection scheme}
+
 
 \newpage
 \begin{thebibliography}{99}
