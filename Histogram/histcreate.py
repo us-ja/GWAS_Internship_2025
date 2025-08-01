@@ -10,7 +10,7 @@ import math
 
 n=get_total_snp("../HapMap")
 
-
+plt.figure(figsize=(8,4.5))
 
 def get_res(files):
     heights=[0]*n
@@ -53,9 +53,9 @@ def mybars(color, label, dir:str=".", in_subdir:str=None, in_file:str=None, not_
                 plt.text(x=i, y=heights[i]+0.1+ymin, s=i, fontsize=(heights[i]+ymin)*0.7+1, color=color)
     if pres_h:
         return heights
-k_fold=mybars( "blue", "k-fold", "../k-fold", "given", "result", ["Old", "l_", "Shuffle_Pheno", "Showcase"], pres_h=True)
+k_fold=mybars( "blue", "Pyramid", "../k-fold", "given", "result", ["Old", "l_", "Shuffle_Pheno", "Showcase"], pres_h=True)
 mybars("red", "Phenotype Shuffle", "../Shuffle_Pheno", "given", "result", not_in_subdir=["l_"], print_f=True)
-mybars( "green", "Selection", "../Changedatasets", "given", "result", bottom=k_fold)
+mybars( "green", "Grouping", "../Changedatasets", "given", "result", bottom=k_fold)
 plt.ticklabel_format(useOffset=False, style='plain')
 plt.legend(loc="upper left")
 
