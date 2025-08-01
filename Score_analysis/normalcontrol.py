@@ -33,7 +33,7 @@ assoc.close()
 randscore=[]
 randpos=[]
 rand_size=9#len(a_lines-1)
-for i in range(50000):
+for i in range(5000):
     selection=list(map(rand_sign, random.sample(range(1, len(a_lines)-1),k=rand_size)))
     randscore.append(score(selection, a_lines))
     randpos.append(score_pos(selection, a_lines))
@@ -41,7 +41,7 @@ def print_summary(list):
     print( numpy.mean(list), numpy.var(list))
 print_summary(randscore)
 print_summary(randpos)
-
-sm.qqplot(numpy.array(list(map(lambda x: (x*2), randscore))), line='45')
-
+stdd=numpy.std(randscore)
+sm.qqplot(numpy.array(list(map(lambda x: (x/stdd), randscore))), line='45')
+py.savefig('Documentation/qq.eps', format='eps')
 py.show()
