@@ -493,7 +493,7 @@ def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bo
         file.close()
         print()
         return f_res 
-def compare(result, prefix:str="HapMap", accept=lambda x: True, showall=False):
+def compare(result, prefix:str="HapMap", accept=lambda x: True, showall=False, print_ind=False):
     products=[]
     file=open(result)
     lines=file.readlines()
@@ -524,7 +524,8 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall=False):
         else:
             j+=1
         i+=1
-    print(b_pers, "persons")
+    if print_ind:
+        print(b_pers, "persons")
     correct_pred=0
     fpos=0
     fneg=0
@@ -545,10 +546,12 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall=False):
         else:
             if int(share)==1:
                 fpos+=1
-                print("False positive for person", e)
+                if print_ind:
+                    print("False positive for person", e)
             else:
                 fneg+=1
-                print("False negative for person", e,"with share of", round(share,2))
+                if print_ind:
+                    print("False negative for person", e,"with share of", round(share,2))
     print("correct were ", correct_pred, "out of ", len(b_pers), "that is ", round(correct_pred/len(b_pers),3)*100,"%", "with", fpos, "false positives and ", fneg, " false negatives")
 def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimlines=None):
     '''edge case where -0 is identified as 0, binary=("00", "01", "11", "10", "--")'''

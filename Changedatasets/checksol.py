@@ -15,9 +15,8 @@ def only_not_in(x):
 # compare("given50per_lbound_enf200_4/result7.txt", accept=only_not_in)         
    
 print("Started at", curr_time())              
-res=["Res/given25_s127bound_enf200_4/result22.txt"]
-for i in range(100,130) :
-    pass
+res=get_files(".", "s1", "res")
+res.sort()
 for e in res:
     print("\n Analysis of ",e)
     compare(e)
