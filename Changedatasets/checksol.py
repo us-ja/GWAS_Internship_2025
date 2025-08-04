@@ -32,13 +32,15 @@ plt.boxplot(data,tick_labels=labels, medianprops=dict(color='blue'))
 
 # plt.violinplot([sh, bound, alt_b,kfold_s,kfold_b ],showmeans=False, showmedians=True , )
 plt.ylabel('Share of correct predictions in %')
+plt.xlabel('Method, Amt of predictions')
 for i in range(len(data)):
     print(np.mean(data[i]))
     plt.scatter(i + 1, np.mean(data[i]), color='green')
 
 
 plt.axhline(54/1.07, color='red', linestyle=':')
-# plt.savefig('../Documentation/accuracyplot.eps', format='eps')
+plt.subplots_adjust(left=None, bottom=0.14, wspace=None)
+plt.savefig('../Documentation/accuracyplot.eps', format='eps')
 print("finished all at", curr_time())
 plt.show()
 
