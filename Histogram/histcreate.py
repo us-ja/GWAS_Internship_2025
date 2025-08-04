@@ -64,7 +64,7 @@ def mybars(color, label, dir:str=".", in_subdir:str=None, in_file:str=None, not_
     
     return heights
 num=150
-k_fold=mybars( "C0", "Pyramid", "../k-fold/Res", "given", "result", ["Old", "l_", "Shuffle_Pheno", "Showcase"], pres_h=True, max_num=num)
+k_fold=mybars( "C0", "Pyramid", "../k-fold/", "given", "result", ["Old", "l_", "Shuffle_Pheno", "Showcase"], pres_h=True, max_num=num)
 alter=mybars( "C1", "Alternate", "../Changedatasets", "alter", "result", bottom=k_fold,pres_h=True,max_num=num,)
 grouped=mybars( "C2", "Grouping", "../Changedatasets", "25", "result", bottom=alter, pres_h=True,max_num=num)
 mybars("C3", "Phenotype Shuffle", "../Shuffle_Pheno", "given", "result", not_in_subdir=["l_"], bottom=grouped)
@@ -75,5 +75,5 @@ plt.legend(loc="upper left")
 plt.xlabel('Number of SNP')
 plt.ylabel('Frequency')
 plt.title('Histogram of SNPs')
-# plt.savefig('../Documentation/histall.eps', format='eps')
+plt.savefig('../Documentation/histall.eps', format='eps')
 plt.show()
