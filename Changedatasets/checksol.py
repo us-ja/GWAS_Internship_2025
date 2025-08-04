@@ -4,43 +4,42 @@ import random
 import matplotlib.pyplot as plt
 from my_utils import *
 seed=10
-def only_not_in(x):
-    return x>99
 
-# print("all not in last level")
-# compare("l_3/given50per_lbound_enf200_0/result203.txt", ) 
-# compare("given50per_lbound_enf200_4/result7.txt","\n")  
-# print("")
-# print("only not part of data") 
-# compare("l_3/given50per_lbound_enf200_0/result203.txt", accept=only_not_in) 
-# compare("given50per_lbound_enf200_4/result7.txt", accept=only_not_in)         
-def get_shares(files):
-    alt=[]
-    files.sort()
-    for e in files:
-        print("\n Analysis of ",e)
-        alt.append(compare(e))
-        if alt[-1]==None:
-            alt.pop()
-    return alt
+
 print("Started at", curr_time())              
-res=get_files(".", "s1", "res", ["bound"])
-sh=get_shares(res)
 
-res=get_files(".", "s1", "res", ["shuffle"])
-bound=get_shares(res)
+sh=get_shares(get_files(".", "s1", "res", ["bound"]),accept_lim=True, )
 
-res=get_files(".", "alter", "res",["shuffle"])
-alt_b=get_shares(res)
-res=get_files(".", "alter", "res",["bound"])
-alt_s=get_shares(res)
+bound=get_shares(get_files(".", "s1", "res", ["shuffle"]),accept_lim=True)
 
+alt_b=get_shares(get_files(".", "alter", "res",),accept_lim=True)
 
-    
-plt.title('Selection Scheme: Out of sample prediction accuracy')
-plt.boxplot([sh, bound, alt_s, alt_b], tick_labels=["Shuffle 25\n"+str(len(sh)), "Ordered 25\n"+str(len(bound)), "Shuffle half\n"+str(len(alt_s)), "Bound half\n"+str(len(alt_b))])
+# alt_s=get_shares(get_files(".", "alter", "res",["bound"]))
+
+kfold_b= get_shares(get_files("../k-fold", "bound", "res",) )
+kfold_s= get_shares(get_files("../k-fold", "shuffle", "res",))
+
+plt.figure(figsize=(10,5))
+plt.title('Out of sample prediction accuracy')
+# print(sh)
+# print( np.quantile(sh, np.array([0.00, 0.25, 0.50, 0.75, 1.00]),method='closest_observation'))
+# print(np.quantile(bound, 0.75), np.mean(bound))
+# print( np.quantile(bound, np.array([0.00, 0.25, 0.50, 0.75, 1.00])))
+# print(np.quantile(bound, 0.25), np.mean(bound))
+data=[sh, bound, alt_b,kfold_s,kfold_b ]
+labels=["Shuffle 25\n"+str(len(sh)), "Ordered 25\n"+str(len(bound)), "Alternate\n"+str(len(alt_b)),"Pyramid shuffle \n"+str(len(kfold_s)),"Pyramid bound\n"+str(len(kfold_b))] 
+plt.boxplot(data,tick_labels=labels, medianprops=dict(color='blue'))
+
+# plt.violinplot([sh, bound, alt_b,kfold_s,kfold_b ],showmeans=False, showmedians=True , )
 plt.ylabel('Share of correct predictions in %')
-# plt.savefig('../Documentation/selbox.eps', format='eps')
-plt.show()
+for i in range(len(data)):
+    print(np.mean(data[i]))
+    plt.scatter(i + 1, np.mean(data[i]), color='green')
+
+
+plt.axhline(54/1.07, color='red', linestyle=':')
+# plt.savefig('../Documentation/accuracyplot.eps', format='eps')
 print("finished all at", curr_time())
+plt.show()
+
  

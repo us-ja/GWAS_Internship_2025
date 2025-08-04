@@ -238,7 +238,7 @@ def espresso_analysis(espresso_out, path, selection, doubles, excluded_pers, sel
 def espresso(input, output):
     '''runs espresso with input and ouput to output'''
     subprocess.run(str("../../espresso-logic-master/bin/espresso "+input+" > "+output ), shell=True)
-def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefix:str='HapMap',total:int=None, dir:str="", delete_logs:bool=True, allow_unknowns:str=20, stopifoverspecif:bool=False, sel_pers:list=[], change_pheno=None, checkdoubles=True, seed=None):
+def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefix:str='HapMap',total:int=None, dir:str="", delete_logs:bool=True, allow_unknowns:str=20, stopifoverspecif:bool=False, sel_pers:list=[], change_pheno=None, checkdoubles=True, seed=None, ped_lines:list=None):
     '''returns file name of the result executed according to input, A1 is selected as risk allele'''
     out_before=sys.stdout
     ped_file=fileprefix+".ped"
@@ -257,11 +257,10 @@ def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefi
         else:
             seq_start=int(value)
             seed=None
-
-    ped= open(ped_file) 
-    
-    ped_lines = ped.readlines()
-    ped.close()
+    if ped_lines==None:
+        ped= open(ped_file) 
+        ped_lines = ped.readlines()
+        ped.close()
     if sel_pers==[]:
         sel_pers=list(range(0,len(ped_lines)))
     count=0 #counts the lines
@@ -414,7 +413,9 @@ def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bo
         comment=add_comm+"split"+str(group_size)+"_"
     
     method="given"
-
+    file=open(dataprefix+".ped")
+    pedlines=file.readlines()
+    file.close()
     identified=list(range(total_snp))
     if shuffle:
         random.shuffle(identified)
@@ -442,7 +443,7 @@ def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bo
                 end=ends[i+1]
                 to_analyze= identified[start:end]
                 # print(to_analyze)
-                created_files.append(conversion(to_analyze, method,  comment, start, fileprefix=dataprefix ,total=total_snp, dir=dir_l(level),stopifoverspecif=True, sel_pers=sel_pers, delete_logs=deletelog, change_pheno=change_pheno, allow_unknowns=allow_unknowns, checkdoubles=checkdoubles, seed=seed))
+                created_files.append(conversion(to_analyze, method,  comment, start, fileprefix=dataprefix ,total=total_snp, dir=dir_l(level),stopifoverspecif=True, sel_pers=sel_pers, delete_logs=deletelog, change_pheno=change_pheno, allow_unknowns=allow_unknowns, checkdoubles=checkdoubles, seed=seed, ped_lines=pedlines))
             # print(created_files)
             
         else:
@@ -484,21 +485,26 @@ def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bo
         identified=set()
         file=open(f_res)
         lines=file.readlines()
+        file.close()
         for i in range(-4-int(lines[1]),-4):
             ele= lines[i].split(sep=',')
             ele[0], ele[-1]=ele[0][1:], ele[-1][:-2]
             ele=(list( map(float, ele)))
             for j in range(len(ele)):
                 print(ele[j], end=", ")
-        file.close()
+        
         print()
         return f_res 
-def compare(result, prefix:str="HapMap", accept=lambda x: True, showall=False, print_ind=False):
+def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=False, print_ind:bool=False, hlines:list=None,b_lines:list=None, surpress_print=False):
     products=[]
+    if not surpress_print:
+        print("\n Analysis of ",result)
     file=open(result)
     lines=file.readlines()
+    file.close()
     if int(lines[1])==0:
-        print("no res")
+        if not surpress_print:
+            print("no res")
         return None
     for i in range(-4-int(lines[1]),-4):
         ele= lines[i].split(sep=',')
@@ -506,7 +512,7 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall=False, p
         ele[-1]=ele[-1][:-2]
         ele=list( map(float, ele))
         products.append(ele)
-    file.close()
+    
 
     b_pers=[]
     
@@ -518,10 +524,11 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall=False, p
 
     i=0
     j=0
-    hap= open(prefix+".ped")
-    lines=hap.readlines()
-    hap.close()
-    while i<len(lines):
+    if hlines==None:
+        hap= open(prefix+".ped")
+        hlines=hap.readlines()
+        hap.close()
+    while i<len(hlines):
         if (j>=len(a_pers) or i!=a_pers[j]) and accept(i):
             b_pers.append(i)
         else:
@@ -534,14 +541,12 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall=False, p
     fneg=0
     
 
-    hap= open(prefix+".ped")
-    lines=hap.readlines()
-    hap.close()
-    bim=open(prefix+".bim")
-    b_lines=bim.readlines()
-    bim.close()
+    if b_lines==None:
+        bim=open(prefix+".bim")
+        b_lines=bim.readlines()
+        bim.close()
     for e in b_pers:
-        share, pheno= (diagnose_pers(products,e, prefix, lines=lines, bimlines=b_lines))
+        share, pheno= (diagnose_pers(products,e, prefix, lines=hlines, bimlines=b_lines))
         if (int(share)==pheno):
             correct_pred+=1
             if showall:
@@ -554,9 +559,10 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall=False, p
             else:
                 fneg+=1
                 if print_ind:
+                    
                     print("False negative for person", e,"with share of", round(share,2))
-    
-    print("correct were ", correct_pred, "out of ", len(b_pers), "that is ", round(correct_pred/len(b_pers)*100,1),"%", "with", fpos, "false positives and ", fneg, " false negatives")
+    if not surpress_print:
+        print("correct were ", correct_pred, "out of ", len(b_pers), "that is ", round(correct_pred/len(b_pers)*100,1),"%", "with", fpos, "false positives and ", fneg, " false negatives")
     return correct_pred/len(b_pers)*100
 def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimlines=None):
     '''edge case where -0 is identified as 0, binary=("00", "01", "11", "10", "--")'''
@@ -581,9 +587,11 @@ def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimline
                 pos=False
             snp=(indivual[int(abs(snp_num))+6][0]).split()
             if bimlines==None:
-                a, b= select_risk_al(prefix+".bim", [int(abs(snp_num))+6])
-            else:
-                a, b= select_risk_al(prefix+".bim", [int(abs(snp_num))+6], b_lines=bimlines)
+                bim=open(prefix+".bim")
+                bimlines=bim.readlines()
+                bim.close()
+            
+            a, b= select_risk_al(prefix+".bim", [int(abs(snp_num))+6], b_lines=bimlines)
             risk, norisk= a[0], b[0]
             allele=0
             for e in snp :
