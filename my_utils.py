@@ -614,3 +614,29 @@ def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimline
         if share>maxshare:
             maxshare=share
     return maxshare, phenotype
+def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_print=True):
+    '''sorts list and outputs a list of accuracies per file'''
+    alt=[]
+    files.sort()
+    hap=open(prefix+".ped")
+    hapl=hap.readlines()
+    hap.close()
+    biml=open(prefix+".bim")
+    b_lines=biml.readlines()
+    biml.close()
+    for e in files:
+        
+        s=get_seed_from_file(e)
+        if accept_lim:
+            random.seed(s)
+            sel_pers=(list(range(get_total_pers(prefix))))
+            random.shuffle(sel_pers)
+            alt.append(compare(e, accept=lambda x: x in sel_pers[100:], hlines=hapl,b_lines=b_lines, surpress_print=surpress_print))
+        else:
+            alt.append(compare(e, hlines=hapl, b_lines=b_lines, surpress_print=surpress_print))
+        if alt[-1]==None:
+            alt.pop()
+    return alt
+
+def get_seed_from_file(txt:str):
+    return (int(''.join(filter(str.isdigit, txt[txt.find("given"):max((txt.find("bound_enf")),(txt.find("split")),(txt.find("shuffle")))]))))
