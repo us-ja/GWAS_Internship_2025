@@ -3,6 +3,7 @@ sys.path.append('..')
 from my_utils import *
 import matplotlib.pyplot as plt
 import numpy as np
+import random
 import os
 import math
 
@@ -12,29 +13,35 @@ n=get_total_snp("../HapMap")
 
 plt.figure(figsize=(8,4.5))
 
-def get_res(files):
+def get_res(files, max_num=None):
     heights=[0]*n
+    count=0
     for e in files:
         file=open(e)
         lines=file.readlines()
-        res=set()
-        for i in range(-4-int(lines[1]),-4):
-            ele= lines[i].split(sep=',')
-            ele[0] =ele[0][1:]
-            ele[-1]=ele[-1][:-2]
-            res.update( map(int, map(abs,map(float, ele))))
-        
-        for f in res:
-            heights[f]+=1
+        if int(lines[1])!=0 and (max_num==None or max_num>count):
+            res=set()
+            for i in range(-4-int(lines[1]),-4):
+                ele= lines[i].split(sep=',')
+                ele[0] =ele[0][1:]
+                ele[-1]=ele[-1][:-2]
+                res.update( map(int, map(abs,map(float, ele))))
+            
+            for f in res:
+                heights[f]+=1
+            count+=1
+
         file.close()
-    return heights
+    return heights, count
 
 # print(heights)
 
 
-def mybars(color, label, dir:str=".", in_subdir:str=None, in_file:str=None, not_in_subdir:list=None, not_in_file:list=None,  bottom=None, print_f=False, pres_h=False):
+def mybars(color, label, dir:str=".", in_subdir:str=None, in_file:str=None, not_in_subdir:list=None, not_in_file:list=None,  bottom=None, print_f=False, pres_h=False, max_num=None):
     files=get_files(dir, in_subdir, in_file, not_in_subdir, not_in_file, print_f=print_f)
-    heights=get_res(files)
+    
+    heights, count=get_res(files, max_num)
+
     first=True
     
         
@@ -47,7 +54,7 @@ def mybars(color, label, dir:str=".", in_subdir:str=None, in_file:str=None, not_
             else:
                 ymin=bottom[i]
             if first:
-                plt.vlines(x=i, ymin=ymin, ymax=heights[i], colors=color, label=label+" ("+str(len(files))+")", )
+                plt.vlines(x=i, ymin=ymin, ymax=heights[i], colors=color, label=label+" ("+str(count)+")", )
                 first=False
             else:
                 plt.vlines(x=i, ymin=ymin, ymax=heights[i], colors=color)
@@ -56,10 +63,11 @@ def mybars(color, label, dir:str=".", in_subdir:str=None, in_file:str=None, not_
     
     
     return heights
-k_fold=mybars( "C0", "Pyramid", "../k-fold/Res", "given", "result", ["Old", "l_", "Shuffle_Pheno", "Showcase"], pres_h=True)
-alter=mybars( "C1", "Alternate", "../Changedatasets", "alter", "result",bottom=k_fold, pres_h=True)
-mybars( "C2", "Grouping", "../Changedatasets", "25", "result", bottom=alter)
-mybars("C3", "Phenotype Shuffle", "../Shuffle_Pheno", "given", "result", not_in_subdir=["l_"], )
+num=150
+k_fold=mybars( "C0", "Pyramid", "../k-fold/Res", "given", "result", ["Old", "l_", "Shuffle_Pheno", "Showcase"], pres_h=True, max_num=num)
+alter=mybars( "C1", "Alternate", "../Changedatasets", "alter", "result", bottom=k_fold,pres_h=True,max_num=num,)
+grouped=mybars( "C2", "Grouping", "../Changedatasets", "25", "result", bottom=alter, pres_h=True,max_num=num)
+mybars("C3", "Phenotype Shuffle", "../Shuffle_Pheno", "given", "result", not_in_subdir=["l_"], bottom=grouped)
 plt.ticklabel_format(useOffset=False, style='plain',)
 plt.legend(loc="upper left")
 

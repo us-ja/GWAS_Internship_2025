@@ -497,6 +497,9 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall=False, p
     products=[]
     file=open(result)
     lines=file.readlines()
+    if int(lines[1])==0:
+        print("no res")
+        return None
     for i in range(-4-int(lines[1]),-4):
         ele= lines[i].split(sep=',')
         ele[0] =ele[0][1:]
@@ -552,7 +555,9 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall=False, p
                 fneg+=1
                 if print_ind:
                     print("False negative for person", e,"with share of", round(share,2))
-    print("correct were ", correct_pred, "out of ", len(b_pers), "that is ", round(correct_pred/len(b_pers),3)*100,"%", "with", fpos, "false positives and ", fneg, " false negatives")
+    
+    print("correct were ", correct_pred, "out of ", len(b_pers), "that is ", round(correct_pred/len(b_pers)*100,1),"%", "with", fpos, "false positives and ", fneg, " false negatives")
+    return correct_pred/len(b_pers)*100
 def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimlines=None):
     '''edge case where -0 is identified as 0, binary=("00", "01", "11", "10", "--")'''
     if lines==None:
