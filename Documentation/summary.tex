@@ -89,8 +89,18 @@ For the purpose of analyzing the combined predictive power of SNPs the PRS is no
 
 
 \subsection{Products}
+The amount of products can be used as an indication of how many subgroups there are needed to find a minimal cover.
+
+ $ $\\
+
+
+
+It should be analyzed what impact each of the products have if there are multiple, eventually it might prove necessary to discard some products which are specifying on one small subset. This is to avoid overfitting by stratifying to fit the given data perfectly but not the out-of-sample data.
+
+If multiple products with considerable sizes (for in- and out-of- sample data), deviate in many SNPs, it can be speculated that two different groups potentially being affected by different subtypes of diseases were classed into one phenotype. 
 \subsection{Literals}
 \subsection{Time \& Complexity}
+Since the complexity of our approach is high, it is inevitable to consider it as part of the evaluation. An easy measure of the complexity is the time it took us to run the program. Change of dataset, parameters or computational  capabilities all have an influence on the time.
 \section{ Tried methods}
 \subsection{Primitive approaches}
 \subsubsection{Entire}
