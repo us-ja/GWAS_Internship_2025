@@ -170,6 +170,11 @@ It was found that not all schemes support phenotype shuffling meaning that for e
 This method divides the individuals into different equal-sized groups, in each level one group is chosen and the dataset of only those individuals is considered on this level similar to the Pyramid scheme. 
 
 On each level, only a part of the individuals is considered, this means, that the minimal cover is optimized only for those people. On the next level, different individuals get selected, we can assume their phenotype is determined by the same underlying structure, therefore the previous minimal covers should suffice to find a minimal cover. If this is not the case, we have an over-specified truth table, this might be due to there not being an underlying structure or the missing detection of it or due to errors in genotyping. 
+\begin{figure} [!h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{selbox.eps} 
+\caption {Prediction accuracies of the grouping scheme for the out of sample which means not in last level. Every category originally had 15 sample, because of over-specification some are eliminated, the updated count is displayed below the category name.   }\label{fig:selbox}
+}
+\end{figure}
+
 \begin{figure} [!h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{histall.eps} 
 \caption {Histogram of multiple  k-folds using the Pyramid scheme and mutiple phenotype shuffling schemes. The grouping scheme is superimposed on top of the k-fold. No overlap is detected, clear trends with the pyramid scheme are visible, while for shuffled phenotypes no order is apparent.   }\label{fig:play}
 }
