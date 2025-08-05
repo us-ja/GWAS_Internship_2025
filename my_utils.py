@@ -396,7 +396,7 @@ def rand_sign(x:float)->float:
     while y==0:
         y=random.randint(-1,1)*x
     return y
-def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0, deletelog:bool=True, sel_pers=[], add_comm:str="",seed:int=None, change_pheno=None, allow_unknowns:int=20, change_pers_func=None, checkdoubles:bool=True, shuffle_in_level:bool=True):
+def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bool=True, shuffle:bool=True, recover:str=None, in_subdir:str=None, in_file:str=None,startlevel:int=0, deletelog:bool=True, sel_pers=[], add_comm:str="",seed:int=None, change_pheno=None, allow_unknowns:int=20, change_pers_func=None, checkdoubles:bool=True, shuffle_in_level:bool=True, p_lines:list=None):
     '''combines  with given groupsize, if recover is a tuple specifiying dir, in_subdir, in_file then starts from matching files'''
     print("Started building at ", curr_time())
     if shuffle_in_level:
@@ -413,9 +413,10 @@ def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bo
         comment=add_comm+"split"+str(group_size)+"_"
     
     method="given"
-    file=open(dataprefix+".ped")
-    pedlines=file.readlines()
-    file.close()
+    if p_lines==None:
+        file=open(dataprefix+".ped")
+        pedlines=file.readlines()
+        file.close()
     identified=list(range(total_snp))
     if shuffle:
         random.shuffle(identified)
@@ -495,7 +496,7 @@ def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bo
         
         print()
         return f_res 
-def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=False, print_ind:bool=False, hlines:list=None,b_lines:list=None, surpress_print=False, change_pheno=None):
+def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=False, print_ind:bool=False, plines:list=None,b_lines:list=None, surpress_print=False, change_pheno=None):
     products=[]
     if not surpress_print:
         print("\n Analysis of ",result)
@@ -524,11 +525,11 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
 
     i=0
     j=0
-    if hlines==None:
+    if plines==None:
         hap= open(prefix+".ped")
-        hlines=hap.readlines()
+        plines=hap.readlines()
         hap.close()
-    while i<len(hlines):
+    while i<len(plines):
         if (j>=len(a_pers) or i!=a_pers[j]) and accept(i):
             b_pers.append(i)
         else:
@@ -546,7 +547,7 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
         b_lines=bim.readlines()
         bim.close()
     for e in b_pers:
-        share, pheno= (diagnose_pers(products,e, prefix, lines=hlines, bimlines=b_lines, change_pheno=change_pheno))
+        share, pheno= (diagnose_pers(products,e, prefix, lines=plines, bimlines=b_lines, change_pheno=change_pheno))
         if (int(share)==pheno):
             correct_pred+=1
             if showall:
@@ -643,9 +644,9 @@ def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_
             random.seed(s)
             sel_pers=(list(range(get_total_pers(prefix))))
             random.shuffle(sel_pers)
-            alt.append(compare(e, accept=lambda x: x in sel_pers[100:], hlines=hapl,b_lines=b_lines, surpress_print=surpress_print))
+            alt.append(compare(e, accept=lambda x: x in sel_pers[100:], plines=hapl,b_lines=b_lines, surpress_print=surpress_print))
         else:
-            alt.append(compare(e, hlines=hapl, b_lines=b_lines, surpress_print=surpress_print))
+            alt.append(compare(e, plines=hapl, b_lines=b_lines, surpress_print=surpress_print))
         if alt[-1]==None:
             alt.pop()
     return alt
