@@ -585,7 +585,8 @@ def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimline
                 pos=True
             else:
                 pos=False
-            snp=(indivual[int(abs(snp_num))+6][0]).split()
+            snp=(indivual[int(abs(snp_num))+6]).split()
+            
             if bimlines==None:
                 bim=open(prefix+".bim")
                 bimlines=bim.readlines()
