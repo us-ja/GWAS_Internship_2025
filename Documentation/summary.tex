@@ -26,13 +26,13 @@ We are using minimal cover algorithms (namely Espresso) to find a small selectio
 \tableofcontents
 \newpage
 \section {Quality control}
-We want to emphasize the importance of quality control (QC) for this approach as it relies heavily on the assumption that the data has no inconsistencies. 
+We want to emphasize the importance of quality control (QC) for this approach as it generally relies on the assumption that the data has no inconsistencies at all. 
 
 Our data stems from a GWAS/PRS tutorial and the corresponding Git directory which we also use for quality control \cite{tutorial}. It has 109 subjects and 1'073'226 SNPs after the aforementioned QC.  \\
 
 
-
 For the selection of approaches the number of permitted unknowns is crucial, which is set to 2\% per individual and SNP. In the scope this means that there might still exist above 20'000 unknowns per individual. 
+
 \section{Espresso}
 Espresso is a tool that performs 2-level logic minimisation. It uses heuristics to find a satisfying minimal cover. It takes a logic table as input and outputs a minimized circuit.  The output is not guaranteed to be optimal. \\
 
@@ -89,29 +89,30 @@ For the purpose of analyzing the combined predictive power of SNPs the PRS is no
 
 
 \subsection{Products}
-The amount of products can be used as an indication of how many subgroups there are needed to find a minimal cover.
+The amount of products we get in output from Espresso can be used as an indication of how many subgroups there are needed to find a minimal cover.
 
- $ $\\
+Generally, we assume less products in the result to be preferable as this can be seen as simpler relationship, which we deem to be more probable to fit the real cause. \\
 
+It should be analyzed what impact each of the products have if there are multiple products, eventually it might prove necessary to discard some products which are specifying on one small subset. This is to avoid overfitting by stratifying to fit the given data perfectly but not the out-of-sample data.
 
-
-It should be analyzed what impact each of the products have if there are multiple, eventually it might prove necessary to discard some products which are specifying on one small subset. This is to avoid overfitting by stratifying to fit the given data perfectly but not the out-of-sample data.
-
-If multiple products with considerable sizes (for in- and out-of- sample data), deviate in many SNPs, it can be speculated that two different groups potentially being affected by different subtypes of diseases were classed into one phenotype. 
+If multiple products with considerable sizes (for in- and out-of- sample data), deviate in many SNPs, it can be speculated that two different groups being affected by different subtypes of diseases were classed into one single phenotype. 
 \subsection{Literals}
+The amount of literals like for products indicate how complex the found solution is, again we prefer the simplest solution as we deem if to fit the real causes with a higher chance.
 \subsection{Time \& Complexity}
 Since the complexity of our approach is high, it is inevitable to consider it as part of the evaluation. An easy measure of the complexity is the time it took us to run the program. Change of dataset, parameters or computational  capabilities all have an influence on the time.
 \section{ Tried methods}
 \subsection{Primitive approaches}
 \subsubsection{Entire}
 Taking the entire dataset and let it be solved by Espresso, is impossible as the time requirements grow exponentially, as we know the problem is not even in P. 
+
+For small datasets, it might be possible and useful, though wrong genotyping or incorrect phenotypes will remain hidden. 
 \subsubsection{Omitting parts of the dataset}
 \label{sec:omit}
 Taking partial parts of the dataset and never discovering other parts is possible though it is highly doubtful how a good solution should found consistently. For discovering the dataset and experimenting this we did run some experiments. In the context of this experiment when we refer to $n$ we mean the amount of SNPs. 
 
 \begin{enumerate} 
 \setcounter{enumi}{1}
-\item The out-of-data prediction accuracy is as predicted around the 50\% mark, potentially slightly above for hign $n$. 
+\item The out-of-data prediction accuracy predicted around the 50\% mark, potentially slightly above for hign $n$ or according to the formula $2p^2-2p+1$ for cases where $p\neq 0.5$.
 \setcounter{enumi}{3}
 \item High $n$ yield a smaller product, we explain deviations from this rule by the diverging paths taken in Espresso or in case of different dataset by the difference of possibilities. 
 \item Same as for products, just more pronounced as in practice this are higher numbers and therefore more possible outcomes(events). 
@@ -131,35 +132,35 @@ The following table gives an overview of the acquired results with all 109 subje
  2000&25&2&8min
 \end{tabular}
 \end{center}
-
-If there are less than 60 SNP, it is generally not possible to find an assignment as the truth table would be over-specified. \\
-
-A random selection of SNP generally decreases the identified products required for a minimal cover, this trends also affects the literals but is less pronounced. Additionally, it was discovered that missing data is not distributed equally among the data and therefore in sequential analysis even for a relative high n it might not be possible to find a cover due to over-specification. For random selections this constitutes less of a concern as we are guaranteed to have at most 2\% missingness.  
-\begin{figure}[h]
+\begin{figure}[!h]
 \centering{\includegraphics[width=\linewidth]{randseq} \caption {Comparison between random and sequential selection methods }\label{fig:randseq}
 }
 \end{figure}
-
-The random method will be used exclusively in all future analysis. \\
-
-
-Different encoding methods also influence the result. The adjusted method is selected going forwards (see \ref{sec:encode})
-
-\begin{figure}[h] \centering{\includegraphics[width=\linewidth, trim={0 0 0 4},clip]{binarycomp} 
+\begin{figure}[!h] \centering{\includegraphics[width=\linewidth, trim={0 0 0 4},clip]{binarycomp} 
 \caption {Comparison between different binary encoding methods }\label{fig:binary}
-}
+}\end{figure}
+If there are less than 60 SNP, it is generally not possible to find an assignment as the truth table would be over-specified. \\
 
-\end{figure}
+A random selection of SNP generally decreases the identified products required for a minimal cover, this trends also affects the literals but is less pronounced. Additionally, it was discovered that missing data is not distributed equally among the data and therefore in sequential analysis even for a relative high n it might not be possible to find a cover due to over-specification. For random selections this constitutes less of a concern as we are guaranteed to have at most 2\% missingness.  
 
-The adjusted method will be used exclusively in all future analysis. 
+
+
+The random method will be used exclusively in all future analysis. 
+
+
+Different encoding methods (see \ref{sec:encode}) also influence the result. The adjusted method is selected for the rest of this document. 
+
+
+
 
 \subsubsection{Iterative approaches}
-We can try to start with some small selection and iteratively build up until the entire data set is included. We start with the smallest possible set such that the truth table is not over-specified and add one SNP, we evaluate this table, find a minimal cover and from the number of literals in the minimal cover, we decide whether this SNP stays in the selection depending on some criteria. Then we do same for every SNP. 
-
 \begin{figure} [!h] \centering{\includegraphics[ trim={70 320 0 0},clip, width=\linewidth]{play_snp} 
 \caption {Iterative approaches with SNP indicating the number of selected SNPs, the limit was set on literals. 0: strictly decreasing, 1: monotonically decreasing, 2: no equivalences (increasing or decreasing)}\label{fig:play}
 }
 \end{figure}
+We can try to start with some small selection and iteratively build up until the entire data set is included. We start with the smallest possible set such that the truth table is not over-specified and add one SNP, we evaluate this table, find a minimal cover and from the number of literals in the minimal cover, we decide whether this SNP stays in the selection depending on some criteria. Then we do same for every SNP. 
+
+
 
 The time it takes to go through the entire dataset is immense and from some point onwards there are likely no gains. This approach does not consider all possible relationships between different SNPs, in fact in only remarks the ones with a strong PRS anyways or the starting set, making this approach not equilibrated. 
 
@@ -168,7 +169,7 @@ The time it takes to go through the entire dataset is immense and from some poin
 \subsection{Pyramid scheme}
 In the pyramid scheme, the algorithm runs sequentially  through the entire dataset by separating all SNPs into groups of size $k$, finding a minimal cover for every group. All the SNPs making part of a found minimal cover are then subsequently taken to the next level. This is repeated until in one level  all the identified SNPs from the previous level are less than k SNPs, from where a minimal cover for the entire universe of less than k SNPs can be found. \\
 
-The selection of the group can be done in many ways, we decided to analyze the random selection approach as well as sequential, which should correspond to the sequences in the DNA as already enounced in Chapter \ref{sec:omit}, and clearly preferable as we can see in Figure \ref{fig:randseq}.
+The selection of the group can be done in many ways, we decided to analyze the random selection approach as well as sequential, which should correspond to the sequences in the DNA as already explained in Chapter \ref{sec:omit}, and clearly preferable as we can see in Figure \ref{fig:randseq}.
 
 
 \subsection{Phenotype shuffling}
@@ -177,24 +178,34 @@ This altered dataset can be run to test different methods. When this is done we 
 It was found that not all schemes support phenotype shuffling meaning that for example the grouping scheme relies on the fact that there is some underlying determining for genotypes per phenotype. It therefore might occur that since the involved individuals from one level have an over-specified truth table due to the phenotypes basically being random as the different subgroups of individuals on each level are independent.  \\
 
 \subsection{Grouping scheme}
-This method divides the individuals into different equal-sized groups, in each level one group is chosen and the dataset of only those individuals is considered on this level similar to the Pyramid scheme. 
-
-On each level, only a part of the individuals is considered, this means, that the minimal cover is optimized only for those people. On the next level, different individuals get selected, we can assume their phenotype is determined by the same underlying structure, therefore the previous minimal covers should suffice to find a minimal cover. If this is not the case, we have an over-specified truth table, this might be due to there not being an underlying structure or the missing detection of it or due to errors in genotyping. 
 \begin{figure} [!h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{selbox.eps} 
 \caption {Prediction accuracies of the grouping scheme for the out of sample which means not in last level. Every category originally had 15 sample, because of over-specification some are eliminated, the updated count is displayed below the category name.   }\label{fig:selbox}
 }
 \end{figure}
+This method divides the individuals into different equal-sized groups, in each level one group is chosen and the dataset of only those individuals is considered on this level similar to the Pyramid scheme. 
+
+On each level, only a part of the individuals is considered, this means, that the minimal cover is optimized only for those people. On the next level, different individuals get selected, we can assume their phenotype is determined by the same underlying structure, therefore the previous minimal covers should suffice to find a minimal cover. If this is not the case, we have an over-specified truth table, this might be due to there not being an underlying structure or the missing detection of it or due to errors in genotyping. 
+
+We found 25\% of the in-sample data to be fitting for the approach. With alternating groups such as when making splitting the individuals into two groups yields lower prediction accuracy, while optimizing for the in-sample data. Additionally, alternating often fails due to overspecification especially if the order from the previous level is not respected (shuffle SNPs after each level).
 
 
+\subsection{Introduce artificial diffusion based on specific criteria}
+We would like to test how multiple underlying products affect the data. Unfortunately, the available test data only requires one product. Although if we change the phenotype of all persons based on some specific genotype variation, we hope to see this exact configuration in the results furthermore we expect two products of which one is composed of our chosen diffusion criteria and to be closely related to a valid minimal cover for the original data. Further alterations or even combining of phenotypes might proof to be useful not only for evaluating the results but also for analyzing phenotypes with considerable pleiotropy or suspected subtypes.
 
 \section{Evaluation of the methods}
+From the out-of-sample prediction accuracy, we determine that some approaches perform better than random, though we would hope for higher accuracy. \\
+
+We also see consistently the same SNP reappearing in different covers, which might signal the importance of that SNP. For shuffled phenotypes, this phenomena cannot be detected, hence there is no selection which is generally good at identifying persons. 
+This result is expected and supports the claim of significance of the found SNPs.
+
+The histogram seems less crowded than the Manhattan plot of the PRS of Figure \ref{fig:manhattan}. Also most of the SNP also have a high PRS value indicating correlation with the phenotype. 
 \begin{figure} [!h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{histall.eps} 
 \caption {Histogram of multiple k-folds using one out of pyramid scheme, grouping scheme or phenotype shuffling schemes. The grouping scheme is superimposed on top of the k-fold. No overlap is detected, clear trends with the pyramid scheme are visible, while for shuffled phenotypes no order is apparent.   }\label{fig:play}
 }
 \end{figure}
 
 \begin{figure} [!h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{accuracyplot.eps} 
-\caption {Prediction accuracies of  predicted outcomes in data out of sample data, never included in the data before. The red lines indicates the expected guessing accuracy for this data with a random approach. }\label{fig:play}
+\caption {Prediction accuracies of  predicted outcomes in data out of sample data, never included in the data before. The red lines indicates the expected guessing accuracy for this data with a random approach. The data is theoretically continuous, here we observe the out-of-sample size to be too small (about 10) , explaining the occurences of overlapping quartiles and medians.}\label{fig:play}
 }
 \end{figure}
 
