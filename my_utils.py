@@ -415,7 +415,7 @@ def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bo
     method="given"
     if p_lines==None:
         file=open(dataprefix+".ped")
-        pedlines=file.readlines()
+        p_lines=file.readlines()
         file.close()
     identified=list(range(total_snp))
     if shuffle:
@@ -444,7 +444,7 @@ def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bo
                 end=ends[i+1]
                 to_analyze= identified[start:end]
                 # print(to_analyze)
-                created_files.append(conversion(to_analyze, method,  comment, start, fileprefix=dataprefix ,total=total_snp, dir=dir_l(level),stopifoverspecif=True, sel_pers=sel_pers, delete_logs=deletelog, change_pheno=change_pheno, allow_unknowns=allow_unknowns, checkdoubles=checkdoubles, seed=seed, ped_lines=pedlines))
+                created_files.append(conversion(to_analyze, method,  comment, start, fileprefix=dataprefix ,total=total_snp, dir=dir_l(level),stopifoverspecif=True, sel_pers=sel_pers, delete_logs=deletelog, change_pheno=change_pheno, allow_unknowns=allow_unknowns, checkdoubles=checkdoubles, seed=seed, ped_lines=p_lines))
             # print(created_files)
             
         else:
@@ -670,15 +670,17 @@ def pyramid25(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=N
     comm="25_s"+str(seed)
     try:
         res=(combine_build_up(g_size, fileprefix,add_comm=comm, seed=seed, sel_pers=sel_pers,change_pers_func=givepers,checkdoubles=False,shuffle_in_level=shuffle_in_level, p_lines=plines, deletelog=deletelog, total_snp=total_snp))
-    except:
+    except Exception as err:
         print("seed failed", seed)
+        print(err)
     try:
         if res!=None:
-            print("\n Analysis of ",res, "\n out of last level:")
-            compare(res, fileprefix, change_pheno=change_pheno, plines=plines)
+            
+            compare(res, fileprefix, change_pheno=change_pheno, plines=plines, )
             print("Out of sample")
-            compare(res,fileprefix, accept=lambda x: True if (x in sel_pers[int(0.9*get_total_pers):]) else False,  change_pheno=change_pheno, plines=plines )
-    except:
+            compare(res,fileprefix, accept=lambda x: True if (x in sel_pers[int(0.9*k):]) else False,  change_pheno=change_pheno, plines=plines)
+    except Exception as err:
         print("error analysis of seed ", seed)
+        print(err)
 
     print("finished all at", curr_time())
