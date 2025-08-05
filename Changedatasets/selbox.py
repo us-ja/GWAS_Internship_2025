@@ -12,7 +12,7 @@ sh=get_shares(get_files(".", "s1", "res", ["bound"]),accept_lim=False, )
 
 bound=get_shares(get_files(".", "s1", "res", ["shuffle"]),accept_lim=False)
 
-alt_b=get_shares(get_files(".", "alter", "res",),accept_lim=False)
+alt_b=get_shares(get_files(".", "alter", "res",["shuffle"]),accept_lim=False)
 
 alt_s=get_shares(get_files(".", "alter", "res",["bound"]))
 
@@ -40,7 +40,7 @@ for i in range(len(data)):
 
 plt.axhline(54/1.07, color='red', linestyle=':')
 plt.subplots_adjust(left=None, bottom=0.14, wspace=None)
-plt.savefig('../Documentation/selbox.eps', format='eps')
+# plt.savefig('../Documentation/selbox.eps', format='eps')
 print("finished all at", curr_time())
 plt.show()
 
