@@ -149,7 +149,7 @@ def to_espresso(selection:list, sel_pers:list, lines:list, risk:list, norisk:lis
     #     sys.stdout = f    
     #     print(idict)
     return doubles, excluded_pers
-def espresso_analysis(espresso_out, path, selection, doubles, excluded_pers, selection_type, seed, risk, norisk, sel_pers):
+def espresso_analysis(espresso_out:str, path:str, selection:list, doubles:int, excluded_pers:int, selection_type:str, seed, risk:list, norisk:list, sel_pers):
     '''reads out from espresso and creates result file containing the summary'''
     n=len(selection)
     res_out= path+"result"+str(n)+".txt"
@@ -235,7 +235,7 @@ def espresso_analysis(espresso_out, path, selection, doubles, excluded_pers, sel
             print("Literals/ num of SNP:")
             print(counter)
     return res_out
-def espresso(input, output):
+def espresso(input:str, output:str):
     '''runs espresso with input and ouput to output'''
     subprocess.run(str("../../espresso-logic-master/bin/espresso "+input+" > "+output ), shell=True)
 def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefix:str='HapMap',total:int=None, dir:str="", delete_logs:bool=True, allow_unknowns:str=20, stopifoverspecif:bool=True, sel_pers:list=[], change_pheno=None, checkdoubles=True, seed=None, ped_lines:list=None):
@@ -365,6 +365,7 @@ def merge_nicer(A,B, compar):
             j=j+1
     return C
 def merge_sort(A,l,r, comparision_func=lambda x,y : (x>y) ):
+    '''sort elements of A to whatever the comparison func says'''
     if r-l == 0:
         return []
     if r-l == 1:
@@ -650,12 +651,11 @@ def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_
         if alt[-1]==None:
             alt.pop()
     return alt
-
 def get_seed_from_file(txt:str):
     return (int(''.join(filter(str.isdigit, txt[txt.find("given"):max((txt.find("bound_enf")),(txt.find("split")),(txt.find("shuffle")))]))))
 
-
-def pyramid25(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=None, deletelog:bool=False, shuffle_in_level=False, total_snp:int=None):
+def grouping25(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=None, deletelog:bool=False, shuffle_in_level:bool=False, total_snp:int=None):
+    '''runs the grouping scheme with a 90/10 k-fold each group has size of 22.5% and 10% is control for out of sample'''
     k=get_total_pers(fileprefix=fileprefix)
     def givepers(l:int, sel_pers:list=[], fileprefix=fileprefix, k=k):
         if sel_pers==[]:
@@ -664,7 +664,7 @@ def pyramid25(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=N
             return sel_pers[l%4*int(0.225*k):(l%4+1)*int(0.225*k)]
     print("start with seed", seed, "at", curr_time())
     random.seed(seed)
-    sel_pers=(list(range(109)))
+    sel_pers=(list(range(k)))
     random.shuffle(sel_pers)
     print(sel_pers)
     comm="25_s"+str(seed)

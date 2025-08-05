@@ -6,4 +6,4 @@ hap=open("HapMap.ped")
 l=hap.readlines()
 
 for seed in range(225, 825, 25):
-    pyramid25(fileprefix, seed, seed, plines=l, )
+    grouping25(fileprefix, seed, seed, plines=l, )

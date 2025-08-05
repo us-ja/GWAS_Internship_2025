@@ -19,4 +19,4 @@ for line in l:
 
 
 for seed in range(200, 205):
-    pyramid25(fileprefix, seed, 200, plines=l, change_pheno=(lambda x: 1 if x in ids else 0), )
+    grouping25(fileprefix, seed, 200, plines=l, change_pheno=(lambda x: 1 if x in ids else 0), )
