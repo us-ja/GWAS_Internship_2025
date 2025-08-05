@@ -7,5 +7,5 @@ fileprefix="blood_lipid_cleaned"
 
 
 for seed in range(200, 210):
-    grouping25(fileprefix, 400, seed)
+    grouping25(fileprefix, 300, seed)
     
