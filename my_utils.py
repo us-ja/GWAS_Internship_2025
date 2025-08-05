@@ -653,3 +653,32 @@ def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_
 
 def get_seed_from_file(txt:str):
     return (int(''.join(filter(str.isdigit, txt[txt.find("given"):max((txt.find("bound_enf")),(txt.find("split")),(txt.find("shuffle")))]))))
+
+
+def pyramid25(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=None, deletelog:bool=False, shuffle_in_level=False, total_snp:int=None):
+    k=get_total_pers(fileprefix=fileprefix)
+    def givepers(l:int, sel_pers:list=[], fileprefix=fileprefix, k=k):
+        if sel_pers==[]:
+            return list(range(l%4*int(0.225*k), (l%4+1)*int(0.225*k)))
+        else:
+            return sel_pers[l%4*int(0.225*k):(l%4+1)*int(0.225*k)]
+    print("start with seed", seed, "at", curr_time())
+    random.seed(seed)
+    sel_pers=(list(range(109)))
+    random.shuffle(sel_pers)
+    print(sel_pers)
+    comm="25_s"+str(seed)
+    try:
+        res=(combine_build_up(g_size, fileprefix,add_comm=comm, seed=seed, sel_pers=sel_pers,change_pers_func=givepers,checkdoubles=False,shuffle_in_level=shuffle_in_level, p_lines=plines, deletelog=deletelog, total_snp=total_snp))
+    except:
+        print("seed failed", seed)
+    try:
+        if res!=None:
+            print("\n Analysis of ",res, "\n out of last level:")
+            compare(res, fileprefix, change_pheno=change_pheno, plines=plines)
+            print("Out of sample")
+            compare(res,fileprefix, accept=lambda x: True if (x in sel_pers[int(0.9*get_total_pers):]) else False,  change_pheno=change_pheno, plines=plines )
+    except:
+        print("error analysis of seed ", seed)
+
+    print("finished all at", curr_time())
