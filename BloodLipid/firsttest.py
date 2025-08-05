@@ -2,7 +2,7 @@ import sys
 sys.path.append('..')
 import random
 from my_utils import *
-res=[]
+
 def givepers(l:int, sel_pers:list=[], fileprefix="blood_lipid"):
     k=get_total_pers(fileprefix=fileprefix)
     if sel_pers==[]:
