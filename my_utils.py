@@ -238,7 +238,7 @@ def espresso_analysis(espresso_out, path, selection, doubles, excluded_pers, sel
 def espresso(input, output):
     '''runs espresso with input and ouput to output'''
     subprocess.run(str("../../espresso-logic-master/bin/espresso "+input+" > "+output ), shell=True)
-def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefix:str='HapMap',total:int=None, dir:str="", delete_logs:bool=True, allow_unknowns:str=20, stopifoverspecif:bool=False, sel_pers:list=[], change_pheno=None, checkdoubles=True, seed=None, ped_lines:list=None):
+def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefix:str='HapMap',total:int=None, dir:str="", delete_logs:bool=True, allow_unknowns:str=20, stopifoverspecif:bool=True, sel_pers:list=[], change_pheno=None, checkdoubles=True, seed=None, ped_lines:list=None):
     '''returns file name of the result executed according to input, A1 is selected as risk allele'''
     out_before=sys.stdout
     ped_file=fileprefix+".ped"
@@ -495,7 +495,7 @@ def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bo
         
         print()
         return f_res 
-def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=False, print_ind:bool=False, hlines:list=None,b_lines:list=None, surpress_print=False):
+def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=False, print_ind:bool=False, hlines:list=None,b_lines:list=None, surpress_print=False, change_pheno=None):
     products=[]
     if not surpress_print:
         print("\n Analysis of ",result)
@@ -546,7 +546,7 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
         b_lines=bim.readlines()
         bim.close()
     for e in b_pers:
-        share, pheno= (diagnose_pers(products,e, prefix, lines=hlines, bimlines=b_lines))
+        share, pheno= (diagnose_pers(products,e, prefix, lines=hlines, bimlines=b_lines, change_pheno=change_pheno))
         if (int(share)==pheno):
             correct_pred+=1
             if showall:
@@ -564,7 +564,7 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
     if not surpress_print:
         print("correct were ", correct_pred, "out of ", len(b_pers), "that is ", round(correct_pred/len(b_pers)*100,1),"%", "with", fpos, "false positives and ", fneg, " false negatives")
     return correct_pred/len(b_pers)*100
-def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimlines=None):
+def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimlines=None, change_pheno=None):
     '''edge case where -0 is identified as 0, binary=("00", "01", "11", "10", "--")'''
     if lines==None:
         hap= open(prefix+".ped")
@@ -572,7 +572,10 @@ def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimline
         hap.close()
     indivual=(lines[e]).split('\t')
     maxshare=0
-    phenotype=int(indivual[5])-1
+    if change_pheno!=None:
+        phenotype=change_pheno(indivual[1])
+    else:
+        phenotype=int(indivual[5])-1
     for p in products:
         state=True
         falses=0
