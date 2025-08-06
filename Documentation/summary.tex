@@ -33,13 +33,13 @@ Our data stems from a GWAS/PRS tutorial and the corresponding Git directory whic
 
 For the selection of approaches the number of permitted unknowns is crucial, which is set to 2\% per individual and SNP. In the scope this means that there might still exist above 20'000 unknowns per individual. \\
 
-We found a second data set on imputed simulated blood lipid data on the 1k Genome Project \cite{1k}
+We found a second data set on imputed simulated blood lipid data on the 1k Genome Project \cite{1k}. It contains more than one million SNPs for 2504 individuals before QC. There are no missing genotype data. After QC, with 1\% minor allele frequency threshold 75733 SNPs remain, no individuals have to be filtered out.
 \section{Espresso}
 Espresso is a tool that performs 2-level logic minimization. It uses heuristics to find a satisfying minimal cover. It takes a logic table as input and outputs a minimized circuit.  The output is not guaranteed to be optimal. \\
 
 "-" can used as don't cares. It is possible to specify special input types such as  \emph{.type fr} to indicate that not in case of an underspecified truth tables the underspecified cases are treated as don't cares. 
 
-f
+
 \section{Translation of genetic data into binary}
 \label{sec:encode}
 Most genetic data is stored in two pairwise inherited strings this is true particular for human autosomal genes. The manifestation can be made up from one of the four nucleobases (A/C/G/T) or an indentation of any length or a deletion (non-existence). The information for any particular SNP might also be partially missing. For any given position there commonly exist two different manifestations, one is labelled as the no-risk allele and the other allele is referred to as risk allele. There is no consensus for every SNP on what allele should be considered the risk allele, generally the variant with lower sampling rates is considered the risk allele. Two different studies might find different might find different risk alleles but they would still agree on the same manifestation which is in correlation with the disease. \\
@@ -174,9 +174,9 @@ The selection of the group can be done in many ways, we decided to analyze the r
 
 
 \subsection{Phenotype shuffling}
-We shuffle the phenotypes of all the individuals, this is achieved through random selection of k persons which have phenotype 2 respectively 1. 
+We shuffle the phenotypes of all the individuals, this is achieved through random selection of k persons which have phenotype 2 respectively 1. This preserves $p$ of having the phenotype. 
 This altered dataset can be run to test different methods. When this is done we expect the resulting minimal cover to be random, meaning that the method we compare to where structure exist should need less literals or products as there is an underlying structure dictating the outcome, where this is obviously not true for shuffled phenotypes. We can also control with the frequencies of the selected SNPs with shuffled phenotypes whether there exists an overlap with the SNPs of our normal method. \\
-It was found that not all schemes support phenotype shuffling meaning that for example the grouping scheme relies on the fact that there is some underlying determining for genotypes per phenotype. It therefore might occur that since the involved individuals from one level have an over-specified truth table due to the phenotypes basically being random as the different subgroups of individuals on each level are independent.  \\
+It was found that not all schemes support phenotype shuffling. For example the grouping scheme relies on the fact that there is some underlying determining for genotypes per phenotype. It therefore might occur that since the involved individuals from one level have an over-specified truth table due to the phenotypes basically being random as the different subgroups of individuals on each level are independent.  \\
 
 \subsection{Grouping scheme}
 \begin{figure} [!h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{selbox.eps} 
@@ -188,8 +188,9 @@ This method divides the individuals into different equal-sized groups, in each l
 On each level, only a part of the individuals is considered, this means, that the minimal cover is optimized only for those people. On the next level, different individuals get selected, we can assume their phenotype is determined by the same underlying structure, therefore the previous minimal covers should suffice to find a minimal cover. If this is not the case, we have an over-specified truth table, this might be due to there not being an underlying structure or the missing detection of it or due to errors in genotyping. 
 We tested to methods for passing SNPs down a level: shuffling in every level or preserving original state. Preserving states did generally perform worse in terms of products and literals but also for out-of-sample accuracy. On the other hand, it might occur that good combinations from the previous level are split when shuffling in every level.
 
-We found 25\% of the in-sample data to be fitting for the approach. With alternating groups such as when making splitting the individuals into two groups yields lower prediction accuracy, while optimizing for the in-sample data. Additionally, alternating often fails due to over-specification especially if the order from the previous level is not respected (shuffle SNPs after each level).
+We found 25\% of the in-sample data to be fitting for the approach. With alternating groups such as when splitting the individuals into two groups yields lower prediction accuracies, while optimizing for the in-sample data. Additionally, alternating often fails due to over-specification especially if the order from the previous level is not respected (shuffle SNPs after each level).
 
+Later the code was changed to refer to the previous level's selection of individuals if the final analysis is over-specified. This should resolve most cases where over-specification was posing a problem.  
 
 \subsection{Introducing artificial diffusion based on specific criteria}
 
@@ -212,7 +213,7 @@ From the out-of-sample prediction accuracy, we determine that some approaches pe
 We also consistently see some of the SNPs reappearing in different covers, which might signal the importance of that specific SNP. For shuffled phenotypes, this phenomena was not observed, hence there is no selection which is generally good for identifying persons. 
 This result is expected and supports the claim of significance of the found SNPs.
 
-The histogram seems less crowded than the Manhattan plot of the PRS of Figure \ref{fig:manhattan}. Also most of the SNP also have a high PRS value indicating correlation with the phenotype. Repeated results are a sign of confidence, but it also needs to be mentioned, that we are far away from having equal results in all iterations. This also indicates that potentially multiple global optima exist or it hasn't even been found yet.  
+The histogram seems less crowded than the Manhattan plot of the PRS of Figure \ref{fig:manhattan}. Also most of the SNP also have a high PRS value indicating correlation with the phenotype. Repeated results are a sign of confidence, but it also needs to be mentioned, that we are far away from having equal results in all iterations. This also indicates that potentially multiple global optima exist or it hasn't even been found yet.  Except for  the pyramid scheme there do not exist clear "favorite" SNPs but rather a small collection of SNPs appearing more than once.
 
 Another question is whether the global optima or any found cover for this purposes actually has biological credibility in explaining the surveyed phenotype. 
 
