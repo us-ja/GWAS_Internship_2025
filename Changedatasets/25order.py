@@ -24,5 +24,5 @@ for seed in range(115, 130):
 
 for e in res:
     print("\n Analysis of ",e)
-    compare(e)
+    compare(e)#written before amend changes
 print("finished all at", curr_time())

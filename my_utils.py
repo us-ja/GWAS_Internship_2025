@@ -559,7 +559,7 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
         j=0
         
         while i<len(plines):
-            if (j>=len(a_pers) or i!=a_pers[j]) and accept(i) or (x==0):
+            if (j>=len(a_pers) or i!=a_pers[j]) and (accept(i) or (x==0)):
                 b_pers.append(i)
             else:
                 j+=1
@@ -687,6 +687,7 @@ def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_
             random.seed(s)
             sel_pers=(list(range(get_total_pers(prefix))))
             random.shuffle(sel_pers)
+            #might override function
             alt.append(compare(e, accept=lambda x: x in sel_pers[100:], plines=hapl,b_lines=b_lines, surpress_print=surpress_print, amend=False)[1])
         else:
             alt.append(compare(e, plines=hapl, b_lines=b_lines, surpress_print=surpress_print, amend=False)[0])
