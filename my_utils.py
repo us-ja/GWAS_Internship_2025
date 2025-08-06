@@ -482,6 +482,11 @@ def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bo
 
     if len(identified)//group_size==0:#prevent entering this if levelled out and not finished
         f_res=(conversion(identified, method, comment,level, fileprefix=dataprefix, total=total_snp, stopifoverspecif=True, sel_pers=sel_pers, delete_logs=deletelog, change_pheno=change_pheno, allow_unknowns=allow_unknowns, checkdoubles=checkdoubles, seed=seed))
+        if f_res==None:
+            if change_pers_func!=None:
+                sel_pers=change_pers_func(level-1, o_sel_pers)#report results with previous data set
+                print("refused last level")
+                f_res=f_res=(conversion(identified, method, comment,level-1, fileprefix=dataprefix, total=total_snp, stopifoverspecif=True, sel_pers=sel_pers, delete_logs=deletelog, change_pheno=change_pheno, allow_unknowns=allow_unknowns, checkdoubles=checkdoubles, seed=seed))
         print( "finished at level", level, curr_time())
         print("the selection gave :")
         identified=set()
