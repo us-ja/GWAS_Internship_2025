@@ -14,7 +14,7 @@ hap.close()
 
 
 
-for seed in range(200, 205):
+for seed in range(205, 210):
     ids=[]
     ref=l[1].split("\t")[seed]
     for line in l:
