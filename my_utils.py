@@ -72,7 +72,7 @@ def print_line(idict, e, change_pheno):
         print(" ",int(idict[e]["phenotype"])-1)
     else:
         print(" ",change_pheno(e))
-def to_espresso(selection:list, sel_pers:list, lines:list, risk:list, norisk:list,  esp_in:str, allow_unknowns=20, change_pheno=None, checkdoubles=True): 
+def to_espresso(selection:list, sel_pers:list, lines:list, risk:list, norisk:list,  esp_in:str, allow_unknowns=20, change_pheno=None, checkdoubles=False): 
     
     idict = {}
     o=sys.stdout
@@ -238,7 +238,7 @@ def espresso_analysis(espresso_out:str, path:str, selection:list, doubles:int, e
 def espresso(input:str, output:str):
     '''runs espresso with input and ouput to output'''
     subprocess.run(str("../../espresso-logic-master/bin/espresso "+input+" > "+output ), shell=True)
-def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefix:str='HapMap',total:int=None, dir:str="", delete_logs:bool=True, allow_unknowns:str=20, stopifoverspecif:bool=True, sel_pers:list=[], change_pheno=None, checkdoubles=True, seed=None, ped_lines:list=None):
+def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefix:str='HapMap',total:int=None, dir:str="", delete_logs:bool=True, allow_unknowns:str=20, stopifoverspecif:bool=True, sel_pers:list=[], change_pheno=None, checkdoubles=False, seed=None, ped_lines:list=None):
     '''returns file name of the result executed according to input, A1 is selected as risk allele'''
     out_before=sys.stdout
     ped_file=fileprefix+".ped"
