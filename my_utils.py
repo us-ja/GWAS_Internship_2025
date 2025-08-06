@@ -550,7 +550,7 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
     if accept!=(lambda x: True):
         methods+=1
     for x in range(methods):
-        if x==1:
+        if x==1 and (amend or not surpress_print):
             print("Out of sample:")
             countadd+=1
         b_pers=[]
@@ -688,11 +688,15 @@ def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_
             sel_pers=(list(range(get_total_pers(prefix))))
             random.shuffle(sel_pers)
             #might override function
-            alt.append(compare(e, accept=lambda x: x in sel_pers[100:], plines=hapl,b_lines=b_lines, surpress_print=surpress_print, amend=False)[1])
+            this_r=compare(e, accept=lambda x: x in sel_pers[100:], plines=hapl,b_lines=b_lines, surpress_print=surpress_print, amend=False)
+            # print(this_r)
+            if this_r!=None:
+                alt.append(this_r[1])
         else:
-            alt.append(compare(e, plines=hapl, b_lines=b_lines, surpress_print=surpress_print, amend=False)[0])
-        if alt[-1]==None:
-            alt.pop()
+            this_r=(compare(e, plines=hapl, b_lines=b_lines, surpress_print=surpress_print, amend=False))
+            if this_r!=None:
+                alt.append(this_r[0])
+        
     return alt
 def get_seed_from_file(txt:str):
     return (int(''.join(filter(str.isdigit, txt[txt.find("given"):max((txt.find("bound_enf")),(txt.find("split")),(txt.find("shuffle")))]))))
