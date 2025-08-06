@@ -503,7 +503,7 @@ def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bo
         
         print()
         return f_res 
-def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=False, print_ind:bool=False, plines:list=None,b_lines:list=None, surpress_print=False, change_pheno=None, amend:bool=False):
+def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=False, print_ind:bool=False, plines:list=None,b_lines:list=None, surpress_print=False, change_pheno=None, amend:bool=True):
     o=sys.stdout
     products=[]
     file=open(result)
