@@ -498,16 +498,25 @@ def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bo
         
         print()
         return f_res 
-def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=False, print_ind:bool=False, plines:list=None,b_lines:list=None, surpress_print=False, change_pheno=None):
+def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=False, print_ind:bool=False, plines:list=None,b_lines:list=None, surpress_print=False, change_pheno=None, amend:bool=False):
+    o=sys.stdout
     products=[]
-    if not surpress_print:
-        print("\n Analysis of ",result)
     file=open(result)
     lines=file.readlines()
     file.close()
+    countadd=0
+    if amend:
+        file=open(result, 'a')
+        sys.stdout=file
+        print("\n Continue with comparison")
+
+    elif not surpress_print:
+        print("\n Analysis of ",result)
+    countadd+=2
     if int(lines[1])==0:
         if not surpress_print:
             print("no res")
+            countadd+=1
         return None
     for i in range(-4-int(lines[1]),-4):
         ele= lines[i].split(sep=',')
@@ -539,6 +548,7 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
         i+=1
     if print_ind:
         print(b_pers, "persons")
+        countadd+=1
     correct_pred=0
     fpos=0
     fneg=0
@@ -549,26 +559,37 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
         b_lines=bim.readlines()
         bim.close()
     for e in b_pers:
-        share, pheno= (diagnose_pers(products,e, prefix, lines=plines, bimlines=b_lines, change_pheno=change_pheno))
+        share, pheno, add= (diagnose_pers(products,e, prefix, lines=plines, bimlines=b_lines, change_pheno=change_pheno))
+        countadd+=add
         if (int(share)==pheno):
             correct_pred+=1
             if showall:
                 print(round(share,2), pheno)
+                countadd+=1
         else:
             if int(share)==1:
                 fpos+=1
                 if print_ind:
                     print("False positive for person", e)
+                    countadd+=1
             else:
                 fneg+=1
                 if print_ind:
                     
                     print("False negative for person", e,"with share of", round(share,2))
+                    countadd+=1
     if not surpress_print:
         print("correct were ", correct_pred, "out of ", len(b_pers), "that is ", round(correct_pred/len(b_pers)*100,1),"%", "with", fpos, "false positives and ", fneg, " false negatives")
+        countadd+=1
+    if amend:
+        print("added lines:")
+        print(countadd)
+        file.close()
+    sys.stdout=o
     return correct_pred/len(b_pers)*100
 def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimlines=None, change_pheno=None):
     '''edge case where -0 is identified as 0, binary=("00", "01", "11", "10", "--")'''
+    countadd=0
     if lines==None:
         hap= open(prefix+".ped")
         lines=hap.readlines()
@@ -609,6 +630,7 @@ def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimline
                         allele+=1  
                     elif norisk!=e and "-" not in e:
                         print("major problem", risk, norisk, e)
+                        countadd+=1
       
             if pos:
                 if allele==0:
@@ -624,11 +646,11 @@ def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimline
         if falses==0:
         
                 
-            return 1, phenotype
+            return 1, phenotype, countadd
         share= (len(p)-falses)/len(p)
         if share>maxshare:
             maxshare=share
-    return maxshare, phenotype
+    return maxshare, phenotype, countadd
 def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_print=True):
     '''sorts list and outputs a list of accuracies per file'''
     alt=[]
