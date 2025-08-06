@@ -504,12 +504,16 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
     file=open(result)
     lines=file.readlines()
     file.close()
+    if lines[-2]=="added lines:":
+        for i in range(-int(lines[-1]),0 ):
+            print(lines[i])
+
+        return float(lines[-3])
     countadd=0
     if amend:
         file=open(result, 'a')
         sys.stdout=file
         print("\n Continue with comparison")
-
     elif not surpress_print:
         print("\n Analysis of ",result)
     countadd+=2
@@ -533,7 +537,6 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
     a_pers=list(sorted(map(int, a_pers)))
     
     
-
     i=0
     j=0
     if plines==None:
@@ -552,7 +555,6 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
     correct_pred=0
     fpos=0
     fneg=0
-    
 
     if b_lines==None:
         bim=open(prefix+".bim")
@@ -582,7 +584,10 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
         print("correct were ", correct_pred, "out of ", len(b_pers), "that is ", round(correct_pred/len(b_pers)*100,1),"%", "with", fpos, "false positives and ", fneg, " false negatives")
         countadd+=1
     if amend:
+        print("correct %:")
+        print(correct_pred/len(b_pers)*100)
         print("added lines:")
+        countadd+=2
         print(countadd)
         file.close()
     sys.stdout=o
