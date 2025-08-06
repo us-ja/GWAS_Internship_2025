@@ -192,6 +192,8 @@ We found 25\% of the in-sample data to be fitting for the approach. With alterna
 \subsection{Introduce artificial diffusion based on specific criteria}
 We would like to test how multiple underlying products affect the data. Unfortunately, the available test data only requires one product. Although if we change the phenotype of all persons based on some specific genotype variation, we hope to see this exact configuration in the results furthermore we expect two products of which one is composed of our chosen diffusion criteria and to be closely related to a valid minimal cover for the original data. Further alterations or even combining of phenotypes might proof to be useful not only for evaluating the results but also for analyzing phenotypes with considerable pleiotropy or suspected subtypes.
 
+We could not replicate the expectations in any of the 5 run experiments with the grouping scheme with group sizes of 25 with the pairwise selection of SNP number 28 as present for the second individual or phenotype as the diffused phenotype. We will repeat the experiment with different SNPs. 
+
 \section{Evaluation of the methods}
 From the out-of-sample prediction accuracy, we determine that some approaches perform better than random, though we would hope for higher accuracy. \\
 
@@ -199,12 +201,12 @@ We also see consistently the same SNP reappearing in different covers, which mig
 This result is expected and supports the claim of significance of the found SNPs.
 
 The histogram seems less crowded than the Manhattan plot of the PRS of Figure \ref{fig:manhattan}. Also most of the SNP also have a high PRS value indicating correlation with the phenotype. 
-\begin{figure} [!h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{histall.eps} 
+\begin{figure} [h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{histall.eps} 
 \caption {Histogram of multiple k-folds using one out of pyramid scheme, grouping scheme or phenotype shuffling schemes. The grouping scheme is superimposed on top of the k-fold. No overlap is detected, clear trends with the pyramid scheme are visible, while for shuffled phenotypes no order is apparent.   }\label{fig:play}
 }
 \end{figure}
 
-\begin{figure} [!h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{accuracyplot.eps} 
+\begin{figure} [h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{accuracyplot.eps} 
 \caption {Prediction accuracies of  predicted outcomes in data out of sample data, never included in the data before. The red lines indicates the expected guessing accuracy for this data with a random approach. The data is theoretically continuous, here we observe the out-of-sample size to be too small (about 10) , explaining the occurences of overlapping quartiles and medians.}\label{fig:play}
 }
 \end{figure}
