@@ -490,7 +490,8 @@ def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bo
         file.close()
         for i in range(-4-int(lines[1]),-4):
             ele= lines[i].split(sep=',')
-            ele[0], ele[-1]=ele[0][1:], ele[-1][:-2]
+            ele[0]=ele[0][1:]
+            ele[-1]= ele[-1][:-2]
             ele=(list( map(float, ele)))
             for j in range(len(ele)):
                 print(ele[j], end=", ")
