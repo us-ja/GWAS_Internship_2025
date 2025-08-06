@@ -504,6 +504,7 @@ def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bo
         print()
         return f_res 
 def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=False, print_ind:bool=False, plines:list=None,b_lines:list=None, surpress_print=False, change_pheno=None, amend:bool=True):
+    '''creates a compare output according to specified and amends it to the result file'''
     o=sys.stdout
     products=[]
     file=open(result)
@@ -513,15 +514,14 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
         for i in range(-int(lines[-1]),0 ):
             print(lines[i])
 
-        return float(lines[-3])
+        return tuple(map(float, tuple(lines[-3])))
+    
     countadd=0
     if amend:
         file=open(result, 'a')
         sys.stdout=file
         print("\n Continue with comparison")
-    elif not surpress_print:
-        print("\n Analysis of ",result)
-    countadd+=2
+        countadd+=2
     if int(lines[1])==0:
         if not surpress_print:
             print("no res")
@@ -534,69 +534,78 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
         ele=list( map(float, ele))
         products.append(ele)
     
-
-    b_pers=[]
-    
     a_pers= lines[-8-int(lines[1])].split(',')
     a_pers[0], a_pers[-1]=a_pers[0][1:], a_pers[-1][:-2]
     a_pers=list(sorted(map(int, a_pers)))
     
-    
-    i=0
-    j=0
     if plines==None:
         hap= open(prefix+".ped")
         plines=hap.readlines()
         hap.close()
-    while i<len(plines):
-        if (j>=len(a_pers) or i!=a_pers[j]) and accept(i):
-            b_pers.append(i)
-        else:
-            j+=1
-        i+=1
-    if print_ind:
-        print(b_pers, "persons")
-        countadd+=1
-    correct_pred=0
-    fpos=0
-    fneg=0
-
     if b_lines==None:
         bim=open(prefix+".bim")
         b_lines=bim.readlines()
         bim.close()
-    for e in b_pers:
-        share, pheno, add= (diagnose_pers(products,e, prefix, lines=plines, bimlines=b_lines, change_pheno=change_pheno))
-        countadd+=add
-        if (int(share)==pheno):
-            correct_pred+=1
-            if showall:
-                print(round(share,2), pheno)
-                countadd+=1
-        else:
-            if int(share)==1:
-                fpos+=1
-                if print_ind:
-                    print("False positive for person", e)
+    methods=1
+    if accept!=(lambda x: True):
+        methods+=1
+    for x in range(methods):
+        if x==1:
+            print("Out of sample:")
+            countadd+=1
+        b_pers=[]
+        
+        i=0
+        j=0
+        
+        while i<len(plines):
+            if (j>=len(a_pers) or i!=a_pers[j]) and accept(i) or (x==0):
+                b_pers.append(i)
+            else:
+                j+=1
+            i+=1
+        if print_ind:
+            print(b_pers, "persons")
+            countadd+=1
+        correct_pred=0
+        fpos=0
+        fneg=0
+
+        
+        for e in b_pers:
+            share, pheno, add= (diagnose_pers(products,e, prefix, lines=plines, bimlines=b_lines, change_pheno=change_pheno))
+            countadd+=add
+            if (int(share)==pheno):
+                correct_pred+=1
+                if showall:
+                    print(round(share,2), pheno)
                     countadd+=1
             else:
-                fneg+=1
-                if print_ind:
-                    
-                    print("False negative for person", e,"with share of", round(share,2))
-                    countadd+=1
-    if not surpress_print:
-        print("correct were ", correct_pred, "out of ", len(b_pers), "that is ", round(correct_pred/len(b_pers)*100,1),"%", "with", fpos, "false positives and ", fneg, " false negatives")
-        countadd+=1
+                if int(share)==1:
+                    fpos+=1
+                    if print_ind:
+                        print("False positive for person", e)
+                        countadd+=1
+                else:
+                    fneg+=1
+                    if print_ind:
+                        
+                        print("False negative for person", e,"with share of", round(share,2))
+                        countadd+=1
+        if not surpress_print:
+            print("correct were ", correct_pred, "out of ", len(b_pers), "that is ", round(correct_pred/len(b_pers)*100,1),"%", "with", fpos, "false positives and ", fneg, " false negatives")
+            countadd+=1
+        if x==0:
+            first_pred=correct_pred/len(b_pers)*100
     if amend:
-        print("correct %:")
-        print(correct_pred/len(b_pers)*100)
+        print("correct all, out of sample in percent:")
+        print(first_pred, correct_pred/len(b_pers)*100)
         print("added lines:")
-        countadd+=2
+        countadd+=4
         print(countadd)
         file.close()
     sys.stdout=o
-    return correct_pred/len(b_pers)*100
+    return first_pred, correct_pred/len(b_pers)*100
 def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimlines=None, change_pheno=None):
     '''edge case where -0 is identified as 0, binary=("00", "01", "11", "10", "--")'''
     countadd=0
@@ -678,9 +687,9 @@ def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_
             random.seed(s)
             sel_pers=(list(range(get_total_pers(prefix))))
             random.shuffle(sel_pers)
-            alt.append(compare(e, accept=lambda x: x in sel_pers[100:], plines=hapl,b_lines=b_lines, surpress_print=surpress_print))
+            alt.append(compare(e, accept=lambda x: x in sel_pers[100:], plines=hapl,b_lines=b_lines, surpress_print=surpress_print, amend=False)[1])
         else:
-            alt.append(compare(e, plines=hapl, b_lines=b_lines, surpress_print=surpress_print))
+            alt.append(compare(e, plines=hapl, b_lines=b_lines, surpress_print=surpress_print, amend=False)[0])
         if alt[-1]==None:
             alt.pop()
     return alt
@@ -689,12 +698,17 @@ def get_seed_from_file(txt:str):
 
 def grouping25(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=None, deletelog:bool=True, checkdoubles:bool=False,shuffle_in_level:bool=False, total_snp:int=None):
     '''runs the grouping scheme with a 90/10 k-fold each group has size of 22.5% and 10% is control for out of sample'''
+    grouping(fileprefix, seed, g_size, plines, change_pheno, deletelog, checkdoubles, shuffle_in_level,total_snp,given_share=0.25, controlshare=0.1)
+
+def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=None, deletelog:bool=True, checkdoubles:bool=False,shuffle_in_level:bool=False, total_snp:int=None, given_share:float=0.25, controlshare:float=0.1):
+    '''runs the grouping scheme with a controlshare k-fold each group has size of givenpercent-controlshare*givenpercent and 10% is control for out of sample'''
     k=get_total_pers(fileprefix=fileprefix)
+    takeshare=given_share-given_share*controlshare
     def givepers(l:int, sel_pers:list=[], fileprefix=fileprefix, k=k):
         if sel_pers==[]:
-            return list(range(l%4*int(0.225*k), (l%4+1)*int(0.225*k)))
+            return list(range(l%4*int(takeshare*k), (l%4+1)*int(takeshare*k)))
         else:
-            return sel_pers[l%4*int(0.225*k):(l%4+1)*int(0.225*k)]
+            return sel_pers[l%4*int(takeshare*k):(l%4+1)*int(takeshare*k)]
     print("start with seed", seed, "at", curr_time())
     random.seed(seed)
     sel_pers=(list(range(k)))
@@ -708,10 +722,7 @@ def grouping25(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=
         print(err)
     try:
         if res!=None:
-            
-            compare(res, fileprefix, change_pheno=change_pheno, plines=plines, )
-            print("Out of sample")
-            compare(res,fileprefix, accept=lambda x: True if (x in sel_pers[int(0.9*k):]) else False,  change_pheno=change_pheno, plines=plines)
+            compare(res,fileprefix, accept=lambda x: True if (x in sel_pers[int(1-controlshare*k):]) else False,  change_pheno=change_pheno, plines=plines)
     except Exception as err:
         print("error analysis of seed ", seed)
         print(err)
