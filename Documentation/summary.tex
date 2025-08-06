@@ -31,14 +31,15 @@ We want to emphasize the importance of quality control (QC) for this approach as
 Our data stems from a GWAS/PRS tutorial and the corresponding Git directory which we also use for quality control \cite{tutorial}. It has 109 subjects and 1'073'226 SNPs after the aforementioned QC.  \\
 
 
-For the selection of approaches the number of permitted unknowns is crucial, which is set to 2\% per individual and SNP. In the scope this means that there might still exist above 20'000 unknowns per individual. 
+For the selection of approaches the number of permitted unknowns is crucial, which is set to 2\% per individual and SNP. In the scope this means that there might still exist above 20'000 unknowns per individual. \\
 
+We found a second data set on imputed simulated blood lipid data on the 1k Genome Project \cite{1k}
 \section{Espresso}
-Espresso is a tool that performs 2-level logic minimisation. It uses heuristics to find a satisfying minimal cover. It takes a logic table as input and outputs a minimized circuit.  The output is not guaranteed to be optimal. \\
+Espresso is a tool that performs 2-level logic minimization. It uses heuristics to find a satisfying minimal cover. It takes a logic table as input and outputs a minimized circuit.  The output is not guaranteed to be optimal. \\
 
 "-" can used as don't cares. It is possible to specify special input types such as  \emph{.type fr} to indicate that not in case of an underspecified truth tables the underspecified cases are treated as don't cares. 
 
-
+f
 \section{Translation of genetic data into binary}
 \label{sec:encode}
 Most genetic data is stored in two pairwise inherited strings this is true particular for human autosomal genes. The manifestation can be made up from one of the four nucleobases (A/C/G/T) or an indentation of any length or a deletion (non-existence). The information for any particular SNP might also be partially missing. For any given position there commonly exist two different manifestations, one is labelled as the no-risk allele and the other allele is referred to as risk allele. There is no consensus for every SNP on what allele should be considered the risk allele, generally the variant with lower sampling rates is considered the risk allele. Two different studies might find different might find different risk alleles but they would still agree on the same manifestation which is in correlation with the disease. \\
@@ -112,7 +113,7 @@ Taking partial parts of the dataset and never discovering other parts is possibl
 
 \begin{enumerate} 
 \setcounter{enumi}{1}
-\item The out-of-data prediction accuracy predicted around the 50\% mark, potentially slightly above for hign $n$ or according to the formula $2p^2-2p+1$ for cases where $p\neq 0.5$.
+\item The out-of-data prediction accuracy predicted around the 50\% mark, according to the formula $2p^2-2p+1$ for cases where $p\neq 0.5$, assuming that the prediction also predicts with the same probability p, else it would simply be $p$ or $1-p$ for $p<0.5$.
 \setcounter{enumi}{3}
 \item High $n$ yield a smaller product, we explain deviations from this rule by the diverging paths taken in Espresso or in case of different dataset by the difference of possibilities. 
 \item Same as for products, just more pronounced as in practice this are higher numbers and therefore more possible outcomes(events). 
@@ -162,7 +163,7 @@ We can try to start with some small selection and iteratively build up until the
 
 
 
-The time it takes to go through the entire dataset is immense and from some point onwards there are likely no gains. This approach does not consider all possible relationships between different SNPs, in fact in only remarks the ones with a strong PRS anyways or the starting set, making this approach not equilibrated. 
+The time required to go through the entire dataset is immense and from some point onwards there are likely no gains. This approach does not consider all possible relationships between different SNPs, in fact in only remarks the ones with a strong PRS anyways or the starting set, making this approach not equilibrated. 
 
 
 
@@ -185,31 +186,38 @@ It was found that not all schemes support phenotype shuffling meaning that for e
 This method divides the individuals into different equal-sized groups, in each level one group is chosen and the dataset of only those individuals is considered on this level similar to the Pyramid scheme. 
 
 On each level, only a part of the individuals is considered, this means, that the minimal cover is optimized only for those people. On the next level, different individuals get selected, we can assume their phenotype is determined by the same underlying structure, therefore the previous minimal covers should suffice to find a minimal cover. If this is not the case, we have an over-specified truth table, this might be due to there not being an underlying structure or the missing detection of it or due to errors in genotyping. 
+We tested to methods for passing SNPs down a level: shuffling in every level or preserving original state. Preserving states did generally perform worse in terms of products and literals but also for out-of-sample accuracy. On the other hand, it might occur that good combinations from the previous level are split when shuffling in every level.
 
-We found 25\% of the in-sample data to be fitting for the approach. With alternating groups such as when making splitting the individuals into two groups yields lower prediction accuracy, while optimizing for the in-sample data. Additionally, alternating often fails due to overspecification especially if the order from the previous level is not respected (shuffle SNPs after each level).
+We found 25\% of the in-sample data to be fitting for the approach. With alternating groups such as when making splitting the individuals into two groups yields lower prediction accuracy, while optimizing for the in-sample data. Additionally, alternating often fails due to over-specification especially if the order from the previous level is not respected (shuffle SNPs after each level).
 
 
-\subsection{Introduce artificial diffusion based on specific criteria}
+\subsection{Introducing artificial diffusion based on specific criteria}
+
 We would like to test how multiple underlying products affect the data. Unfortunately, the available test data only requires one product. Although if we change the phenotype of all persons based on some specific genotype variation, we hope to see this exact configuration in the results furthermore we expect two products of which one is composed of our chosen diffusion criteria and to be closely related to a valid minimal cover for the original data. Further alterations or even combining of phenotypes might proof to be useful not only for evaluating the results but also for analyzing phenotypes with considerable pleiotropy or suspected subtypes.
 
 We could not replicate the expectations in any of the 5 run experiments with the grouping scheme with group sizes of 25 with the pairwise selection of SNP number 28 as present for the second individual or phenotype as the diffused phenotype. We will repeat the experiment with different SNPs. 
 
 \section{Evaluation of the methods}
-From the out-of-sample prediction accuracy, we determine that some approaches perform better than random, though we would hope for higher accuracy. \\
-
-We also see consistently the same SNP reappearing in different covers, which might signal the importance of that SNP. For shuffled phenotypes, this phenomena cannot be detected, hence there is no selection which is generally good at identifying persons. 
-This result is expected and supports the claim of significance of the found SNPs.
-
-The histogram seems less crowded than the Manhattan plot of the PRS of Figure \ref{fig:manhattan}. Also most of the SNP also have a high PRS value indicating correlation with the phenotype. 
 \begin{figure} [h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{histall.eps} 
 \caption {Histogram of multiple k-folds using one out of pyramid scheme, grouping scheme or phenotype shuffling schemes. The grouping scheme is superimposed on top of the k-fold. No overlap is detected, clear trends with the pyramid scheme are visible, while for shuffled phenotypes no order is apparent.   }\label{fig:play}
 }
 \end{figure}
 
 \begin{figure} [h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{accuracyplot.eps} 
-\caption {Prediction accuracies of  predicted outcomes in data out of sample data, never included in the data before. The red lines indicates the expected guessing accuracy for this data with a random approach. The data is theoretically continuous, here we observe the out-of-sample size to be too small (about 10) , explaining the occurences of overlapping quartiles and medians.}\label{fig:play}
+\caption {Prediction accuracies of  predicted outcomes in data out of sample data, never included in the data before. The red lines indicates the expected guessing accuracy for this data with a random approach. The data is theoretically continuous, here we observe the out-of-sample size to be too small (about 10) , explaining the occurrences of overlapping quartiles and medians.}\label{fig:play}
 }
 \end{figure}
+From the out-of-sample prediction accuracy, we determine that some approaches perform better than random, though we would hope for higher accuracy. \\
+
+We also consistently see some of the SNPs reappearing in different covers, which might signal the importance of that specific SNP. For shuffled phenotypes, this phenomena was not observed, hence there is no selection which is generally good for identifying persons. 
+This result is expected and supports the claim of significance of the found SNPs.
+
+The histogram seems less crowded than the Manhattan plot of the PRS of Figure \ref{fig:manhattan}. Also most of the SNP also have a high PRS value indicating correlation with the phenotype. Repeated results are a sign of confidence, but it also needs to be mentioned, that we are far away from having equal results in all iterations. This also indicates that potentially multiple global optima exist or it hasn't even been found yet.  
+
+Another question is whether the global optima or any found cover for this purposes actually has biological credibility in explaining the surveyed phenotype. 
+
+
+
 
 
 \newpage
@@ -218,5 +226,7 @@ The histogram seems less crowded than the Manhattan plot of the PRS of Figure \r
 \emph{Marees AT et al. } A tutorial on conducting genome-wide association studies: Quality control and statistical analysis. \url{https://pmc.ncbi.nlm.nih.gov/articles/PMC6001694/}
 \bibitem{lipid_data}
 \emph{Hajiaghabozorgi, M. } GWAS dataset with simulated binary phenotypes for 1000 Genome Project. March 1, 2023. \url{https://doi.org/10.5281/zenodo.7683384}
+\bibitem{1k}
+\emph{The 1000 Genomes Project Consortium.} A global reference for human genetic variation. Nature 526, p. 68–74. 2015.\url{ https://doi.org/10.1038/nature15393}
 \end{thebibliography}
 \end{document}
