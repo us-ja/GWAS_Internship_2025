@@ -654,7 +654,7 @@ def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_
 def get_seed_from_file(txt:str):
     return (int(''.join(filter(str.isdigit, txt[txt.find("given"):max((txt.find("bound_enf")),(txt.find("split")),(txt.find("shuffle")))]))))
 
-def grouping25(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=None, deletelog:bool=False, shuffle_in_level:bool=False, total_snp:int=None):
+def grouping25(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=None, deletelog:bool=True, shuffle_in_level:bool=False, total_snp:int=None):
     '''runs the grouping scheme with a 90/10 k-fold each group has size of 22.5% and 10% is control for out of sample'''
     k=get_total_pers(fileprefix=fileprefix)
     def givepers(l:int, sel_pers:list=[], fileprefix=fileprefix, k=k):
