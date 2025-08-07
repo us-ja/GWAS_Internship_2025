@@ -680,6 +680,7 @@ def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimline
 def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_print:bool=True, amend:bool=True,controlshare:float=0.09):
     '''sorts list and outputs a list of accuracies per file only adheres to input if not amended yet'''
     alt=[]
+    seeds=[]
     files.sort()
     hap=open(prefix+".ped")
     hapl=hap.readlines()
@@ -689,8 +690,9 @@ def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_
     biml.close()
     for e in files:
         
-        s=get_seed_from_file(e)
+        
         if accept_lim:
+            s=get_seed_from_file(e)
             total_pers=get_total_pers(prefix)
             random.seed(s)
             sel_pers=(list(range(total_pers)))
@@ -700,12 +702,14 @@ def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_
             # print(this_r)
             if this_r!=None:
                 alt.append(this_r[1])
+                seeds.append(get_seed_from_file(e))
         else:
             this_r=(compare(e, plines=hapl, b_lines=b_lines, surpress_print=surpress_print, amend=amend))
             if this_r!=None:
                 alt.append(this_r[0])
+                seeds.append(get_seed_from_file(e))
         
-    return alt
+    return alt, seeds
 def get_seed_from_file(txt:str):
     return (int(''.join(filter(str.isdigit, txt[txt.find("given"):max((txt.find("bound_enf")),(txt.find("split")),(txt.find("shuffle")))]))))
 
