@@ -38,7 +38,7 @@ for i in range(len(data)):
     plt.scatter(i + 1, np.mean(data[i]), color='green')
 
 
-plt.axhline(54/1.07, color='red', linestyle=':')
+plt.axhline(55/1.09, color='red', linestyle=':')
 plt.subplots_adjust(left=None, bottom=0.14, wspace=None)
 # plt.savefig('../Documentation/selbox.eps', format='eps')
 print("finished all at", curr_time())
