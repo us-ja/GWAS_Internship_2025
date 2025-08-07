@@ -9,8 +9,8 @@ seed=10
 
 print("Started at", curr_time())              
 
-sh,=get_shares(get_files(".", "s1", "res", ["bound"]),accept_lim=True, )[0]
-print(sh)
+sh=get_shares(get_files(".", "s1", "res", ["bound"]),accept_lim=True, )[0]
+
 bound=get_shares(get_files(".", "s1", "res", ["shuffle"]),accept_lim=True)[0]
 
 alt_b=get_shares(get_files(".", "alter", "res",),accept_lim=True)[0]
@@ -41,7 +41,7 @@ for i in range(len(data)):
 
 plt.axhline(55/1.09, color='red', linestyle=':')
 plt.subplots_adjust(left=None, bottom=0.14, wspace=None)
-# plt.savefig('../Documentation/accuracyplot.eps', format='eps')
+plt.savefig('../Documentation/accuracyplot.eps', format='eps')
 print("finished all at", curr_time())
 plt.show()
 

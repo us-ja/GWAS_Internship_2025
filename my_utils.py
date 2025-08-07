@@ -690,7 +690,6 @@ def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_
     biml.close()
     for e in files:
         
-        
         if accept_lim:
             s=get_seed_from_file(e)
             total_pers=get_total_pers(prefix)
@@ -707,7 +706,7 @@ def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_
             this_r=(compare(e, plines=hapl, b_lines=b_lines, surpress_print=surpress_print, amend=amend))
             if this_r!=None:
                 alt.append(this_r[0])
-                seeds.append(get_seed_from_file(e))
+                seeds.append(None)
         
     return alt, seeds
 def get_seed_from_file(txt:str):
