@@ -8,13 +8,13 @@ seed=10
 
 print("Started at", curr_time())              
 
-sh=get_shares(get_files(".", "s1", "res", ["bound"]),accept_lim=False, )
+sh=get_shares(get_files(".", "s1", "res", ["bound"]),accept_lim=False, )[0]
 
-bound=get_shares(get_files(".", "s1", "res", ["shuffle"]),accept_lim=False)
+bound=get_shares(get_files(".", "s1", "res", ["shuffle"]),accept_lim=False)[0]
 
-alt_b=get_shares(get_files(".", "alter", "res",["shuffle"]),accept_lim=False)
+alt_b=get_shares(get_files(".", "alter", "res",["shuffle"]),accept_lim=False)[0]
 
-alt_s=get_shares(get_files(".", "alter", "res",["bound"]))
+alt_s=get_shares(get_files(".", "alter", "res",["bound"]))[0]
 
 # kfold_b= get_shares(get_files("../k-fold", "bound", "res",) )
 # kfold_s= get_shares(get_files("../k-fold", "shuffle", "res",))

@@ -6,18 +6,19 @@ from my_utils import *
 seed=10
 
 
+
 print("Started at", curr_time())              
 
-sh=get_shares(get_files(".", "s1", "res", ["bound"]),accept_lim=True, )
+sh,=get_shares(get_files(".", "s1", "res", ["bound"]),accept_lim=True, )[0]
+print(sh)
+bound=get_shares(get_files(".", "s1", "res", ["shuffle"]),accept_lim=True)[0]
 
-bound=get_shares(get_files(".", "s1", "res", ["shuffle"]),accept_lim=True)
-
-alt_b=get_shares(get_files(".", "alter", "res",),accept_lim=True)
+alt_b=get_shares(get_files(".", "alter", "res",),accept_lim=True)[0]
 
 # alt_s=get_shares(get_files(".", "alter", "res",["bound"]))
 
-kfold_b= get_shares(get_files("../k-fold", "bound", "res",) )
-kfold_s= get_shares(get_files("../k-fold", "shuffle", "res",))
+kfold_b= get_shares(get_files("../k-fold", "bound", "res",) )[0]
+kfold_s= get_shares(get_files("../k-fold", "shuffle", "res",))[0]
 
 plt.figure(figsize=(10,5))
 plt.title('Out of sample prediction accuracy')
