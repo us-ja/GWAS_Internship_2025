@@ -510,22 +510,29 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
     file=open(result)
     lines=file.readlines()
     file.close()
-    if lines[-2]=="added lines:":
-        for i in range(-int(lines[-1]),0 ):
-            print(lines[i])
-
-        return tuple(map(float, tuple(lines[-3])))
     
+    if "added lines:\n" == lines[-2]:#is already amended
+        for i in range(-int(lines[-1]),0 ):
+            if not surpress_print:
+                print(lines[i])
+        if lines[-3]=="no res\n":
+            return None
+        return tuple(map(float, lines[-3].split()))
     countadd=0
     if amend:
         file=open(result, 'a')
         sys.stdout=file
-        print("\n Continue with comparison")
-        countadd+=2
+        print("Compare:")
+        countadd+=1
     if int(lines[1])==0:
-        if not surpress_print:
+        if not surpress_print or amend:
             print("no res")
             countadd+=1
+        if amend:
+            print("added lines:")
+            countadd+=2
+            print(countadd)
+        sys.stdout=o
         return None
     for i in range(-4-int(lines[1]),-4):
         ele= lines[i].split(sep=',')
@@ -550,7 +557,7 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
     if accept!=(lambda x: True):
         methods+=1
     for x in range(methods):
-        if x==1 and (amend or not surpress_print):
+        if x==1 and (print_ind or not surpress_print):
             print("Out of sample:")
             countadd+=1
         b_pers=[]
@@ -589,7 +596,6 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
                 else:
                     fneg+=1
                     if print_ind:
-                        
                         print("False negative for person", e,"with share of", round(share,2))
                         countadd+=1
         if not surpress_print:
@@ -670,8 +676,8 @@ def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimline
         if share>maxshare:
             maxshare=share
     return maxshare, phenotype, countadd
-def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_print=True):
-    '''sorts list and outputs a list of accuracies per file'''
+def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_print:bool=True, amend:bool=True,):
+    '''sorts list and outputs a list of accuracies per file only adheres to input if not amended yet'''
     alt=[]
     files.sort()
     hap=open(prefix+".ped")
@@ -688,12 +694,12 @@ def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_
             sel_pers=(list(range(get_total_pers(prefix))))
             random.shuffle(sel_pers)
             #might override function
-            this_r=compare(e, accept=lambda x: x in sel_pers[100:], plines=hapl,b_lines=b_lines, surpress_print=surpress_print, amend=False)
+            this_r=compare(e, accept=lambda x: x in sel_pers[100:], plines=hapl,b_lines=b_lines, surpress_print=surpress_print, amend=amend)
             # print(this_r)
             if this_r!=None:
                 alt.append(this_r[1])
         else:
-            this_r=(compare(e, plines=hapl, b_lines=b_lines, surpress_print=surpress_print, amend=False))
+            this_r=(compare(e, plines=hapl, b_lines=b_lines, surpress_print=surpress_print, amend=amend))
             if this_r!=None:
                 alt.append(this_r[0])
         
@@ -707,6 +713,7 @@ def grouping25(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=
 
 def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=None, deletelog:bool=True, checkdoubles:bool=False,shuffle_in_level:bool=False, total_snp:int=None, given_share:float=0.25, controlshare:float=0.1):
     '''runs the grouping scheme with a controlshare k-fold each group has size of givenpercent-controlshare*givenpercent and 10% is control for out of sample'''
+    o=sys.stdout
     k=get_total_pers(fileprefix=fileprefix)
     takeshare=given_share-given_share*controlshare
     def givepers(l:int, sel_pers:list=[], fileprefix=fileprefix, k=k):
@@ -722,13 +729,17 @@ def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=No
     comm="25_s"+str(seed)
     try:
         res=(combine_build_up(g_size, fileprefix,add_comm=comm, seed=seed, sel_pers=sel_pers,change_pers_func=givepers,checkdoubles=checkdoubles,shuffle_in_level=shuffle_in_level, p_lines=plines, deletelog=deletelog, total_snp=total_snp))
+        sys.stdout=o
     except Exception as err:
+        sys.stdout=o
         print("seed failed", seed)
         print(err)
     try:
         if res!=None:
             compare(res,fileprefix, accept=lambda x: True if (x in sel_pers[int(1-controlshare*k):]) else False,  change_pheno=change_pheno, plines=plines)
+            sys.stdout=o
     except Exception as err:
+        sys.stdout=o
         print("error analysis of seed ", seed)
         print(err)
 
