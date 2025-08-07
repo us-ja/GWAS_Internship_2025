@@ -676,7 +676,7 @@ def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimline
         if share>maxshare:
             maxshare=share
     return maxshare, phenotype, countadd
-def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_print:bool=True, amend:bool=True,):
+def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_print:bool=True, amend:bool=True,controlshare:float=0.08):
     '''sorts list and outputs a list of accuracies per file only adheres to input if not amended yet'''
     alt=[]
     files.sort()
@@ -690,11 +690,12 @@ def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_
         
         s=get_seed_from_file(e)
         if accept_lim:
+            total_pers=get_total_pers(prefix)
             random.seed(s)
-            sel_pers=(list(range(get_total_pers(prefix))))
+            sel_pers=(list(range(total_pers)))
             random.shuffle(sel_pers)
             #might override function
-            this_r=compare(e, accept=lambda x: x in sel_pers[100:], plines=hapl,b_lines=b_lines, surpress_print=surpress_print, amend=amend)
+            this_r=compare(e, accept=lambda x: x in sel_pers[total_pers-int(controlshare*total_pers):], plines=hapl,b_lines=b_lines, surpress_print=surpress_print, amend=amend)
             # print(this_r)
             if this_r!=None:
                 alt.append(this_r[1])
