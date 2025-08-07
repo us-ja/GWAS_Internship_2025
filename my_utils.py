@@ -741,7 +741,7 @@ def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=No
     print(sel_pers)
     comm="25_s"+str(seed)
     try:
-        res=(combine_build_up(g_size, fileprefix,add_comm=comm, seed=seed, sel_pers=sel_pers,change_pers_func=givepers,checkdoubles=checkdoubles,shuffle_in_level=shuffle_in_level, p_lines=plines, deletelog=deletelog, total_snp=total_snp))
+        res=(combine_build_up(g_size, fileprefix,add_comm=comm, seed=seed, sel_pers=sel_pers,change_pers_func=givepers,checkdoubles=checkdoubles,shuffle_in_level=shuffle_in_level, p_lines=plines, deletelog=deletelog, total_snp=total_snp, change_pheno=change_pheno))
         sys.stdout=o
     except Exception as err:
         sys.stdout=o
