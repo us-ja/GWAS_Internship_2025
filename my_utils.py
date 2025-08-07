@@ -532,6 +532,7 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
             print("added lines:")
             countadd+=2
             print(countadd)
+            file.close()
         sys.stdout=o
         return None
     for i in range(-4-int(lines[1]),-4):
@@ -676,7 +677,7 @@ def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimline
         if share>maxshare:
             maxshare=share
     return maxshare, phenotype, countadd
-def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_print:bool=True, amend:bool=True,controlshare:float=0.08):
+def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_print:bool=True, amend:bool=True,controlshare:float=0.09):
     '''sorts list and outputs a list of accuracies per file only adheres to input if not amended yet'''
     alt=[]
     files.sort()
@@ -745,3 +746,4 @@ def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=No
         print(err)
 
     print("finished all at", curr_time())
+
