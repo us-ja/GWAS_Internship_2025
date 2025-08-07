@@ -737,7 +737,7 @@ def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=No
         print(err)
     try:
         if res!=None:
-            compare(res,fileprefix, accept=lambda x: True if (x in sel_pers[int(1-controlshare*k):]) else False,  change_pheno=change_pheno, plines=plines)
+            compare(res,fileprefix, accept=lambda x: True if (x in sel_pers[k-int(controlshare*k):]) else False,  change_pheno=change_pheno, plines=plines)
             sys.stdout=o
     except Exception as err:
         sys.stdout=o
