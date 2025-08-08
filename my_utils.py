@@ -613,14 +613,14 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
         file.close()
     sys.stdout=o
     return first_pred, correct_pred/len(b_pers)*100
-def diagnose_pers(products:list, e:str, prefix:str="HapMap", lines=None, bimlines=None, change_pheno=None):
+def diagnose_pers(products:list, indiv:int, prefix:str="HapMap", lines=None, bimlines=None, change_pheno=None):
     '''edge case where -0 is identified as 0, binary=("00", "01", "11", "10", "--")'''
     countadd=0
     if lines==None:
         hap= open(prefix+".ped")
         lines=hap.readlines()
         hap.close()
-    indivual=(lines[e]).split('\t')
+    indivual=(lines[indiv]).split('\t')
     maxshare=0
     if change_pheno!=None:
         phenotype=change_pheno(indivual[1])
@@ -729,11 +729,18 @@ def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=No
     o=sys.stdout
     k=get_total_pers(fileprefix=fileprefix)
     takeshare=given_share-given_share*controlshare
+    assert takeshare>0 and takeshare<=1, "takeshare specification is impossible"
+    repeats=int(1/takeshare)
+    if repeats<1:
+        repeats=1
+    
     def givepers(l:int, sel_pers:list=[], fileprefix=fileprefix, k=k):
+        
         if sel_pers==[]:
-            return list(range(l%4*int(takeshare*k), (l%4+1)*int(takeshare*k)))
+            
+            return list(range(l%repeats*int(takeshare*k), (l%repeats+1)*int(takeshare*k)))
         else:
-            return sel_pers[l%4*int(takeshare*k):(l%4+1)*int(takeshare*k)]
+            return sel_pers[l%repeats*int(takeshare*k):(l%repeats+1)*int(takeshare*k)]
     print("start with seed", seed, "at", curr_time())
     random.seed(seed)
     sel_pers=(list(range(k)))
@@ -745,11 +752,13 @@ def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=No
         sys.stdout=o
     except Exception as err:
         sys.stdout=o
+        res=None
         print("seed failed", seed)
         print(err)
+    predic_acc=None
     try:
-        if res!=None:
-            compare(res,fileprefix, accept=lambda x: True if (x in sel_pers[k-int(controlshare*k):]) else False,  change_pheno=change_pheno, plines=plines)
+        if res!=None and controlshare>0:
+            predic_acc=compare(res,fileprefix, accept=lambda x: True if (x in sel_pers[k-int(controlshare*k):]) else False,  change_pheno=change_pheno, plines=plines)
             sys.stdout=o
     except Exception as err:
         sys.stdout=o
@@ -757,4 +766,82 @@ def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=No
         print(err)
 
     print("finished all at", curr_time())
+    return predic_acc, res
 
+def createdata(fileprefix, total_snp, total_pers,seed, def_ph):
+    o=sys.stdout
+    random.seed(seed)
+    ped=open(fileprefix+".ped", 'w')
+
+    sys.stdout=ped
+    snp_p= []
+    for i in range(total_snp):
+        snp_p.append(random.uniform(0.05,0.5))
+    def get_total_pers(x=None, y=None):
+        return total_pers
+    def get_total_snp(x=None, y=None):
+        return total_snp
+    l=[]
+    for i in range(total_pers):
+        line=[]
+        pheno=random.randint(0,1)
+        
+        for j in range(2):
+            line.append(str(i))
+        for j in range(3):
+            line.append(str(0))
+        for j in range(1):
+            line.append(str(pheno+1))
+        unsat=False
+        remain=len(def_ph)
+        for j in range(total_snp):
+            if j in def_ph:
+                a="T"
+                b="T"
+                rand=random.uniform(0,1)
+                if not pheno:
+                    if unsat:
+                        if rand>snp_p[j]:
+                            a="C"
+                        if rand>snp_p[j]:
+                            b="C"
+                    elif rand<1/remain:
+                        a="C"
+                        unsat=True
+                    else:
+                        remain-=1
+
+            else:   
+                if random.uniform(0,1)<snp_p[j]:
+                    a="A"
+                else:
+                    a="G"
+                if random.uniform(0,1)<snp_p[j]:
+                    b="A"
+                else:
+                    b="G"
+            
+            
+            line.append(a+" "+b)
+            
+        print('\t'.join(line))
+
+    ped.close()
+    bim=open(fileprefix+".bim", 'w')
+    sys.stdout=bim
+    for i in range(len(snp_p)):
+        line=[]
+        for j in range(3):
+            line.append(str(i))
+        line.append(str(int(snp_p[i]*1000)))
+        line.append("A")
+        line.append("G")
+        if i in def_ph:
+            line.append("C")
+            line.append("T") 
+            
+        print('\t'.join(line))
+    bim.close()
+
+
+    sys.stdout=o
