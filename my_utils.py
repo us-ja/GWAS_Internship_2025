@@ -730,9 +730,9 @@ def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=No
     k=get_total_pers(fileprefix=fileprefix)
     takeshare=given_share-given_share*controlshare
     assert takeshare>0 and takeshare<=1, "takeshare specification is impossible"
-    repeats=int(1/takeshare)
-    if repeats<1:
-        repeats=1
+    repeats=int(1/given_share)
+    assert repeats>0, "repeat is not in the supposed range, see grouping function given_share"
+   
     
     def givepers(l:int, sel_pers:list=[], fileprefix=fileprefix, k=k):
         
