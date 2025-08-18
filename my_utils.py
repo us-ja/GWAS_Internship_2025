@@ -754,7 +754,9 @@ def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=No
         sys.stdout=o
         res=None
         print("seed failed", seed)
-        print(err)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno, err)
     predic_acc=None
     try:
         if res!=None and controlshare>0:
@@ -763,7 +765,9 @@ def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=No
     except Exception as err:
         sys.stdout=o
         print("error analysis of seed ", seed)
-        print(err)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno, err)
 
     print("finished all at", curr_time())
     return predic_acc, res
