@@ -7,8 +7,8 @@ total_snp=1000
 total_pers=109
 seed=500
 
-for mult_prod in range(2,5):
-    for prod in range(1,2):
+for mult_prod in range(1,5):
+    for prod in range(1,20//mult_prod):
         print(mult_prod, prod)
         def_ph=[]
         for i in range(mult_prod):

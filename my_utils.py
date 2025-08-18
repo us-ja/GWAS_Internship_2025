@@ -105,7 +105,7 @@ def to_espresso(selection:list, sel_pers:list, lines:list, risk:list, norisk:lis
                         allele+=1  
                     elif norisk[i]!=e and "-" not in e:
                         
-                        print("major problem", risk[i], norisk[i], e)
+                        print("major problem", risk[i], norisk[i], e, "in to espresso")
                         print(selection[i],i) 
             idict[indivual[1]]["snps"].append(binary[allele])   
             snp_num+=1        
@@ -278,8 +278,10 @@ def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefi
             seed=value
 
     if selection_type=="random" or selection_type=="seeded":
-        random.seed(value)
+        random.seed(seed)
         selection=random.sample(range(6, total+6),k=amt_select_snp)
+    elif selection_type=="total":
+        selection=list(range(6, total+6))
     elif selection_type=="given":
         selection=list(map(lambda x: x + 6, map(int,(map(abs, selection)))))
     else:   #treats it as sequential
@@ -843,8 +845,6 @@ def createdata(fileprefix:str, total_snp:int, total_pers:int,seed, def_ph:list, 
                 b="T"
                 rand=random.uniform(0,1)
                 if not pheno or j not in anded:
-
-                    
                     if rand>snp_p[j]:
                         a="C"
                     if rand>snp_p[j]:
