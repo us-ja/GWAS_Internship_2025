@@ -772,7 +772,7 @@ def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=No
     print("finished all at", curr_time())
     return predic_acc, res
 
-def createdata(fileprefix, total_snp, total_pers,seed, def_ph):
+def createdata(fileprefix:str, total_snp:int, total_pers:int,seed, def_ph:list, mult_prod:int=False):
     o=sys.stdout
     random.seed(seed)
     ped=open(fileprefix+".ped", 'w')
@@ -785,11 +785,39 @@ def createdata(fileprefix, total_snp, total_pers,seed, def_ph):
         return total_pers
     def get_total_snp(x=None, y=None):
         return total_snp
-    l=[]
+    
     for i in range(total_pers):
+        selected=False
         line=[]
         pheno=random.randint(0,1)
         
+        if mult_prod:
+            anded=[]
+            all=[]
+            forbidden=[]
+            for k in range(len(def_ph)-1, -1, -1):
+                if not selected and random.uniform(0,1)<1/(k+1) :
+                    anded.extend(def_ph[k])
+                    selected=True
+                elif selected and random.uniform(0,1)<0.225 :#random chance of also being true
+                    anded.extend(def_ph[k])
+                    selected=True 
+                if not pheno:
+                    forbidden.append(random.choice(def_ph[k]))
+                all.extend(def_ph[k])
+
+
+            assert selected==True, "no product was ever selected"
+        else:
+            anded=def_ph
+            all=def_ph
+            if not pheno:
+                forbidden.append(def_ph[random.randint(0,len(def_ph))])
+
+
+
+
+
         for j in range(2):
             line.append(str(i))
         for j in range(3):
@@ -797,24 +825,21 @@ def createdata(fileprefix, total_snp, total_pers,seed, def_ph):
         for j in range(1):
             line.append(str(pheno+1))
         unsat=False
-        remain=len(def_ph)
+        
         for j in range(total_snp):
-            if j in def_ph:
+            if j in all:
                 a="T"
                 b="T"
                 rand=random.uniform(0,1)
-                if not pheno:
-                    if unsat:
-                        if rand>snp_p[j]:
-                            a="C"
-                        if rand>snp_p[j]:
-                            b="C"
-                    elif rand<1/remain:
-                        a="C"
-                        unsat=True
-                    else:
-                        remain-=1
+                if not pheno or j not in anded:
 
+                    
+                    if rand>snp_p[j]:
+                        a="C"
+                    if rand>snp_p[j]:
+                        b="C"
+                    if j in forbidden:
+                        a="C"
             else:   
                 if random.uniform(0,1)<snp_p[j]:
                     a="A"
@@ -838,11 +863,13 @@ def createdata(fileprefix, total_snp, total_pers,seed, def_ph):
         for j in range(3):
             line.append(str(i))
         line.append(str(int(snp_p[i]*1000)))
-        line.append("A")
-        line.append("G")
-        if i in def_ph:
+        
+        if i in all:
             line.append("C")
             line.append("T") 
+        else:
+            line.append("A")
+            line.append("G")
             
         print('\t'.join(line))
     bim.close()
