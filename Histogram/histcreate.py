@@ -19,9 +19,12 @@ def get_res(files, max_num=None):
     for e in files:
         file=open(e)
         lines=file.readlines()
+        added_lin=0
+        if "added lines:\n" == lines[-2]:#is already amended
+            added_lin=int(lines[-1])
         if int(lines[1])!=0 and (max_num==None or max_num>count):
             res=set()
-            for i in range(-4-int(lines[1]),-4):
+            for i in range(-4-int(lines[1])-added_lin,-4-added_lin):
                 ele= lines[i].split(sep=',')
                 ele[0] =ele[0][1:]
                 ele[-1]=ele[-1][:-2]
