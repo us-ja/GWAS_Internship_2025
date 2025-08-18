@@ -461,12 +461,16 @@ def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bo
                 file = open(file_name)
                 lines=file.readlines()
                 for i in range(-4-int(lines[1]),-4):
-                    ele= lines[i].split(sep=',')
-                    ele[0] =ele[0][1:]
-                    ele[-1]=ele[-1][:-2]
-                    ele=list(map(int, map(float, ele)))
-                    for j in range(len(ele)):
-                        new_identified.add(ele[j])
+                    if lines[i]=="[]\n":#no usable result
+                        # print("breaked at 467")
+                        pass
+                    else:
+                        ele= lines[i].split(sep=',')
+                        ele[0] =ele[0][1:]
+                        ele[-1]=ele[-1][:-2]
+                        ele=list(map(int, map(float, ele)))
+                        for j in range(len(ele)):
+                            new_identified.add(ele[j])
                 identified.extend(new_identified)
                 if len(identified)-ends[-1]>=group_size:
                     ends.append(len(identified))  
@@ -488,18 +492,21 @@ def combine_build_up(group_size:int, dataprefix, total_snp:int=None , bounded:bo
                 print("refused last level")
                 f_res=f_res=(conversion(identified, method, comment,level-1, fileprefix=dataprefix, total=total_snp, stopifoverspecif=True, sel_pers=sel_pers, delete_logs=deletelog, change_pheno=change_pheno, allow_unknowns=allow_unknowns, checkdoubles=checkdoubles, seed=seed))
         print( "finished at level", level, curr_time())
-        print("the selection gave :")
+        print("the selection gave :\n")
         identified=set()
         file=open(f_res)
         lines=file.readlines()
         file.close()
         for i in range(-4-int(lines[1]),-4):
-            ele= lines[i].split(sep=',')
-            ele[0]=ele[0][1:]
-            ele[-1]= ele[-1][:-2]
-            ele=(list( map(float, ele)))
-            for j in range(len(ele)):
-                print(ele[j], end=", ")
+            if lines[i]=="[]\n":#no usable result
+                # print("breaked at 500")
+                pass
+            else:
+                ele= lines[i].split(sep=',')
+                ele[0]=ele[0][1:]
+                ele[-1]= ele[-1][:-2]
+                ele=(list( map(float, ele)))
+                print(ele)
         
         print()
         return f_res 
@@ -536,11 +543,14 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
         sys.stdout=o
         return None
     for i in range(-4-int(lines[1]),-4):
-        ele= lines[i].split(sep=',')
-        ele[0] =ele[0][1:]
-        ele[-1]=ele[-1][:-2]
-        ele=list( map(float, ele))
-        products.append(ele)
+        if lines[i]=="[]\n":#no usable result
+            pass
+        else:
+            ele= lines[i].split(sep=',')
+            ele[0] =ele[0][1:]
+            ele[-1]=ele[-1][:-2]
+            ele=list( map(float, ele))
+            products.append(ele)
     
     a_pers= lines[-8-int(lines[1])].split(',')
     a_pers[0], a_pers[-1]=a_pers[0][1:], a_pers[-1][:-2]
@@ -745,7 +755,7 @@ def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=No
     random.seed(seed)
     sel_pers=(list(range(k)))
     random.shuffle(sel_pers)
-    print(sel_pers)
+    # print(sel_pers)
     comm="25_s"+str(seed)
     try:
         res=(combine_build_up(g_size, fileprefix,add_comm=comm, seed=seed, sel_pers=sel_pers,change_pers_func=givepers,checkdoubles=checkdoubles,shuffle_in_level=shuffle_in_level, p_lines=plines, deletelog=deletelog, total_snp=total_snp, change_pheno=change_pheno))
@@ -759,9 +769,10 @@ def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=No
         print(exc_type, fname, exc_tb.tb_lineno, err)
     predic_acc=None
     try:
-        if res!=None and controlshare>0:
-            predic_acc=compare(res,fileprefix, accept=lambda x: True if (x in sel_pers[k-int(controlshare*k):]) else False,  change_pheno=change_pheno, plines=plines)
-            sys.stdout=o
+        assert res!=None, "result was none "
+        assert controlshare>0, "controlshare < 0"
+        predic_acc=compare(res,fileprefix, accept=lambda x: True if (x in sel_pers[k-int(controlshare*k):]) else False,  change_pheno=change_pheno, plines=plines)
+        sys.stdout=o
     except Exception as err:
         sys.stdout=o
         print("error analysis of seed ", seed)
