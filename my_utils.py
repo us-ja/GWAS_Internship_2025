@@ -271,6 +271,7 @@ def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefi
         amt_select_snp=total
     if total<amt_select_snp:
         amt_select_snp=total
+        print("overflow cut", total)
     if selection_type=="random":
         seed=random.randint(0,amt_select_snp)
     else:
@@ -285,9 +286,7 @@ def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefi
     elif selection_type=="given":
         selection=list(map(lambda x: x + 6, map(int,(map(abs, selection)))))
     else:   #treats it as sequential
-        if seq_start+amt_select_snp>total:
-            amt_select_snp=total-seq_start
-            print("overflow cut", total)
+        assert seq_start+amt_select_snp<=total+6, "value above specific range"
         selection=list(range(seq_start,seq_start+amt_select_snp))
     path=dir+selection_type+comment+str(value)+"/"
     output=path+"output_"+str(amt_select_snp)
@@ -590,7 +589,12 @@ def compare(result, prefix:str="HapMap", accept=lambda x: True, showall:bool=Fal
         correct_pred=0
         fpos=0
         fneg=0
-
+        if len(b_pers)==0:
+            print("no result can be determined as b_pers has lenght 0")
+            print("added lines:")
+            countadd+=3
+            print(countadd)
+            return None
         
         for e in b_pers:
             share, pheno, add= (diagnose_pers(products,e, prefix, lines=plines, bimlines=b_lines, change_pheno=change_pheno))
@@ -825,7 +829,7 @@ def createdata(fileprefix:str, total_snp:int, total_pers:int,seed, def_ph:list, 
             anded=def_ph
             all=def_ph
             if not pheno:
-                forbidden.append(def_ph[random.randint(0,len(def_ph))])
+                forbidden.append(def_ph[random.randint(0,len(def_ph))])#random.choice
 
 
 
