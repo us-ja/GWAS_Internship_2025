@@ -8,19 +8,19 @@ import matplotlib.pyplot as plt
 # predic_acc=conversion(list(range(20)), "given", "total", 0, "testdata_2", delete_logs=False)#works
 # print(predic_acc)
 results=[]
-start=10
-end=300
+start=1
+end=350
 steps=1
 for i in range(start, end, steps):
 
     results.append(True)
-    if i>1:
+    if i>3:
         fileprefix="testdata_1001"
         print("analysis of ", i)
         try:
             file=open("sequentialtotal6/result"+str(i)+".txt")
         except:
-            file=open(conversion(i, "sequential", "total", 6, fileprefix, delete_logs=False))
+            file=open(conversion(i, "sequential", "total", 6, fileprefix))
             
         lines=file.readlines()
         file.close()

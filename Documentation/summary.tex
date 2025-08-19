@@ -26,33 +26,42 @@ We are using minimal cover algorithms (namely Espresso) to find a small selectio
 \tableofcontents
 \newpage
 \section{Introduction}
-\section {Quality control}
-We want to emphasize the importance of quality control (QC) for this approach as it generally relies on the assumption that the data has no inconsistencies at all. 
+Genome wide association studies  (GWAS)  are done to identify significant risk loci from genome data. The goal is to understand the relation between the observed phenotype and the underlying genetic structure. 
 
-Our data stems from a GWAS/PRS tutorial and the corresponding Git directory which we also use for quality control \cite{tutorial}. It has 109 subjects and 1'073'226 SNPs after the aforementioned QC.  \\
+For this purpose many tools such as PRS already exist. "A polygenic risk score (abbreviated PRS) uses genomic information alone to assess a person’s chances of having or developing a particular medical condition. A person’s PRS is a statistical calculation based on the presence or absence of multiple genomic variants, without taking environmental or other factors into account."\cite{prs} Through stratification different ethnicities can be captured accurately. 
 
+Rarely is it possible to assess the relationship between multiple single nucleotide polymorphisms with PRS as a tool due to it being limited to a single genomic variational presence or absence. Two or more independent causes for a disease might greatly affect the capability of this model. On the other hand, PRS is resistant against undetected cases in the control group. 
+
+We want to explore a different method using Espresso which from a truth table finds a minimized circuit. We hope that thanks to this circuit, we are able to extract more information especially of the relations between different SNPs. A minimized cover can be understood as simplest possible explanation, therefore we actively search for it. 
+
+\subsection {Quality control and Data}
+Quality control (QC) is a crucial step when processing data. In the context of genetic data, specific limits are set to ensure the quality of the data. Data which violates this form are excluded either through the exclusion of an entire SNP (column) or a subject (row). It involves analysis of the Hardy-Weinberg equilibrium, the heterozygosity rate, checking cryptic relatedness (familiar matches), limiting the missingness of data, matching gender data with the sex chromosome. SNPs with a low minor allele frequencies (MAF) are also excluded as no significant statement is possible. 
+
+Our data stems from a GWAS/PRS tutorial\cite{tutorial}. We also stick to the instructions for the QC given during this tutorial, after which our data has 109 subjects and 1'073'226 SNPs.  \\
 
 For the selection of approaches the number of permitted unknowns is crucial, which is set to 2\% per individual and SNP. In the scope this means that there might still exist above 20'000 unknowns per individual. \\
 
-We found a second data set on imputed simulated blood lipid data on the 1k Genome Project \cite{1k}. It contains more than one million SNPs for 2504 individuals before QC. There are no missing genotype data. After QC, with 1\% minor allele frequency threshold 75733 SNPs remain, no individuals have to be filtered out.
-\section{Espresso}
-Espresso is a tool that performs 2-level logic minimization. It uses heuristics to find a satisfying minimal cover. It takes a logic table as input and outputs a minimized circuit.  The output is not guaranteed to be optimal. \\
+We found a second data set on imputed simulated blood lipid data from the 1k Genome Project \cite{1k}. It also contains more than one million SNPs for 2'504 individuals before QC. There are no missing genotype data. After QC, with 1\% MAF threshold 75'733 SNPs remain, no individuals had to be filtered out.\\
 
-"-" can used as don't cares. It is possible to specify special input types such as  \emph{.type fr} to indicate that not in case of an underspecified truth tables the underspecified cases are treated as don't cares. 
+\subsection{Espresso}
+Espresso is a tool that performs 2-level logic minimization. It uses heuristics to find a satisfying minimal cover. It takes a logic table in form of a truth table as input and outputs a minimized circuit.  The output is not guaranteed to be optimal. \\
 
+"-" (don't cares) tell Espresso that it can assign any value to this place. It is possible to specify special input forms for example  \emph{.type fr} to indicate that in case of an underspecified truth table the underspecified cases are treated as if they were don't cares. \\
 
-\section{Translation of genetic data into binary}
+One wrong data point especially if the phenotype (outcome of the truth table) is affected, can have a huge impact on the found minimal cover. Therefore, we want to emphasize the importance of  QC for this approach as it generally relies on the assumption that the data has no inconsistencies at all and that the phenotype is fully determinable by genetic analysis and no outside influence. 
+
+\subsection{Translation of genetic data into binary}
 \label{sec:encode}
-Most genetic data is stored in two pairwise inherited strings this is true particular for human autosomal genes. The manifestation can be made up from one of the four nucleobases (A/C/G/T) or an indentation of any length or a deletion (non-existence). The information for any particular SNP might also be partially missing. For any given position there commonly exist two different manifestations, one is labelled as the no-risk allele and the other allele is referred to as risk allele. There is no consensus for every SNP on what allele should be considered the risk allele, generally the variant with lower sampling rates is considered the risk allele. Two different studies might find different might find different risk alleles but they would still agree on the same manifestation which is in correlation with the disease. \\
+Most genetic data in particular for human autosomal genes is stored in two pairwise inherited strings. The manifestation can be made up from one of the four nucleobases (A/C/G/T) or an indentation of any length or a deletion (non-existence). The information for any particular SNP might also be partially missing due to errors in the laboratory. For any given position there commonly exist two different manifestations. One is labelled as the no-risk allele and the other allele is referred to as risk allele. There is no general consensus on what allele should be considered the risk allele, generally the variant with lower sampling rates is considered the risk allele. Two different studies might find different might find different risk alleles but they would still agree on the same manifestation which is in correlation with the disease. \\
 
 
-We abstract the manifestations to a count of the occurrences of the risk allele. This count we decode into two digits long binary number. To avoid the unnecessary big Hamming distance of 2 between the counts of 2 ($10_2$) and 1 ($01_2$), while the smaller distance between 2 and 0 ($00_2$) would only have a Hamming distance of 1, we encode 2 as $11_2$. For the effect of this choice consider Figure \ref{fig:binary}.\\
+We abstract the manifestations to a count of the occurrences of the risk allele. This count we decode into two digits long binary number. To avoid the unnecessary big Hamming distance of 2 between the counts of 2 ($10_2$) and 1 ($01_2$), while the smaller distance between 2 and 0 ($00_2$) would only have a Hamming distance of 1, we encode 2 as $11_2$. This seems to slightly improve the performance, which is visible in Figure \ref{fig:binary}.\\
 
-Phenotypes for each individual should already exist in an easily binary translatable form.  We focus on binary phenotypes, if this approach shows promising results it is also possible to extend the approach to continuous  data or different potentially related diseases with pleiotropy. 
+Phenotypes for each subject should already exist in an easily binary translatable form. We focus on binary phenotypes, it could be imagined to extend the approach to continuous data, but we have to remember that the entire deviation should be explained by genetic data and no outside factors. Different potentially related diseases with pleiotropy might be a more fitting use-case.
 
 \section{Evaluation of results}
 \label{sec:evaluate}
-We use a range of different criteria to approximate the quality of our method. Each criteria has its own advantages and flaws which should always be taken into consideration. No single criteria is sufficient for showing a working method rather does it give an indication.
+We use a range of different criteria to approximate the quality of our methods. Each criteria has its own advantages and flaws which should always be taken into consideration. Although, no single criteria is sufficient for proofing a working method, it can give an indication whether this path should be pursued or not.
 
 \begin{enumerate}
 \item Previous identification of SNPs by other researchers
@@ -66,28 +75,28 @@ We might also discuss potential issues or perks of a specific method which go be
 
 \subsection{Previous identification of SNPs by other researchers}
 If there already exists a genetic analysis on the specific phenotype we are researching, we can compare those findings. 
-In other cases, it might even be the case that datasets or phenotypes are simulated. Knowing the underlying structure, we expect our results to match the simulations SNPs, if our method works. 
+In other cases, it might even be the case that datasets or phenotypes are simulated. Knowing the underlying structure, we expect our results to match the simulations SNPs, under the assumption that our method works. 
 \subsection{Out-of-data accuracy}
-We apply  a k-fold process to our data where we select 90\% of the individuals and the rest serves as out-of-sample data. We can then test the individuals not included whether they satisfy the minimal cover or no and determine whether this deviates from their phenotype.  We expect $2p^2-2p+1$ to be the share of correctly guessed by random guessing where $p$ is the probability of having the phenotype of the "disease". In practice, an ever higher limit should be set at  the max of p  or 1-p as simply always guessing the same outcome would reach this accuracy. 
+We can apply a k-fold process to our data where we select 90\% of the individuals and the rest serves as out-of-sample data. We can then test the individuals not included in our sample to test whether they satisfy the minimal cover or not. From this we determine whether this deviates from their phenotype. Now, a deviation means a wrong prediction. We expect $2p^2-2p+1$ to be the share of correctly guessed by random guessing where $p$ is the probability of having the phenotype of the "disease". In practice, an even higher limit should be set at  the max of p or 1-p as simply always guessing the same outcome attains this accuracy. 
 
 \subsection{PRS}
-PRS or polygenic risk score can be easily determined. It is a single value for each SNP indicating the modelled risk of having the disease when having the risk allele. The distribution of the PRSs is likely to be normal with barycentre around 0. PRS can be simply added up to get a risk score. 
-\begin{figure} [!h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{qq.eps} 
+The PRS can be easily determined. It is a single value for each SNP indicating the modeled risk of having the disease when having the risk allele. The distribution of the PRSs is likely to be normal with barycentre around 0. The scores from multiple SNPs can be added to get a (polygenic) risk score. 
+\begin{figure} [!h] \centering{\includegraphics[ trim={10 0 0 30},clip, width=\linewidth]{qq.eps} 
 \caption {QQ-plot of combined PRS, clearly distributed normally }\label{fig:qq}
 }\end{figure}
 
-It is possible to select a couple of SNPs including their direction (risk/non-risk allele) and calculate a score. If the score is highly positive it indicates predictive power while scores near 0 indicate low predictive power.\\
+It is possible to select a couple of SNPs including their direction (risk/non-risk allele) and calculate a score. If the score is extreme it indicates predictive power (in positive or negative way), while scores near 0 indicate low predictive power.\\
 
 
-\begin{figure} [!h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{PRS_selected} 
+\begin{figure} [!h] \centering{\includegraphics[ trim={0 0 0 20},clip, width=\linewidth]{PRS_selected} 
 \caption {Boxplot of PRS of different selections with same size, our selections stem from the pyramid scheme, they deviate significantly from a random selection. }\label{fig:boxplot}
 }\end{figure}
 
-\begin{figure} [!h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{Manhattan_PRS} 
+\begin{figure} [!h] \centering{\includegraphics[ trim={0 10 0 20},clip, width=\linewidth]{Manhattan_PRS} 
 \caption {Manhattan plot of our toy data }\label{fig:manhattan}
 }\end{figure}
 
-For the purpose of analyzing the combined predictive power of SNPs the PRS is not a particularly effective metric as it only states the individual predictive power, which may be obfuscated by balancing out effects. Generally, a high PRS indicates that SNP with high predictive power have been found, but it is not necessary that they are balanced and therefore low scores should a priori not indicate a failure of the method. \\
+For the purpose of analyzing the combined predictive power of SNPs the PRS is not a particularly effective metric. It only states the individual predictive power, which may be obfuscated by balancing out effects. Generally, a high PRS indicates that  some SNPs with high predictive power have been found, but it is not required that they are balanced (unrelated) and therefore low scores should a priori not indicate a failure of the method. \\
 
 
 \subsection{Products}
@@ -227,5 +236,7 @@ Another question is whether the global optima or any found cover for this purpos
 \emph{Hajiaghabozorgi, M. } GWAS dataset with simulated binary phenotypes for 1000 Genome Project. March 1, 2023. \url{https://doi.org/10.5281/zenodo.7683384}
 \bibitem{1k}
 \emph{The 1000 Genomes Project Consortium.} A global reference for human genetic variation. Nature 526, p. 68–74. 2015.\url{ https://doi.org/10.1038/nature15393}
+\bibitem{prs}
+\emph{Teri Manolio} National Human Genome Research Institute (NIH). August 19 2025. \url{https://www.genome.gov/genetics-glossary/Polygenic-Risk-Score-PRS}
 \end{thebibliography}
 \end{document}
