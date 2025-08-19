@@ -77,7 +77,7 @@ We might also discuss potential issues or perks of a specific method which go be
 If there already exists a genetic analysis on the specific phenotype we are researching, we can compare those findings. 
 In other cases, it might even be the case that datasets or phenotypes are simulated. Knowing the underlying structure, we expect our results to match the simulations SNPs, under the assumption that our method works. 
 \subsection{Out-of-data accuracy}
-We can apply a k-fold process to our data where we select 90\% of the individuals and the rest serves as out-of-sample data. We can then test the individuals not included in our sample to test whether they satisfy the minimal cover or not. From this we determine whether this deviates from their phenotype. Now, a deviation means a wrong prediction. We expect $2p^2-2p+1$ to be the share of correctly guessed by random guessing where $p$ is the probability of having the phenotype of the "disease". In practice, an even higher limit should be set at  the max of p or 1-p as simply always guessing the same outcome attains this accuracy. 
+We can apply a k-fold process to our data where we select 90\% of the individuals and the rest serves as out-of-sample data. We can then test the individuals not included in our sample to test whether they satisfy the minimal cover or not. From this we determine whether this deviates from their phenotype. Now, a deviation means a wrong prediction. We expect $2p^2-2p+1$ to be the share of correctly guessed phenotypes by random guessing where $p$ is the probability of having the phenotype of the "disease". In practice, an even higher limit should be set at $p$ if $p>0.5$ else $1-p$  as simply always guessing the same outcome attains this accuracy. 
 
 \subsection{PRS}
 The PRS can be easily determined. It is a single value for each SNP indicating the modeled risk of having the disease when having the risk allele. The distribution of the PRSs is likely to be normal with barycentre around 0. The scores from multiple SNPs can be added to get a (polygenic) risk score. 
@@ -100,30 +100,32 @@ For the purpose of analyzing the combined predictive power of SNPs the PRS is no
 
 
 \subsection{Products}
-The amount of products we get in output from Espresso can be used as an indication of how many subgroups there are needed to find a minimal cover.
+The output from Espresso is given as one line per product. The amount of products can be used as an indication of how many subgroups there are needed to find a minimal cover.
 
 Generally, we assume less products in the result to be preferable as this can be seen as simpler relationship, which we deem to be more probable to fit the real cause. \\
 
-It should be analyzed what impact each of the products have if there are multiple products, eventually it might prove necessary to discard some products which are specifying on one small subset. This is to avoid overfitting by stratifying to fit the given data perfectly but not the out-of-sample data.
+It should be analyzed what impact each of the products have if there are multiple products, eventually it might prove necessary to discard some products which are specifying only to one small subset, while other products are true for many subjects. This is to avoid overfitting by stratifying to fit the given data perfectly but not the out-of-sample data.
 
-If multiple products with considerable sizes (for in- and out-of- sample data), deviate in many SNPs, it can be speculated that two different groups being affected by different subtypes of diseases were classed into one single phenotype. 
+If multiple products with considerable sizes (for in- and out-of- sample data) deviate in many SNPs, it can be speculated that two different groups being affected by different subtypes of diseases were classed into one single phenotype. This is especially interesting when multiple causes or outcomes are suspected. 
 \subsection{Literals}
-The amount of literals like for products indicate how complex the found solution is, again we prefer the simplest solution as we deem if to fit the real causes with a higher chance.
+The amount of literals like for products indicates how complex the found solution is, again we prefer the simplest solution as we deem if to fit the real causes with a higher chance.
 \subsection{Time \& Complexity}
 Since the complexity of our approach is high, it is inevitable to consider it as part of the evaluation. An easy measure of the complexity is the time it took us to run the program. Change of dataset, parameters or computational  capabilities all have an influence on the time.
 \section{ Tried methods}
+Since no literature exists, nor do we have an already working method, we have to build it ourselves. Since most of the algorithms used do not change between the methods, we try to build up an infrastructure relying on the already built methods and modifying them to support additional methods or use the prebuilt block for building new blocks. 
 \subsection{Primitive approaches}
+Some methods seem to be trivial, but they will never work with our dataset. Nevertheless is it a good idea to consider those approaches as they might help us understand the more complex methods.
 \subsubsection{Entire}
-Taking the entire dataset and let it be solved by Espresso, is impossible as the time requirements grow exponentially, as we know the problem is not even in P. 
+Taking the entire dataset and let Espresso try to find a minimal cover is impossible as the time requirements grow exponentially, as we know the problem is not even in P. 
 
-For small datasets, it might be possible and useful, though wrong genotyping or incorrect phenotypes will remain hidden. 
+For small datasets, it might be possible and useful, though wrong genotyping or incorrect phenotypes will remain hidden. Another approach could be to filter more strictly in an attempt to decrease the size of the dataset.  
+
+If previous knowledge exists suggesting that the result is made up by a single product, we could apply a filter and excluded all positions where the subjects having the phenotype differ as this makes it unsatisfiable if it were in the cover. 
 \subsubsection{Omitting parts of the dataset}
 \label{sec:omit}
-Taking partial parts of the dataset and never discovering other parts is possible though it is highly doubtful how a good solution should found consistently. For discovering the dataset and experimenting this we did run some experiments. In the context of this experiment when we refer to $n$ we mean the amount of SNPs. 
+Taking partial parts of the dataset and never discovering other parts is possible though it is highly doubtful how a satisfying solution can even be found consistently. For discovering the dataset and experimenting with different encodings, we did run some experiments. In the context of this experiment when we refer to $n$ we mean the amount of SNPs. 
 
 \begin{enumerate} 
-\setcounter{enumi}{1}
-\item The out-of-data prediction accuracy predicted around the 50\% mark, according to the formula $2p^2-2p+1$ for cases where $p\neq 0.5$, assuming that the prediction also predicts with the same probability p, else it would simply be $p$ or $1-p$ for $p<0.5$.
 \setcounter{enumi}{3}
 \item High $n$ yield a smaller product, we explain deviations from this rule by the diverging paths taken in Espresso or in case of different dataset by the difference of possibilities. 
 \item Same as for products, just more pronounced as in practice this are higher numbers and therefore more possible outcomes(events). 
@@ -143,7 +145,7 @@ The following table gives an overview of the acquired results with all 109 subje
  2000&25&2&8min
 \end{tabular}
 \end{center}
-\begin{figure}[!h]
+\begin{figure}[!ht]
 \centering{\includegraphics[width=\linewidth]{randseq} \caption {Comparison between random and sequential selection methods }\label{fig:randseq}
 }
 \end{figure}
@@ -202,19 +204,22 @@ We found 25\% of the in-sample data to be fitting for the approach. With alterna
 
 Later the code was changed to refer to the previous level's selection of individuals if the final analysis is over-specified. This should resolve most cases where over-specification was posing a problem.  
 
+\section{Creating data with given structure}
+We have already seen that interfering with the data like for phenotype shuffling, provides further insights. In this chapter we try to evaluate what is possible to achieve with our method and what has to be expected simply by random occurrences. 
+
 \subsection{Introducing artificial diffusion based on specific criteria}
 
 We would like to test how multiple underlying products affect the data. Unfortunately, the available test data only requires one product. Although if we change the phenotype of all persons based on some specific genotype variation, we hope to see this exact configuration in the results furthermore we expect two products of which one is composed of our chosen diffusion criteria and to be closely related to a valid minimal cover for the original data. Further alterations or even combining of phenotypes might proof to be useful not only for evaluating the results but also for analyzing phenotypes with considerable pleiotropy or suspected subtypes.
 
 We could not replicate the expectations in any of the 5 run experiments with the grouping scheme with group sizes of 25 with the pairwise selection of SNP number 28 as present for the second individual or phenotype as the diffused phenotype. We will repeat the experiment with different SNPs. 
-
+\subsection{Simulated data with given phenotype-genotype relations}
 \section{Evaluation of the methods}
-\begin{figure} [h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{histall.eps} 
+\begin{figure} [!ht] \centering{\includegraphics[ trim={10 0 0 20},clip, width=\linewidth]{histall.eps} 
 \caption {Histogram of multiple k-folds using one out of pyramid scheme, grouping scheme or phenotype shuffling schemes. The grouping scheme is superimposed on top of the k-fold. No overlap is detected, clear trends with the pyramid scheme are visible, while for shuffled phenotypes no order is apparent.   }\label{fig:play}
 }
 \end{figure}
 
-\begin{figure} [h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{accuracyplot.eps} 
+\begin{figure} [!ht] \centering{\includegraphics[ trim={0 0 0 10},clip, width=\linewidth]{accuracyplot.eps} 
 \caption {Prediction accuracies of  predicted outcomes in data out of sample data, never included in the data before. The red lines indicates the expected guessing accuracy for this data with a random approach. The data is theoretically continuous, here we observe the out-of-sample size to be too small (about 10) , explaining the occurrences of overlapping quartiles and medians.}\label{fig:play}
 }
 \end{figure}
@@ -226,6 +231,9 @@ This result is expected and supports the claim of significance of the found SNPs
 The histogram seems less crowded than the Manhattan plot of the PRS of Figure \ref{fig:manhattan}. Also most of the SNP also have a high PRS value indicating correlation with the phenotype. Repeated results are a sign of confidence, but it also needs to be mentioned, that we are far away from having equal results in all iterations. This also indicates that potentially multiple global optima exist or it hasn't even been found yet.  Except for  the pyramid scheme there do not exist clear "favorite" SNPs but rather a small collection of SNPs appearing more than once.
 
 Another question is whether the global optima or any found cover for this purposes actually has biological credibility in explaining the surveyed phenotype. 
+
+
+
 
 
 \newpage
