@@ -44,7 +44,7 @@ For the selection of approaches the number of permitted unknowns is crucial, whi
 We found a second data set on imputed simulated blood lipid data from the 1k Genome Project \cite{1k}. It also contains more than one million SNPs for 2'504 individuals before QC. There are no missing genotype data. After QC, with 1\% MAF threshold 75'733 SNPs remain, no individuals had to be filtered out.\\
 
 \subsection{Espresso}
-Espresso is a tool that performs 2-level logic minimization. It uses heuristics to find a satisfying minimal cover. It takes a logic table in form of a truth table as input and outputs a minimized circuit.  The output is not guaranteed to be optimal. \\
+Espresso is a tool that performs 2-level logic minimization. It uses heuristics to find a satisfying minimal cover. It takes a logic table in form of a truth table as input and outputs a minimized circuit.  The output is not guaranteed to be optimal. We consider it to be a minimal cover, though this might not be true. \\
 
 "-" (don't cares) tell Espresso that it can assign any value to this place. It is possible to specify special input forms for example  \emph{.type fr} to indicate that in case of an underspecified truth table the underspecified cases are treated as if they were don't cares. \\
 
@@ -128,12 +128,12 @@ Taking partial parts of the dataset and never discovering other parts is possibl
 \begin{enumerate} 
 \setcounter{enumi}{3}
 \item High $n$ yield a smaller product, we explain deviations from this rule by the diverging paths taken in Espresso or in case of different dataset by the difference of possibilities. 
-\item Same as for products, just more pronounced as in practice this are higher numbers and therefore more possible outcomes(events). 
+\item Same as for products, just more pronounced as in practice this are higher numbers and therefore more possible outcomes (events) exist. 
 \item This analysis is fast and easy to execute for small n, it scales exponentially with n. 
 \end{enumerate}
 
 
-The following table gives an overview of the acquired results with all 109 subjects considered. Each SNP is decoded as two digits, hence the input size is double the amount of selected SNPs. The results are averaged, estimated and depend on the selection of the SNPs and are used as a baseline assumption:
+The following table gives an overview of the acquired results with all 109 subjects considered. Each SNP is decoded as two digits, hence the input size is double the amount of selected SNPs. The results are averaged, estimated and depend on the selection of the SNPs. Here the selection was done randomly.  We might use those results as baseline assumptions in further experiments:
 
 \begin{center}
 \begin{tabular}{ c| c| c| c}
@@ -152,13 +152,11 @@ The following table gives an overview of the acquired results with all 109 subje
 \begin{figure}[!h] \centering{\includegraphics[width=\linewidth, trim={0 0 0 4},clip]{binarycomp} 
 \caption {Comparison between different binary encoding methods }\label{fig:binary}
 }\end{figure}
-If there are less than 60 SNP, it is generally not possible to find an assignment as the truth table would be over-specified. \\
+For a random selection with less than 60 SNPs, we can generally not find a cover as the truth table is over-specified. \\
 
-A random selection of SNP generally decreases the identified products required for a minimal cover, this trends also affects the literals but is less pronounced. Additionally, it was discovered that missing data is not distributed equally among the data and therefore in sequential analysis even for a relative high n it might not be possible to find a cover due to over-specification. For random selections this constitutes less of a concern as we are guaranteed to have at most 2\% missingness.  
+A random selection of SNPs generally decreases the identified products required for a minimal cover compared to a sequential selection. This trend also affects the literals but is less pronounced. Additionally, it was discovered that in sequential analysis even for a relative high $n$ it might not be possible to find a cover due to over-specification. This is due to missing data not being distributed equally among the data, causing regions with high missingness ratio. This constitutes less of a concern for random selection, as in QC we filtered to have at an average of at most 2\% missingness. 
 
-
-
-The random method will be used exclusively in all future analysis. 
+The random method will be used exclusively in all future analysis as we deem it to yield the better results for our purposes. 
 
 
 Different encoding methods (see \ref{sec:encode}) also influence the result. The adjusted method is selected for the rest of this document. 
@@ -171,48 +169,51 @@ Different encoding methods (see \ref{sec:encode}) also influence the result. The
 \caption {Iterative approaches with SNP indicating the number of selected SNPs, the limit was set on literals. 0: strictly decreasing, 1: monotonically decreasing, 2: no equivalences (increasing or decreasing)}\label{fig:play}
 }
 \end{figure}
-We can try to start with some small selection and iteratively build up until the entire data set is included. We start with the smallest possible set such that the truth table is not over-specified and add one SNP, we evaluate this table, find a minimal cover and from the number of literals in the minimal cover, we decide whether this SNP stays in the selection depending on some criteria. Then we do same for every SNP. 
+We can try to start with some small selection and iteratively build up until the entire data set is included. We start with the smallest possible set such that the truth table is not over-specified and add one SNP, we evaluate this table, find a minimal cover and from the number of literals in the minimal cover, we decide whether this SNP stays in the selection depending on some criteria. Then we do same for every SNP until all SNP were included at one point. 
 
-
-
-The time required to go through the entire dataset is immense and from some point onwards there are likely no gains. This approach does not consider all possible relationships between different SNPs, in fact in only remarks the ones with a strong PRS anyways or the starting set, making this approach not equilibrated. 
-
-
+The time required to go through the entire dataset is immense, we are not able to tell Espresso what covers we already found and therefore we do not gain anything from the iterations before.  From some point onwards there are likely no gains as the best solution is a local minima of only a few SNPs.This approach does not consider all possible relationships between different SNPs. In fact, it only remarks the ones with a strong PRS anyways or a  tendency towards the starting set, making this approach not equilibrated. Furthermore, we are not guaranteed by Espresso to have an optimal minimal cover.
 
 \subsection{Pyramid scheme}
-In the pyramid scheme, the algorithm runs sequentially  through the entire dataset by separating all SNPs into groups of size $k$, finding a minimal cover for every group. All the SNPs making part of a found minimal cover are then subsequently taken to the next level. This is repeated until in one level  all the identified SNPs from the previous level are less than k SNPs, from where a minimal cover for the entire universe of less than k SNPs can be found. \\
+In the pyramid scheme, the algorithm runs sequentially through the entire dataset by separating all SNPs into groups of size $k$, finding a minimal cover for every group. All the SNPs making part of a found minimal cover are then subsequently taken to the next level. This is repeated until in one level  all the identified SNPs from the previous level are less than k SNPs, from where a minimal cover for the entire universe of less than k SNPs can be found. \\
 
-The selection of the group can be done in many ways, we decided to analyze the random selection approach as well as sequential, which should correspond to the sequences in the DNA as already explained in Chapter \ref{sec:omit}, and clearly preferable as we can see in Figure \ref{fig:randseq}.
+The selection of the group can be done in many ways, we decided to analyze the random selection approach as well as sequential, which should correspond to the sequences in the DNA as already explained in Chapter \ref{sec:omit}. We found random selection to be clearly preferable as we can see in Figure \ref{fig:randseq} and also because of the missingness problem with sequential selection.
 
-
-\subsection{Phenotype shuffling}
-We shuffle the phenotypes of all the individuals, this is achieved through random selection of k persons which have phenotype 2 respectively 1. This preserves $p$ of having the phenotype. 
-This altered dataset can be run to test different methods. When this is done we expect the resulting minimal cover to be random, meaning that the method we compare to where structure exist should need less literals or products as there is an underlying structure dictating the outcome, where this is obviously not true for shuffled phenotypes. We can also control with the frequencies of the selected SNPs with shuffled phenotypes whether there exists an overlap with the SNPs of our normal method. \\
-It was found that not all schemes support phenotype shuffling. For example the grouping scheme relies on the fact that there is some underlying determining for genotypes per phenotype. It therefore might occur that since the involved individuals from one level have an over-specified truth table due to the phenotypes basically being random as the different subgroups of individuals on each level are independent.  \\
 
 \subsection{Grouping scheme}
 \begin{figure} [!h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{selbox.eps} 
 \caption {Prediction accuracies of the grouping scheme for the out of sample which means not in last level. Every category originally had 15 sample, because of over-specification some are eliminated, the updated count is displayed below the category name.   }\label{fig:selbox}
 }
 \end{figure}
-This method divides the individuals into different equal-sized groups, in each level one group is chosen and the dataset of only those individuals is considered on this level similar to the Pyramid scheme. 
+The grouping scheme method divides the individuals into different equal-sized groups. For each level one group is chosen and the dataset of only those individuals is considered, the rest is performed similar to the Pyramid scheme. 
 
 On each level, only a part of the individuals is considered, this means, that the minimal cover is optimized only for those people. On the next level, different individuals get selected, we can assume their phenotype is determined by the same underlying structure, therefore the previous minimal covers should suffice to find a minimal cover. If this is not the case, we have an over-specified truth table, this might be due to there not being an underlying structure or the missing detection of it or due to errors in genotyping. 
-We tested to methods for passing SNPs down a level: shuffling in every level or preserving original state. Preserving states did generally perform worse in terms of products and literals but also for out-of-sample accuracy. On the other hand, it might occur that good combinations from the previous level are split when shuffling in every level.
+We tested two methods for passing SNPs down a level: shuffling in every level and preserving original state. Preserving states did generally perform worse in terms of products and literals but also for the out-of-sample accuracy. On the other hand, it might occur that good combinations from the previous level are split when shuffling in every level.
 
-We found 25\% of the in-sample data to be fitting for the approach. With alternating groups such as when splitting the individuals into two groups yields lower prediction accuracies, while optimizing for the in-sample data. Additionally, alternating often fails due to over-specification especially if the order from the previous level is not respected (shuffle SNPs after each level).
+We found group sizes of 25\% of the in-sample data to be fitting for the approach with our initial dataset. With alternating groups, such as when splitting the individuals into two groups (group sizes of 50\%), the method yields lower prediction accuracies than the Pyramid scheme or 25\% group sizes. We suspect it  was optimizing for the in-sample data. Additionally, alternating often fails due to over-specification especially if the order from the previous level is not respected (shuffle SNPs after each level).
 
-Later the code was changed to refer to the previous level's selection of individuals if the final analysis is over-specified. This should resolve most cases where over-specification was posing a problem.  
+Later the code was changed to refer to the previous level's selection of individuals if the final analysis is over-specified. This should resolve most cases where over-specification was still posing a problem.  We maintain the stance the randomization between the levels is preferable as this allows for more diverse range of combinations.
 
 \section{Creating data with given structure}
-We have already seen that interfering with the data like for phenotype shuffling, provides further insights. In this chapter we try to evaluate what is possible to achieve with our method and what has to be expected simply by random occurrences. 
+In this chapter we try to evaluate what is possible to achieve with our method and what has to be expected simply by random occurrences. We simulate or change data such that we have a more direct correspondence, which we can try to predict. This gives us an understanding of the capabilities of our methods.
+\subsection{Phenotype shuffling}
+We shuffle the phenotypes of all the individuals, this is achieved through random selection of k persons which have phenotype 2 respectively 1. This preserves $p$ of having the phenotype. 
+This altered dataset can be run to test different methods. When this is done we expect the resulting minimal cover to be random. 
+Our method where structure exists, should need less literals or products as there is an underlying structure dictating the outcome, while this is obviously not true for shuffled phenotypes. We can also check the frequencies of the selected SNPs with shuffled phenotypes to see whether there exists an overlap with the SNPs of our normal method. If this were to be the case repeatedly, this  would hint at a problem in our method potentially stemming from the fact that identifying individuals with certain SNPs is easy, which we generally do not want as this would be overfitting.\\
+It was found that not all schemes support phenotype shuffling. For example the grouping scheme relies on the fact that there is some underlying structure determining the phenotype from the  genotypes. It was observed that over-specification might occur that since due to the phenotypes being random attributed. This causes the SNP from a previous level to be nearly entirely insignificant. \\
+
 
 \subsection{Introducing artificial diffusion based on specific criteria}
 
-We would like to test how multiple underlying products affect the data. Unfortunately, the available test data only requires one product. Although if we change the phenotype of all persons based on some specific genotype variation, we hope to see this exact configuration in the results furthermore we expect two products of which one is composed of our chosen diffusion criteria and to be closely related to a valid minimal cover for the original data. Further alterations or even combining of phenotypes might proof to be useful not only for evaluating the results but also for analyzing phenotypes with considerable pleiotropy or suspected subtypes.
+We would like to test how multiple underlying products affect the data. Unfortunately, the available test data only requires one product. If we change the phenotype of all persons based on some specific genotype variation, we hope to see this exact configuration in the results. Furthermore, we expect two products of which one is composed of our chosen diffusion criteria and to be closely related to a valid minimal cover for the original data. Further alterations or even combining of phenotypes might proof to be useful not only for evaluating the results but also for analyzing phenotypes with considerable pleiotropy or suspected subtypes.
 
-We could not replicate the expectations in any of the 5 run experiments with the grouping scheme with group sizes of 25 with the pairwise selection of SNP number 28 as present for the second individual or phenotype as the diffused phenotype. We will repeat the experiment with different SNPs. 
+We could not replicate the expectations in any of the 5 run experiments. We run the experiment with the grouping scheme with group sizes of 25. We diffused the phenotype by oring the phenotype with the pairwise selection of a specific SNP. This replaced phenotype, we expect to have the same minimal cover plus an additional product containing the specific SNP.  
 \subsection{Simulated data with given phenotype-genotype relations}
+
+We create a simulated dataset. For simplicity, we attribute only A (risk) and G (norisk) for all SNP not used for the phenotype generation, while C (risk) and T (norisk) serve for SNP determining the phenotype. This does not have an influence on the results as we encode them independent of the actual letter. Each SNP (with some caveats for  the determining SNPs), gets attributed a random MAF uniformly distributed between 5\% and 50\%. \\
+
+We mostly tested with the same size as our initial dataset. If less anded 3 SNPs determine the SNP, our methods find this exact cover. Adding more anded SNPs, gives as result only a subset of all determining SNPs with 3 identified SNPs. Apparently they suffice for a minimal cover, repeated tests could unveil more SNPs, identification with the histogram should be possible. 
+Oring the determining SNPs for the phenotype failed to be detected even with only 1 SNP per product. This is due to a limitation in Espresso, which needs to be investigated further. 
+
 \section{Evaluation of the methods}
 \begin{figure} [!ht] \centering{\includegraphics[ trim={10 0 0 20},clip, width=\linewidth]{histall.eps} 
 \caption {Histogram of multiple k-folds using one out of pyramid scheme, grouping scheme or phenotype shuffling schemes. The grouping scheme is superimposed on top of the k-fold. No overlap is detected, clear trends with the pyramid scheme are visible, while for shuffled phenotypes no order is apparent.   }\label{fig:play}
@@ -225,16 +226,12 @@ We could not replicate the expectations in any of the 5 run experiments with the
 \end{figure}
 From the out-of-sample prediction accuracy, we determine that some approaches perform better than random, though we would hope for higher accuracy. \\
 
-We also consistently see some of the SNPs reappearing in different covers, which might signal the importance of that specific SNP. For shuffled phenotypes, this phenomena was not observed, hence there is no selection which is generally good for identifying persons. 
+We consistently see some of the SNPs reappearing in different covers, which might signal the importance of that specific SNP. For shuffled phenotypes, this phenomena was not observed, hence there is no selection which is generally good for identifying persons. 
 This result is expected and supports the claim of significance of the found SNPs.
 
-The histogram seems less crowded than the Manhattan plot of the PRS of Figure \ref{fig:manhattan}. Also most of the SNP also have a high PRS value indicating correlation with the phenotype. Repeated results are a sign of confidence, but it also needs to be mentioned, that we are far away from having equal results in all iterations. This also indicates that potentially multiple global optima exist or it hasn't even been found yet.  Except for  the pyramid scheme there do not exist clear "favorite" SNPs but rather a small collection of SNPs appearing more than once.
+The histogram seems less crowded than the Manhattan plot of the PRS of Figure \ref{fig:manhattan}. Also most of the SNP have a high PRS value indicating correlation with the phenotype. Repeated results are a sign of confidence, but it also needs to be mentioned, that we are far away from having equal results in all iterations. This also indicates that potentially multiple global optima exist or it hasn't even been found yet.  Except for  the pyramid scheme there does not exist clear "favorite" SNPs but rather a small collection of SNPs appearing more than once.
 
 Another question is whether the global optima or any found cover for this purposes actually has biological credibility in explaining the surveyed phenotype. 
-
-
-
-
 
 \newpage
 \begin{thebibliography}{99}
@@ -246,5 +243,7 @@ Another question is whether the global optima or any found cover for this purpos
 \emph{The 1000 Genomes Project Consortium.} A global reference for human genetic variation. Nature 526, p. 68–74. 2015.\url{ https://doi.org/10.1038/nature15393}
 \bibitem{prs}
 \emph{Teri Manolio} National Human Genome Research Institute (NIH). August 19 2025. \url{https://www.genome.gov/genetics-glossary/Polygenic-Risk-Score-PRS}
+\bibitem{10ygwas}
+\emph{Peter M. Visscher et al. } 10 Years of GWAS Discovery: Biology, Function, and Translation, The American Journal of Human Genetics . July 6 2017, p 5-22. 
 \end{thebibliography}
 \end{document}
