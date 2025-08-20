@@ -891,3 +891,7 @@ def createdata(fileprefix:str, total_snp:int, total_pers:int,seed, def_ph:list, 
 
 
     sys.stdout=o
+
+
+def get_distinct_from_res(fileprefix):
+    pass
