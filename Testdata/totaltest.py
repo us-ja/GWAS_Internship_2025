@@ -55,8 +55,10 @@ for k in range(len(results)):
         # plt.vlines(x=i, ymin=0, ymax=1, colors='red')
 bin_s=10
 hist=list(map(lambda x: x+start, correct))
-print(hist)
 plt.hist(hist, bins=list(range(start, end+bin_s, bin_s*steps)))
+plt.title("Successful identifications")
+plt.xlabel("SNPs considered")
+plt.ylabel("Correct identifications out of "+str(bin_s)+" possible")
 plt.show()
 
 
