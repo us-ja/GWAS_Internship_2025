@@ -215,15 +215,16 @@ We mostly tested with the same size as our initial dataset. If less anded 3 SNPs
 Oring the determining SNPs for the phenotype failed to be detected even with only 1 SNP per product. This is due to a limitation in Espresso, which needs to be investigated further. 
 
 \section{Evaluation of the methods}
+\begin{figure} [!ht] \centering{\includegraphics[ trim={0 0 0 20},clip, width=\linewidth]{accuracyplot.eps} 
+\caption {Prediction accuracies of  predicted outcomes in data out of sample data, never included in the data before. The red lines indicates the expected guessing accuracy for this data with a random approach. The data is theoretically continuous, here we observe the out-of-sample size to be too small (about 10) , explaining the occurrences of overlapping quartiles and medians.}\label{fig:play}
+}
+\end{figure}
 \begin{figure} [!ht] \centering{\includegraphics[ trim={10 0 0 20},clip, width=\linewidth]{histall.eps} 
 \caption {Histogram of multiple k-folds using one out of pyramid scheme, grouping scheme or phenotype shuffling schemes. The grouping scheme is superimposed on top of the k-fold. No overlap is detected, clear trends with the pyramid scheme are visible, while for shuffled phenotypes no order is apparent.   }\label{fig:play}
 }
 \end{figure}
 
-\begin{figure} [!ht] \centering{\includegraphics[ trim={0 0 0 10},clip, width=\linewidth]{accuracyplot.eps} 
-\caption {Prediction accuracies of  predicted outcomes in data out of sample data, never included in the data before. The red lines indicates the expected guessing accuracy for this data with a random approach. The data is theoretically continuous, here we observe the out-of-sample size to be too small (about 10) , explaining the occurrences of overlapping quartiles and medians.}\label{fig:play}
-}
-\end{figure}
+
 From the out-of-sample prediction accuracy, we determine that some approaches perform better than random, though we would hope for higher accuracy. It is apparent, that improvements are required or rather that a single cover does not suffice to make any kind of prediction.\\
 
 We consistently see some of the SNPs reappearing in different covers, which might signal the importance of that specific SNP. For shuffled phenotypes, this phenomena was not observed, hence there is no selection which is generally good for identifying persons. 
