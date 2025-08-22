@@ -176,9 +176,9 @@ The time required to go through the entire dataset is immense, we are not able t
 \subsection{Pyramid scheme}
 In the pyramid scheme, the algorithm runs sequentially through the entire dataset by separating all SNPs into groups of size $k$, finding a minimal cover for every group. All the SNPs making part of a found minimal cover are then subsequently taken to the next level. This is repeated until in one level  all the identified SNPs from the previous level are less than k SNPs, from where a minimal cover for the entire universe of less than k SNPs can be found. \\
 
-The selection of the group can be done in many ways, we decided to analyze the random selection approach as well as sequential, which should correspond to the sequences in the DNA as already explained in Chapter \ref{sec:omit}. We found random selection to be clearly preferable as we can see in Figure \ref{fig:randseq} and also because of the missingness problem with sequential selection.
+The selection of the group can be done in many ways, we decided to analyze the random selection approach as well as sequential, which should correspond to the sequences in the DNA as already explained in Chapter \ref{sec:omit}. We found random selection to be clearly preferable as we can see in Figure \ref{fig:randseq} and also because of the missingness problem with sequential selection.\\
 
-
+The selection of our SNPs compared to a random selection is indicating that they do not belong to the same distribution. For example, 9 SNPs together gave 2.03 as PRS value, while for a random selection distribution we have normal distribution with $\mu =0, \sigma=0.23$ giving p=0.000024, a random positive selection has distribution of $\mu =1.1, \sigma=0.096$, therefore giving p=0.0033. 
 \subsection{Grouping scheme}
 \begin{figure} [!h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{selbox.eps} 
 \caption {Prediction accuracies of the grouping scheme for the out of sample which means not in last level. Every category originally had 15 sample, because of over-specification some are eliminated, the updated count is displayed below the category name.   }\label{fig:selbox}
@@ -224,7 +224,7 @@ Oring the determining SNPs for the phenotype failed to be detected even with onl
 \caption {Prediction accuracies of  predicted outcomes in data out of sample data, never included in the data before. The red lines indicates the expected guessing accuracy for this data with a random approach. The data is theoretically continuous, here we observe the out-of-sample size to be too small (about 10) , explaining the occurrences of overlapping quartiles and medians.}\label{fig:play}
 }
 \end{figure}
-From the out-of-sample prediction accuracy, we determine that some approaches perform better than random, though we would hope for higher accuracy. \\
+From the out-of-sample prediction accuracy, we determine that some approaches perform better than random, though we would hope for higher accuracy. It is apparent, that improvements are required or rather that a single cover does not suffice to make any kind of prediction.\\
 
 We consistently see some of the SNPs reappearing in different covers, which might signal the importance of that specific SNP. For shuffled phenotypes, this phenomena was not observed, hence there is no selection which is generally good for identifying persons. 
 This result is expected and supports the claim of significance of the found SNPs.
