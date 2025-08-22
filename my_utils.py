@@ -917,4 +917,3 @@ def get_distinct_from_res(fileprefix):
                 s.add(e)
     print(len(s))
     return len(s)
-get_distinct_from_res("Changedatasets/given25_s101shuffle200_3/result18.txt")
