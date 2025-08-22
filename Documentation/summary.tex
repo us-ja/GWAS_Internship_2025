@@ -214,7 +214,7 @@ We create a simulated dataset. For simplicity, we attribute only A (risk) and G 
 We mostly tested with the same size as our initial dataset. If less anded 3 SNPs determine the SNP, our methods find this exact cover. Adding more anded SNPs, gives as result only a subset of all determining SNPs with 3 identified SNPs. Apparently they suffice for a minimal cover, repeated tests could unveil more SNPs, identification with the histogram should be possible. 
 Oring the determining SNPs for the phenotype failed to be detected even with only 1 SNP per product. This is due to a limitation in Espresso, which needs to be investigated further. 
 
-\section{Evaluation of the methods}
+\section{Evaluation of the methods}%Discussion
 \begin{figure} [!ht] \centering{\includegraphics[ trim={0 0 0 20},clip, width=\linewidth]{accuracyplot.eps} 
 \caption {Prediction accuracies of  predicted outcomes in data out of sample data, never included in the data before. The red lines indicates the expected guessing accuracy for this data with a random approach. The data is theoretically continuous, here we observe the out-of-sample size to be too small (about 10) , explaining the occurrences of overlapping quartiles and medians.}\label{fig:play}
 }
@@ -233,7 +233,7 @@ This result is expected and supports the claim of significance of the found SNPs
 The histogram seems less crowded than the Manhattan plot of the PRS of Figure \ref{fig:manhattan}. Also most of the SNP have a high PRS value indicating correlation with the phenotype. Repeated results are a sign of confidence, but it also needs to be mentioned, that we are far away from having equal results in all iterations. This also indicates that potentially multiple global optima exist or it hasn't even been found yet.  Except for  the pyramid scheme there does not exist clear "favorite" SNPs but rather a small collection of SNPs appearing more than once.
 
 Another question is whether the global optima or any found cover for this purposes actually has biological credibility in explaining the surveyed phenotype. 
-
+\section{Future potential}%Conclusion??
 \newpage
 \begin{thebibliography}{99}
 \bibitem{tutorial}
