@@ -894,4 +894,27 @@ def createdata(fileprefix:str, total_snp:int, total_pers:int,seed, def_ph:list, 
 
 
 def get_distinct_from_res(fileprefix):
-    pass
+    file=open(fileprefix)
+    lines=file.readlines()
+    file.close()
+    s=set()
+    add_lin=0
+    if "added lines:\n" == lines[-2]:#is already amended
+        add_lin=int(lines[-1])
+    
+    countadd=0
+    if int(lines[1])==0:
+        return None
+    for i in range(-4-int(lines[1])-add_lin,-4-add_lin):
+        if lines[i]=="[]\n":#no usable result
+            pass
+        else:
+            ele= lines[i].split(sep=',')
+            ele[0] =ele[0][1:]
+            ele[-1]=ele[-1][:-2]
+            ele=list( map(int,map(abs,map(float, ele))))
+            for e in ele:
+                s.add(e)
+    print(len(s))
+    return len(s)
+get_distinct_from_res("Changedatasets/given25_s101shuffle200_3/result18.txt")
