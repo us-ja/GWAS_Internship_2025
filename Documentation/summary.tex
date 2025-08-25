@@ -178,7 +178,9 @@ In the pyramid scheme, the algorithm runs sequentially through the entire datase
 
 The selection of the group can be done in many ways, we decided to analyze the random selection approach as well as sequential, which should correspond to the sequences in the DNA as already explained in Chapter \ref{sec:omit}. We found random selection to be clearly preferable as we can see in Figure \ref{fig:randseq} and also because of the missingness problem with sequential selection.\\
 
-The selection of our SNPs compared to a random selection is indicating that they do not belong to the same distribution. For example, 9 SNPs together gave 2.03 as PRS value, while for a random selection distribution we have normal distribution with $\mu =0, \sigma=0.23$ giving p=0.000024, a random positive selection has distribution of $\mu =1.1, \sigma=0.096$, therefore giving p=0.0033. 
+The selection of our SNPs compared to a random selection is indicating that they do not belong to the same distribution. For example, 9 SNPs together gave 2.03 as PRS value, while for a random selection distribution we have normal distribution with $\mu =0, \sigma=0.23$ giving p=0.000024, a random positive selection has distribution of $\mu =1.1, \sigma=0.096$, therefore giving p=0.0033, see Figure \ref{fig:boxplot}.
+
+  
 \subsection{Grouping scheme}
 \begin{figure} [!h] \centering{\includegraphics[ trim={0 0 0 0},clip, width=\linewidth]{selbox.eps} 
 \caption {Prediction accuracies of the grouping scheme for the out of sample which means not in last level. Every category originally had 15 sample, because of over-specification some are eliminated, the updated count is displayed below the category name.   }\label{fig:selbox}
@@ -216,11 +218,11 @@ Oring the determining SNPs for the phenotype failed to be detected even with onl
 
 \section{Evaluation of the methods}%Discussion
 \begin{figure} [!ht] \centering{\includegraphics[ trim={0 0 0 20},clip, width=\linewidth]{accuracyplot.eps} 
-\caption {Prediction accuracies of  predicted outcomes in data out of sample data, never included in the data before. The red lines indicates the expected guessing accuracy for this data with a random approach. The data is theoretically continuous, here we observe the out-of-sample size to be too small (about 10) , explaining the occurrences of overlapping quartiles and medians.}\label{fig:play}
+\caption {Prediction accuracies of  predicted outcomes in data out of sample data, never included in the data before. The red lines indicates the expected guessing accuracy for this data with a random approach. The data is theoretically continuous, here we observe the out-of-sample size to be too small (about 10) , explaining the occurrences of overlapping quartiles and medians.}\label{fig:accuracy}
 }
 \end{figure}
 \begin{figure} [!ht] \centering{\includegraphics[ trim={10 0 0 20},clip, width=\linewidth]{histall.eps} 
-\caption {Histogram of multiple k-folds using one out of pyramid scheme, grouping scheme or phenotype shuffling schemes. The grouping scheme is superimposed on top of the k-fold. No overlap is detected, clear trends with the pyramid scheme are visible, while for shuffled phenotypes no order is apparent.   }\label{fig:play}
+\caption {Histogram of multiple k-folds using one out of pyramid scheme, grouping scheme or phenotype shuffling schemes. The grouping scheme is superimposed on top of the k-fold. No overlap is detected, clear trends with the pyramid scheme are visible, while for shuffled phenotypes no order is apparent.   }\label{fig:frq}
 }
 \end{figure}
 
@@ -234,6 +236,11 @@ The histogram seems less crowded than the Manhattan plot of the PRS of Figure \r
 
 Another question is whether the global optima or any found cover for this purposes actually has biological credibility in explaining the surveyed phenotype. 
 \section{Future potential}%Conclusion??
+This research is severely limited by the availability of data and the capabilities of Espresso. Encoding the problem with an SMT solver allows for ternary encoding, additionally we could increase the confidence for combinations including ors. If this is feasible, we would be able to identify more responsible SNP in more complex circumstance, as long as they solely and entirely determine the phenotype. \\
+
+The method succeeds at finding risk loci, but as of now, it fails in correctly predicting the phenotype. Better datasets and tools might increase the reliability but PRS remains strong in predicting on an individual level. Our approach would be more fit for identifying the cause of disease and therefore for use in research. \\
+
+Hybrid versions, which evaluate PRS as well as relations between SNPs, should also be investigated. The histogram of Figure \ref{fig:frq} could also be interpreted as a refined version of a Manhattan plot. The heights of the points in the Manhattan plot could be added to create a new combined evaluation. 
 \newpage
 \begin{thebibliography}{99}
 \bibitem{tutorial}
