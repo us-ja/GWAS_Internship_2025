@@ -917,3 +917,34 @@ def get_distinct_from_res(fileprefix):
                 s.add(e)
     # print(len(s))
     return len(s)
+
+
+def is_good_snp(num, individual, b_lines, total_pers,print_reas=False, accept_pers=None):
+    num=num+6
+    all_state=None
+    e_line=b_lines[num-6].split()
+    norisk=(e_line[-1])
+    risk=(e_line[-2])
+    broke=False
+    for h in range(total_pers):
+        if accept_pers==None or h in accept_pers:
+            indivual=individual[h]
+            if int(indivual[5])==2:#if phenotype is 1
+                allele=0
+                snp=(indivual[num]).split()
+                for e in snp :
+                    
+                    if risk==e :
+                        allele+=1  
+                    elif norisk!=e:#all - have to be skipped as well
+                        if print_reas:
+                            print("detected unsupported operand", e)
+                        return False
+                if all_state!=None and (allele!=all_state and allele!=1):
+                    if print_reas:
+                        print(num, "Allstate conflict:", all_state, allele, h)
+                    return False
+                        
+                elif all_state==None and (allele!=1):
+                    all_state=allele
+    return True
