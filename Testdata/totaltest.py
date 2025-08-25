@@ -37,12 +37,13 @@ for i in range(start, end, steps):
         for j in range(-4-int(lines[1])-added_lin,-4-added_lin):
             if lines[j]=="[]\n":#no usable result
                 pass
-            else:
-                print(lines[j][:-1])
-                if lines[j][0]!="[":
+            elif lines[j][0]!="[":
                     print("irregularity with  ", lines[j],"at", i)
-                if lines[j][:-1]!="[-1.5]" and lines[j][:-1]!="[-2.5]":
-                    results[-1]=False
+            elif lines[j][:-1]!="[-1.5]" and lines[j][:-1]!="[-2.5]":
+                results[-1]=False
+                print("prod:",abs(-4-int(lines[1])-added_lin-(-4-added_lin)))
+                print("Distinct:",get_distinct_from_res("sequentialtotal6/result"+str(i)+".txt"))
+                break
                     
 
 
