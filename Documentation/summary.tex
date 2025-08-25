@@ -230,16 +230,20 @@ Oring the determining SNPs for the phenotype failed to be detected even with onl
 From the out-of-sample prediction accuracy, we determine that some approaches perform better than random, though we would hope for higher accuracy. It is apparent, that improvements are required or rather that a single cover does not suffice to make any kind of prediction.\\
 
 We consistently see some of the SNPs reappearing in different covers, which might signal the importance of that specific SNP. For shuffled phenotypes, this phenomena was not observed, hence there is no selection which is generally good for identifying persons. 
-This result is expected and supports the claim of significance of the found SNPs.
+
+This result is expected and supports the claim of significance of the found SNPs.\\
 
 The histogram seems less crowded than the Manhattan plot of the PRS of Figure \ref{fig:manhattan}. Also most of the SNP have a high PRS value indicating correlation with the phenotype. Repeated results are a sign of confidence, but it also needs to be mentioned, that we are far away from having equal results in all iterations. This also indicates that potentially multiple global optima exist or it hasn't even been found yet.  Except for  the pyramid scheme there does not exist clear "favorite" SNPs but rather a small collection of SNPs appearing more than once.
 
-Another question is whether the global optima or any found cover for this purposes actually has biological credibility in explaining the surveyed phenotype. 
+Another question is whether the global optima or any found cover for this purposes actually has biological credibility in explaining the surveyed phenotype. \\
+
 \section{Future potential}%Conclusion??
 This research is severely limited by the availability of data and the capabilities of Espresso. Encoding the problem with an SMT solver allows for ternary encoding, additionally we could increase the confidence for combinations including ors. If this is feasible, we would be able to identify more responsible SNP in more complex circumstance, as long as they solely and entirely determine the phenotype. Analysis of the products could detect different undetected subtypes of a disease and allow for separation of those types.  \\
 
 
-The method succeeds at finding risk loci, but as of now, it fails in correctly predicting the phenotype. Better datasets and tools might increase the reliability but PRS remains strong in predicting on an individual level. Our approach would be more fit for identifying the cause of disease and therefore for use in research. \\
+The method succeeds at finding risk loci, but as of now, it fails in correctly predicting the phenotype. Better datasets and tools might increase the reliability but PRS remains strong in predicting on an individual level. Our approach would be more fit for identifying the cause of disease and therefore for use in research. 
+
+If the method is not able to find minimal covers, this might be due to a violation of the initial assumptions or in particular because the phenotype cannot be fully explained through genetics. We do not see this as a bug but rather a feature.\\
 
 Hybrid versions, which evaluate PRS as well as relations between SNPs, should also be investigated. The histogram of Figure \ref{fig:frq} could also be interpreted as a refined version of a Manhattan plot. The heights of the points in the Manhattan plot could be added to create a new combined evaluation. \\
 
