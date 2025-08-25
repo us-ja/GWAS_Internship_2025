@@ -915,5 +915,5 @@ def get_distinct_from_res(fileprefix):
             ele=list( map(int,map(abs,map(float, ele))))
             for e in ele:
                 s.add(e)
-    print(len(s))
+    # print(len(s))
     return len(s)
