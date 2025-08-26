@@ -21,15 +21,17 @@ def chromosomes_start(file_prefix:str):
         count+=1
     return lst
 def curr_time():
+    '''returns str of current time'''
     return str(datetime.now().strftime("%H:%M:%S"))
 def count_unknown(lst:list):
+    '''counts the amount of unknowns (-) in the list(person)'''
     count=0
     for e in lst:
         if "--" == e: 
             count+=1
     return count
 def calculate_decimal(lst:list):
-    "calculates decimal numbers "
+    "calculates from binary list a list of decimal numbers used for duplicate checking, if - returns both states  "
     d=[0]
     newlist=[]
 
@@ -49,10 +51,13 @@ def calculate_decimal(lst:list):
                 print(newlist[i], "inconsistency found")
     return d
 def mkdir(name:int, option:str="-p"):  
+    '''make folder, executing the shell command, option can be given accordingly, default is -p to try create but no error if already exists'''
     subprocess.run(str("mkdir "+option+" "+str(name)), shell=True)
 def rm(name:str, option:str=""):
+    '''remove the file, executing the shell command, option can be given accordingly'''
     subprocess.run(str("rm "+option+" "+name), shell=True)
 def select_risk_al(bim_file, selection, b_lines=None):
+    '''returns list of risk and norisk alleles of selected SNPs'''
     risk=[]
     norisk=[]
     if b_lines==None:
@@ -65,6 +70,7 @@ def select_risk_al(bim_file, selection, b_lines=None):
         risk.append(e_line[-2])
     return risk, norisk
 def print_line(idict, e, change_pheno):
+    '''prints one truth table line for given person e from dictionary'''
     for f in idict[e]["snps"]:
         print(f, end="")
     # print(" ",1)
@@ -73,7 +79,7 @@ def print_line(idict, e, change_pheno):
     else:
         print(" ",change_pheno(e))
 def to_espresso(selection:list, sel_pers:list, lines:list, risk:list, norisk:list,  esp_in:str, allow_unknowns=20, change_pheno=None, checkdoubles=False): 
-    
+    '''translates the selection of snps and individuals into a file espresso can evaluate'''
     idict = {}
     o=sys.stdout
     
@@ -322,10 +328,12 @@ def conversion(select_snp, selection_type:str, comment:str, value:int, fileprefi
     
     return res_out#make only if needed
 def dir_l(level:int):
+    '''returns str for naming'''
     return "l_"+str(level)+"/"
-def notcontain(forbidden:list, s:str):
+def notcontain(forbidden:list, b:str):
+    '''checks if list anything from list a (forbidden) is in b'''
     for e in forbidden:
-        if e in s:
+        if e in b:
             return False
     return True
 def get_files(dir:str, in_subdir:str=None, in_file:str=None, not_in_subdir:list=None, not_in_file:list=None, print_f=False):
@@ -342,16 +350,19 @@ def get_files(dir:str, in_subdir:str=None, in_file:str=None, not_in_subdir:list=
         print(created_files)
     return(created_files)
 def get_total_snp(fileprefix:str):
+    '''returns amount of SNPs based on the first line's length'''
     hapmap= open(fileprefix+".ped")
     lines= hapmap.readlines()
     hapmap.close()
     return len(lines[0].split('\t'))-6
 def get_total_pers(fileprefix:str):
+    '''returns count of persons, from given file'''
     hapmap= open(fileprefix+".ped")
     lines= hapmap.readlines()
     hapmap.close()
     return len(lines)
 def merge_nicer(A,B, compar):
+    '''helper function for merge sort'''
     i=0
     j=0
     C=[]
@@ -376,6 +387,7 @@ def merge_sort(A,l,r, comparision_func=lambda x,y : (x>y) ):
     R=merge_sort(A,m,r, comparision_func)
     return merge_nicer(L,R, comparision_func)
 def score(selection:list, a_lines:list, only_pos:bool=False):
+    '''returns a the summed effect sizes (PRS) of the given selction of SNPs'''
     result = 0
     for e in selection:
         sign=1
@@ -726,7 +738,7 @@ def get_shares(files:list, accept_lim:bool=False, prefix:str="HapMap", surpress_
         
     return alt, seeds
 def get_seed_from_file(txt:str):
-    
+    '''returns the seed present in naming of the file, if the filename is formatted normally'''
     # try:
     #     print(txt[txt.find("given"):max((txt.find("bound_enf")),(txt.find("split")),(txt.find("shuffle")))])
     #     print((int(''.join(filter(str.isdigit, txt[txt.find("given"):max((txt.find("bound_enf")),(txt.find("split")),(txt.find("shuffle")))])))))
@@ -790,6 +802,7 @@ def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=No
     return predic_acc, res
 
 def createdata(fileprefix:str, total_snp:int, total_pers:int,seed, def_ph:list, mult_prod:int=False):
+    '''creates artificial data (ped, bim) simulated according to constraints, uses C and T only for constraining SNPs, A and G only for the others'''
     o=sys.stdout
     random.seed(seed)
     ped=open(fileprefix+".ped", 'w')
@@ -893,7 +906,8 @@ def createdata(fileprefix:str, total_snp:int, total_pers:int,seed, def_ph:list, 
     sys.stdout=o
 
 
-def get_distinct_from_res(fileprefix):
+def get_distinct_from_res(fileprefix:str):
+    '''returns the amount of distinct snp used in for the minimal cover from given file'''
     file=open(fileprefix)
     lines=file.readlines()
     file.close()
@@ -919,8 +933,9 @@ def get_distinct_from_res(fileprefix):
     return len(s)
 
 
-def is_good_snp(num, individual, b_lines, total_pers,print_reas=False, accept_pers=None):
-    num=num+6
+def is_good_snp(num:int, individual:list, b_lines:list, total_pers,print_reas:bool=False, accept_pers:list=None):
+    '''takes a snp position and tells whether it could be included in a sum of a single product, individual is an already format listed of the p_lines'''
+    num=int(abs(num))+6
     all_state=None
     e_line=b_lines[num-6].split()
     norisk=(e_line[-1])
