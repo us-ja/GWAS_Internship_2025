@@ -740,7 +740,7 @@ def grouping25(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=
     '''runs the grouping scheme with a 90/10 k-fold each group has size of 22.5% and 10% is control for out of sample'''
     grouping(fileprefix, seed, g_size, plines, change_pheno, deletelog, checkdoubles, shuffle_in_level,total_snp,given_share=0.25, controlshare=0.1)
 
-def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=None, deletelog:bool=True, checkdoubles:bool=False,shuffle_in_level:bool=False, total_snp:int=None, given_share:float=0.25, controlshare:float=0.1):
+def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=None, deletelog:bool=True, checkdoubles:bool=False,shuffle_in_level:bool=False, total_snp:int=None, given_share:float=0.25, controlshare:float=0.1, add_comm:str=""):
     '''runs the grouping scheme with a controlshare k-fold each group has size of givenpercent-controlshare*givenpercent and 10% is control for out of sample'''
     o=sys.stdout
     k=get_total_pers(fileprefix=fileprefix)
@@ -762,7 +762,7 @@ def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=No
     sel_pers=(list(range(k)))
     random.shuffle(sel_pers)
     # print(sel_pers)
-    comm="25_s"+str(seed)
+    comm="25_s"+add_comm+str(seed)
     try:
         res=(combine_build_up(g_size, fileprefix,add_comm=comm, seed=seed, sel_pers=sel_pers,change_pers_func=givepers,checkdoubles=checkdoubles,shuffle_in_level=shuffle_in_level, p_lines=plines, deletelog=deletelog, total_snp=total_snp, change_pheno=change_pheno))
         sys.stdout=o
@@ -785,7 +785,7 @@ def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=No
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         print(exc_type, fname, exc_tb.tb_lineno, err)
-
+    print(predic_acc, res)
     print("finished all at", curr_time())
     return predic_acc, res
 
