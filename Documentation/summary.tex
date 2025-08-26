@@ -193,7 +193,7 @@ We tested two methods for passing SNPs down a level: shuffling in every level an
 
 We found group sizes of 25\% of the in-sample data to be fitting for the approach with our initial dataset. With alternating groups, such as when splitting the individuals into two groups (group sizes of 50\%), the method yields lower prediction accuracies than the Pyramid scheme or 25\% group sizes. We suspect it  was optimizing for the in-sample data. Additionally, alternating often fails due to over-specification especially if the order from the previous level is not respected (shuffle SNPs after each level).
 
-Later the code was changed to refer to the previous level's selection of individuals if the final analysis is over-specified. This should resolve most cases where over-specification was still posing a problem.  We maintain the stance the randomization between the levels is preferable as this allows for more diverse range of combinations.
+Later the code was changed to refer to the previous level's selection of individuals if the final analysis is over-specified. This should resolve most cases where over-specification was still posing a problem. We maintain the stance the randomization between the levels is preferable as this allows for more diverse range of combinations.
 
 \section{Creating data with given structure}
 In this chapter we try to evaluate what is possible to achieve with our method and what has to be expected simply by random occurrences. We simulate or change data such that we have a more direct correspondence, which we can try to predict. This gives us an understanding of the capabilities of our methods.
@@ -237,6 +237,7 @@ The histogram seems less crowded than the Manhattan plot of the PRS of Figure \r
 
 Another question is whether the global optima or any found cover for this purposes actually has biological credibility in explaining the surveyed phenotype. \\
 
+The final method, we claim works the best using Espresso for our test-data has following properties: QC completed, binary translation adjusted with $2_{10}=11_2$, randomization for the selection of 200 SNPs for the start as well as between the levels, using the grouping scheme with 25\% of the total population per group, allow at most 30 unknowns before cutting individuals, which in fact does not happen, not checking for over-specification as it does not happen either. 
 \section{Future potential}%Conclusion??
 This research is severely limited by the availability of data and the capabilities of Espresso. Encoding the problem with an SMT solver allows for ternary encoding, additionally we could increase the confidence for combinations including ors. If this is feasible, we would be able to identify more responsible SNP in more complex circumstance, as long as they solely and entirely determine the phenotype. Analysis of the products could detect different undetected subtypes of a disease and allow for separation of those types.  \\
 
@@ -245,7 +246,7 @@ The method succeeds at finding risk loci, but as of now, it fails in correctly p
 
 If the method is not able to find minimal covers, this might be due to a violation of the initial assumptions or in particular because the phenotype cannot be fully explained through genetics. We do not see this as a bug but rather a feature.\\
 
-Hybrid versions, which evaluate PRS as well as relations between SNPs, should also be investigated. The histogram of Figure \ref{fig:frq} could also be interpreted as a refined version of a Manhattan plot. The heights of the points in the Manhattan plot could be added to create a new combined evaluation. \\
+Machine learning algorithms could be also be involved. Hybrid versions, which evaluate PRS as well as relations between SNPs, should be investigated. The histogram of Figure \ref{fig:frq} could also be interpreted as a refined version of a Manhattan plot. The heights of the points in the Manhattan plot could be added to create a new combined evaluation. 
 
 
 \newpage
