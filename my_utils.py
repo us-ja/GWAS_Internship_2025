@@ -747,11 +747,9 @@ def get_seed_from_file(txt:str):
     #     return None
     # print((int(''.join(filter(str.isdigit, txt[txt.find("given")+8:max((txt.find("bound_enf")),(txt.find("split")),(txt.find("shuffle")))])))))
     return (int(''.join(filter(str.isdigit, txt[txt.find("given")+8:max((txt.find("bound_enf")),(txt.find("split")),(txt.find("shuffle")))]))))
-
 def grouping25(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=None, deletelog:bool=True, checkdoubles:bool=False,shuffle_in_level:bool=False, total_snp:int=None):
     '''runs the grouping scheme with a 90/10 k-fold each group has size of 22.5% and 10% is control for out of sample'''
     grouping(fileprefix, seed, g_size, plines, change_pheno, deletelog, checkdoubles, shuffle_in_level,total_snp,given_share=0.25, controlshare=0.1)
-
 def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=None, deletelog:bool=True, checkdoubles:bool=False,shuffle_in_level:bool=False, total_snp:int=None, given_share:float=0.25, controlshare:float=0.1, add_comm:str=""):
     '''runs the grouping scheme with a controlshare k-fold each group has size of givenpercent-controlshare*givenpercent and 10% is control for out of sample'''
     o=sys.stdout
@@ -800,7 +798,6 @@ def grouping(fileprefix:str, seed, g_size:int, plines:list=None, change_pheno=No
     print(predic_acc, res)
     print("finished all at", curr_time())
     return predic_acc, res
-
 def createdata(fileprefix:str, total_snp:int, total_pers:int,seed, def_ph:list, mult_prod:int=False):
     '''creates artificial data (ped, bim) simulated according to constraints, uses C and T only for constraining SNPs, A and G only for the others'''
     o=sys.stdout
@@ -904,8 +901,6 @@ def createdata(fileprefix:str, total_snp:int, total_pers:int,seed, def_ph:list, 
 
 
     sys.stdout=o
-
-
 def get_distinct_from_res(fileprefix:str):
     '''returns the amount of distinct snp used in for the minimal cover from given file'''
     file=open(fileprefix)
@@ -931,8 +926,6 @@ def get_distinct_from_res(fileprefix:str):
                 s.add(e)
     # print(len(s))
     return len(s)
-
-
 def is_good_snp(num:int, individual:list, b_lines:list, total_pers,print_reas:bool=False, accept_pers:list=None):
     '''takes a snp position and tells whether it could be included in a sum of a single product, individual is an already format listed of the p_lines'''
     num=int(abs(num))+6

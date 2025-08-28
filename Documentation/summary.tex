@@ -17,7 +17,7 @@
 \author{ \Large Janis Waser\\
 \\ \\ \\
 \Large Supervised by \\
-\Large Francesco Costa and Professoressa Laura Pozzi\\
+\Large Francesco Costa \\ \Large Prof. Laura Pozzi\\
 \\ \\ \\
 \Large Università della Svizzera italiana (USI)\\
 \\ \\ 
@@ -212,7 +212,9 @@ As for the pyramid scheme, we tested two methods for passing SNPs down a level a
 
 We found group sizes of 25\% of the in-sample data to be fitting for the approach with our initial dataset. With alternating groups, such as when splitting the individuals into two groups (group sizes of 50\%), the method yields lower prediction accuracies than the Pyramid scheme or 25\% group sizes. We suspect it  was optimizing for the in-sample data. Additionally, alternating often fails due to over-specification especially if the order from the previous level is not respected (shuffle SNPs after each level).\\
 
-Later the code was changed to refer to the previous level's selection of individuals if the final analysis is over-specified. This should resolve most cases where over-specification was still posing a problem. We maintain the stance the randomization between the levels is preferable as this allows for more diverse range of combinations.
+Later the code was changed to refer to the previous level's selection of individuals if the final analysis is over-specified. This should resolve most cases where over-specification was still posing a problem. We maintain the stance the randomization between the levels is preferable as this allows for more diverse range of combinations.\\
+
+With the blood lipid dataset, we found that the result consists of about 9 products out of over 100 distinct SNPs ($k=500$), still with out-of-sample accuracy barely above 50\%. We had to increase $k$ (group size) as else we would have problems with over-specification. We increased it to 300/500, from which we concluded, that it should be increased even further, with $k=300$ it took 8 levels, but with $k=500$ only 5. Another complication is the time, for example with $k=500$ it took us more than one week to run a single experiment. Decreasing the percentage of group sizes, here 25\% could be appropriate for improving the results.
 
 \section{Creating data with given structure}
 In this chapter we try to evaluate what is possible to achieve with our method and what has to be expected simply by random occurrences. We simulate or change data such that we have a more direct correspondence, which we can try to predict. This gives us an understanding of the capabilities of our methods.

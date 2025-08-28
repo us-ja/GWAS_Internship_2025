@@ -12,7 +12,6 @@ start=1
 end=350
 steps=1
 for i in range(start, end, steps):
-
     results.append(True)
     if i>3:
         fileprefix="testdata_1001"
