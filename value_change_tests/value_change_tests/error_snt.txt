@@ -1,8 +1,0 @@
-nohup: ignoring input
-seed_norm_trick.sh: 1: source: not found
-seed_norm_trick.sh: 13: [[: not found
-seed_norm_trick.sh: 13: [[: not found
-seed_norm_trick.sh: 13: [[: not found
-seed_norm_trick.sh: 13: [[: not found
-seed_norm_trick.sh: 13: [[: not found
-seed_norm_trick.sh: 13: [[: not found
