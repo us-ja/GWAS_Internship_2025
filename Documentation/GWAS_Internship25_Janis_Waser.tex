@@ -47,12 +47,12 @@ Genome wide association studies  (GWAS)  are done to identify significant risk l
 
 For this purpose many tools such as PRS already exist. "A polygenic risk score (abbreviated PRS) uses genomic information alone to assess a person’s chances of having or developing a particular medical condition. A person’s PRS is a statistical calculation based on the presence or absence of multiple genomic variants, without taking environmental or other factors into account."\cite{prs} Through stratification different ethnicities can be captured accurately. 
 
-Rarely is it possible to assess the relationship between multiple single nucleotide polymorphisms with PRS as a tool due to it being limited to a single genomic variational presence or absence. Two or more independent causes for a disease might greatly affect the capability of this model. On the other hand, PRS is resistant against undetected cases in the control group. 
+Rarely is it possible to assess the relationship between multiple single nucleotide polymorphisms with PRS as a tool due to it being limited to a single genomic variational presence or absence. Two or more independent causes for a disease might greatly affect the capability of this model. On the other hand, PRS is resistant against undetected cases in the control group. It has been shown, that significant overlap between different psychiatric traits exist, therefore studying this overlap is crucial \cite{psych}. 
 
 We want to explore a different method using Espresso which from a truth table finds a minimized circuit. We hope that thanks to this circuit, we are able to extract more information especially of the relations between different SNPs. A minimized cover can be understood as simplest possible explanation, therefore we actively search for it. 
 
 \subsection {Quality control and Data}
-Quality control (QC) is a crucial step when processing data. In the context of genetic data, specific limits are set to ensure the quality of the data. Data which violates this form are excluded either through the exclusion of an entire SNP (column) or a subject (row). It involves analysis of the Hardy-Weinberg equilibrium, the heterozygosity rate, checking cryptic relatedness (familiar matches), limiting the missingness of data, matching gender data with the sex chromosome. SNPs with a low minor allele frequencies (MAF) are also excluded as no significant statement is possible. 
+Quality control (QC) is a crucial step when processing data\cite{QC}. In the context of genetic data, specific limits are set to ensure the quality of the data. Data which violates this form are excluded either through the exclusion of an entire SNP (column) or a subject (row). It involves analysis of the Hardy-Weinberg equilibrium, the heterozygosity rate, checking cryptic relatedness (familiar matches), limiting the missingness of data, matching gender data with the sex chromosome. SNPs with a low minor allele frequencies (MAF) are also excluded as no significant statement is possible. 
 
 Our data stems from a GWAS/PRS tutorial\cite{tutorial}. We also stick to the instructions for the QC given during this tutorial, after which our data has 109 subjects and 1'073'226 SNPs.  \\
 
@@ -274,6 +274,8 @@ Machine learning algorithms could be also be involved. Hybrid versions, which ev
 \begin{thebibliography}{99}
 \bibitem{tutorial}
 \emph{Marees AT et al. } A tutorial on conducting genome-wide association studies: Quality control and statistical analysis. \url{https://pmc.ncbi.nlm.nih.gov/articles/PMC6001694/}
+\bibitem{QC}
+\emph{Anderson, C., Pettersson, F., Clarke, G. et al. } Data quality control in genetic case-control association studies. Nat Protoc 5, p. 1564–1573, 2010. \url{https://doi.org/10.1038/nprot.2010.116}
 \bibitem{lipid_data}
 \emph{Hajiaghabozorgi, M. } GWAS dataset with simulated binary phenotypes for 1000 Genome Project. March 1, 2023. \url{https://doi.org/10.5281/zenodo.7683384}
 \bibitem{1k}
@@ -281,6 +283,8 @@ Machine learning algorithms could be also be involved. Hybrid versions, which ev
 \bibitem{prs}
 \emph{Teri Manolio} National Human Genome Research Institute (NIH). August 19 2025. \url{https://www.genome.gov/genetics-glossary/Polygenic-Risk-Score-PRS}
 \bibitem{10ygwas}
-\emph{Peter M. Visscher et al. } 10 Years of GWAS Discovery: Biology, Function, and Translation, The American Journal of Human Genetics . July 6 2017, p 5-22. 
+\emph{Peter M. Visscher et al. } 10 Years of GWAS Discovery: Biology, Function, and Translation, The American Journal of Human Genetics . p. 5-22,  July 6 2017.
+\bibitem{psych}
+\emph{Cross-Disorder Group of the Psychiatric Genomics Consortium.} Genetic relationship between five psychiatric disorders estimated from genome-wide SNPs. Nat Genet 45, p. 984–994, 2013. \url{https://doi.org/10.1038/ng.2711}
 \end{thebibliography}
 \end{document}
